@@ -13,6 +13,9 @@ public class Film {
     String name = null;
     String annotation = null;
     String rating = null;
+    private TreeMap<String, ArrayList<String> > purposes = new TreeMap<>();
+    private ArrayList<String> actors =new ArrayList<String>();
+    
     public String getRating() {
         return rating;
     }
@@ -20,8 +23,6 @@ public class Film {
         this.rating = rating;
     }
 
-    private TreeMap<String, ArrayList<String> > purposes = new TreeMap<>();
-    private ArrayList<String> actors =new ArrayList<String>();
     
     public ArrayList<String> getSuggestion_links() {
         return suggestion_links;
@@ -71,6 +72,7 @@ public class Film {
     public void addActor(String name){
         actors.add(name);
     }
+    
     
     public void print(OutputStream stream) throws IOException{
         OutputStreamWriter writer = new OutputStreamWriter(stream);

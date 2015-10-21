@@ -2,8 +2,11 @@ package tryurl;
 
 
 
+import static org.junit.Assert.*;
+
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import org.junit.Test;
 
@@ -36,6 +39,25 @@ public class TestLoad {
     }
     
     @Test
-    public void testDB() throws ClassNotFoundException, SQLException{
+    public void testDB() throws ClassNotFoundException, SQLException, IOException{
+        DBConnector db_con =  new DBConnector(null);
+        db_con.connect();
+        db_con.BuildDatabase();
+        String id = "397236";
+        Film film = KpParser.parseFilm(PageLoader.loadFilm(id), PageLoader.loadFilmSuggestions(id) );
+        db_con.InsertFilm(film);
+        assertTrue(db_con.deleteFilmFromId(film.getId()));
+        db_con.closeAll();
+    }
+    
+    @Test
+    public void testDbConf(){
+        try {
+            DBConnector db_con = new DBConnector("file.conf");
+        } catch (ClassNotFoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        
     }
 }
