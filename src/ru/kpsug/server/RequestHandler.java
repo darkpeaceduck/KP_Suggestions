@@ -19,7 +19,7 @@ public class RequestHandler implements Runnable{
         String line = null;
         try {
             while((line = reader.readLine()) != null){
-                RequestDispatcher.dispatch(line);
+                RequestDispatcher.dispatch(line, this);
             }
         } catch (IOException e) {
         }

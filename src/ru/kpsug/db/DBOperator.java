@@ -57,8 +57,7 @@ public class DBOperator {
     }
 
     // null if from hardcode constants
-    public DBOperator(String conf_path) throws ClassNotFoundException {
-        Class.forName("org.postgresql.Driver");
+    public DBOperator(String conf_path)  {
         if (conf_path != null) {
             try {
                 parseConf(conf_path);

@@ -14,6 +14,7 @@ import ru.kpsug.db.DBOperator;
 public class tcpServer{
     private int port = 6666;
     private DBOperator db;
+    
     private void parseConfig(String path) throws IOException{
         Map<String, String> result = ConfigParser.parseConfig(path);
         for(Entry<String, String> pair : result.entrySet()){
@@ -35,6 +36,7 @@ public class tcpServer{
                 
             }
         }
+        db = new DBOperator(path);
     }
     
     public void start() {
