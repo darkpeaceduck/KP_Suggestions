@@ -10,22 +10,7 @@ import org.jsoup.select.Elements;
 
 public class KpParser {
     private static Document removeSpecialChars(Document doc){
-        String html = doc.html();
-        StringBuilder builder = new StringBuilder();
-        boolean in_special = false;
-        for(char curchar : html.toCharArray()){
-            if(curchar == '&'){
-                in_special = true;
-            }
-            if(!in_special){
-                builder.append(curchar);
-            }
-            if(curchar == ';' && in_special){
-                builder.append(" ");
-                in_special = false;
-            }
-        }
-        return Jsoup.parse(builder.toString());
+        return Jsoup.parse(doc.html().replaceAll("&.*?;", " "));
     }
     private static void parseSuggestions(Film film, Document doc){
          Elements films = doc.getElementsByAttributeValueStarting("id", "tr_");

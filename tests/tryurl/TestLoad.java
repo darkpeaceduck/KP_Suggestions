@@ -43,13 +43,12 @@ public class TestLoad {
         DBOperator db_con =  new DBOperator(null);
         db_con.connect();
         assertTrue(db_con.BuildDatabase());
-//        String id = "3561";
-//        Film film = KpParser.parseFilm(PageLoader.loadFilm(id), PageLoader.loadFilmSuggestions(id) );
-//        film.print(System.out);
-//        System.out.println(PageLoader.loadFilm(id).html());
-//        assertTrue(db_con.InsertFilm(film));
-//        assertEquals(db_con.selectFilm(id), film);
-//        assertTrue(db_con.deleteFilmFromId(film.getId()));
+        String id = "3561";
+        Film film = KpParser.parseFilm(PageLoader.loadFilm(id), PageLoader.loadFilmSuggestions(id) );
+        film.print(System.out);
+        assertTrue(db_con.InsertFilm(film));
+        assertEquals(db_con.selectFilm(id), film);
+        assertTrue(db_con.deleteFilmFromId(film.getId()));
         db_con.closeAll();
         
     }
