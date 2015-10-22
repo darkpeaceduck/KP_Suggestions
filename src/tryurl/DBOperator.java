@@ -188,10 +188,6 @@ public class DBOperator {
     }
     
     private ArrayList<String> parseArrayListString(String s){
-//        String [] splitted= s.substring(1, s.length() - 1).split(",");
-//        for(int i = 1; i < splitted.length; i++){
-//            splitted[i] = splitted[i].substring(1);
-//        }
         return new ArrayList<String>(Arrays.asList(s.split(",")));
     }
     
@@ -206,7 +202,7 @@ public class DBOperator {
     }
 
     public Film selectFilm(String id) {
-        String main_query = "select * from films where id=" + id;
+        String main_query = "select * from " + films_table + " where id=" + id;
         ResultSet set = executeQuery(main_query);
         if (set == null) {
             return null;

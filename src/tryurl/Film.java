@@ -86,13 +86,16 @@ public class Film {
         writer.flush();
     }
     
+//    private boolean objEq(Object Obj, Object Obj2){
+//        return (Obj == null ? Obj2 == nuklObj.equals(Obj2);
+//    }
     @Override
     public boolean equals(Object obj) {
         Film with = (Film) obj;
-        return id.equals(with.id) && name.equals(with.name) &&
-                purposes.equals(with.purposes) &&  actors.equals(with.actors)
-                && annotation.equals(with.annotation) && suggestion_links.equals(with.suggestion_links) &&
-                rating.equals(with.rating);
+        return id.toString().equals(with.id.toString()) && name.toString().equals(with.name.toString()) &&
+                purposes.toString().equals(with.purposes.toString()) &&  actors.toString().equals(with.actors.toString())
+                && annotation.toString().equals(with.annotation.toString()) && suggestion_links.toString().equals(with.suggestion_links.toString()) &&
+                rating.toString().equals(with.rating.toString());
     }
     
     public void addSuggestionLink(String link){
