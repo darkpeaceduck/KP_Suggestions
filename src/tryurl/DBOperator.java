@@ -22,6 +22,9 @@ public class DBOperator {
     private String password = "postgres";
     private static final String field_size = "5000";
     private static final String films_table = "films";
+    
+    volatile private Connection connect = null;
+    volatile private Statement statement = null;
 
     private void parseConf(String config) throws IOException {
         BufferedReader reader = new BufferedReader(new InputStreamReader(
@@ -64,8 +67,6 @@ public class DBOperator {
         }
     }
 
-    private Connection connect = null;
-    private Statement statement = null;
 
     public void connect() throws SQLException {
         connect = DriverManager.getConnection("jdbc:postgresql://" + host + ":"
@@ -78,9 +79,8 @@ public class DBOperator {
         }
     }
 
-    // all methods below are synchronized - no Exceptions
 
-    public boolean executeUpdate(String query) {
+    public synchronized boolean executeUpdate(String query) {
         if (statement == null) {
             try {
                 statement = connect.createStatement();
@@ -97,7 +97,7 @@ public class DBOperator {
     }
 
     // returns null if failed
-    public ResultSet executeQuery(String query) {
+    public synchronized ResultSet executeQuery(String query) {
         if (statement == null) {
             try {
                 statement = connect.createStatement();
@@ -131,6 +131,8 @@ public class DBOperator {
                 + "name varchar(" + field_size + "))";
         return executeUpdate(main_query);
     }
+    
+    
     
     private String writeArrayList(ArrayList<String> arr){
         String result = "";

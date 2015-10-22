@@ -86,9 +86,6 @@ public class Film {
         writer.flush();
     }
     
-//    private boolean objEq(Object Obj, Object Obj2){
-//        return (Obj == null ? Obj2 == nuklObj.equals(Obj2);
-//    }
     @Override
     public boolean equals(Object obj) {
         Film with = (Film) obj;

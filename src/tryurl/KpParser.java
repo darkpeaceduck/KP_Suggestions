@@ -9,20 +9,23 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 public class KpParser {
-    private static Document removeSpecialChars(Document doc){
-        return Jsoup.parse(doc.html().replaceAll("&.*?;", " "));
+    private static Document removeSpecialChars(Document doc) {
+        return Jsoup.parse(doc.html().replaceAll("&.*?;", " ").replaceAll("'", "\""));
     }
-    private static void parseSuggestions(Film film, Document doc){
-         Elements films = doc.getElementsByAttributeValueStarting("id", "tr_");
-         for(Element new_sug : films){
-             film.addSuggestionLink(new_sug.attr("id").substring(3));
-         }
+
+    private static void parseSuggestions(Film film, Document doc) {
+        Elements films = doc.getElementsByAttributeValueStarting("id", "tr_");
+        for (Element new_sug : films) {
+            film.addSuggestionLink(new_sug.attr("id").substring(3));
+        }
     }
+
     private static void parseInfoBlock(Film film, Document doc) {
-        Element info_block = doc.getElementsByClass("info").first().children().first();
+        Element info_block = doc.getElementsByClass("info").first().children()
+                .first();
         for (Element child : info_block.children()) {
             String purp_name = child.getElementsByClass("type").first().html();
-            if(purp_name.equals("рейтинг MPAA")){
+            if (purp_name.equals("рейтинг MPAA")) {
                 continue;
             }
             for (Element td : child.children()) {
@@ -30,7 +33,7 @@ public class KpParser {
                     Elements as = td.getElementsByTag("a");
                     if (as != null) {
                         for (Element a : as) {
-                            if(a.html().equals("...")){
+                            if (a.html().equals("...")) {
                                 break;
                             }
                             film.addPurpose(purp_name, a.html());
@@ -44,61 +47,68 @@ public class KpParser {
     }
 
     private static void parseActors(Film film, Document doc) {
-        Element actors_block = doc.getElementById("actorList");
-        Elements actors_list = actors_block.getElementsByTag("ul").first()
-                .getElementsByAttributeValue("itemprop", "actors");
+        Element actors_block = doc.getElementById("actorList").getElementsByTag("ul").first();
+        if(actors_block == null){
+            return;
+        }
+        Elements actors_list = actors_block.getElementsByAttributeValue("itemprop", "actors");
+        if(actors_list == null){
+            return;
+        }
         for (Element actor : actors_list) {
             String actor_str = actor.getElementsByTag("a").html();
-            if(actor_str.equals("...")){
+            if (actor_str.equals("...")) {
                 break;
             }
             film.addActor(actor_str);
         }
     }
-    
-    private static void parseAnnotation(Film film, Document doc){
-        Element description = doc.getElementsByAttributeValue("itemprop", "description").first();
-        if(description == null){
+
+    private static void parseAnnotation(Film film, Document doc) {
+        Element description = doc.getElementsByAttributeValue("itemprop",
+                "description").first();
+        if (description == null) {
             film.setAnnotation("");
-        }else{
+        } else {
             String result = description.html();
             result = result.replaceAll("<br>", "");
             result = result.replaceAll("\n", "");
             film.setAnnotation(result);
         }
     }
-    
-    private static void parseName(Film film, Document doc){
+
+    private static void parseName(Film film, Document doc) {
         Element elem = doc.getElementsByTag("title").first();
-        if(elem != null){
+        if (elem != null) {
             film.setName(elem.html());
         } else {
             film.setName("");
         }
     }
-    
-    private static void parseId(Film film, Document doc){
-        StringTokenizer tokenizer = new StringTokenizer(doc.getElementsByAttributeValue("rel", "canonical").attr("href"));
+
+    private static void parseId(Film film, Document doc) {
+        StringTokenizer tokenizer = new StringTokenizer(doc
+                .getElementsByAttributeValue("rel", "canonical").attr("href"));
         String result = "";
-        while(true){
-            try{
+        while (true) {
+            try {
                 result = tokenizer.nextToken("/");
-            }catch(NoSuchElementException exsp){
+            } catch (NoSuchElementException exsp) {
                 break;
             }
         }
         film.setId(result);
     }
-    
-    private static void parseRating(Film film, Document doc){
+
+    private static void parseRating(Film film, Document doc) {
         Element rating = doc.getElementsByClass("rating_ball").first();
-        if(rating == null){
+        if (rating == null) {
             film.setRating("0");
-        } else  {
+        } else {
             film.setRating(rating.html());
         }
     }
-    
+
     public static Film parseFilm(Document doc, Document doc_suggestions) {
         Film film = new Film();
         doc = removeSpecialChars(doc);

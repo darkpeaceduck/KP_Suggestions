@@ -7,7 +7,9 @@ import static org.junit.Assert.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.TreeMap;
 
+import org.jsoup.nodes.Document;
 import org.junit.Test;
 
 import java.sql.*;
@@ -43,8 +45,19 @@ public class TestLoad {
         DBOperator db_con =  new DBOperator(null);
         db_con.connect();
         assertTrue(db_con.BuildDatabase());
-        String id = "3561";
-        Film film = KpParser.parseFilm(PageLoader.loadFilm(id), PageLoader.loadFilmSuggestions(id) );
+        String id = "10602";
+        TreeMap<String, String> cookies = new TreeMap<String, String>();
+        cookies.put("PHPSESSID", "1024f7c014ece92d83036ed35488c78d");
+        cookies.put("_ym_visorc_22663942", "b");
+        cookies.put("mobile", "no");
+        cookies.put("noflash", "false");
+        cookies.put("refresh_yandexuid", "251607371445295272");
+        cookies.put("user_country", "ru");
+        cookies.put("yandexuid", "251607371445295272");
+        
+        Document doc = PageLoader.loadFilm(id);
+        System.out.println(doc);
+        Film film = KpParser.parseFilm(doc, PageLoader.loadFilmSuggestions(id) );
         film.print(System.out);
         assertTrue(db_con.InsertFilm(film));
         assertEquals(db_con.selectFilm(id), film);
