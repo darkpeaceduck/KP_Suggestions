@@ -1,4 +1,4 @@
-package tryurl;
+package kp;
 
 
 
@@ -6,14 +6,19 @@ import static org.junit.Assert.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.TreeMap;
 
 import org.jsoup.nodes.Document;
 import org.junit.Test;
 
 import java.sql.*;
-public class TestLoad {
+
+import kp.indexer.DBOperator;
+import kp.indexer.Film;
+import kp.indexer.KpParser;
+import kp.indexer.PageLoader;
+import kp.indexer.Suggestions;
+public class TestIndexer {
 
     @Test
     public void test() throws IOException {

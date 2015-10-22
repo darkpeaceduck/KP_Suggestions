@@ -1,4 +1,4 @@
-package tryurl;
+package kp.indexer;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;

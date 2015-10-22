@@ -1,4 +1,4 @@
-package tryurl;
+package kp.indexer;
 
 public class KpPath {
     public static String getPrefix(){
