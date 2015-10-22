@@ -1,8 +1,10 @@
-package kp.indexer;
+package ru.kpsug.indexer;
 
 import java.io.OutputStreamWriter;
 import java.sql.SQLException;
 import java.util.ArrayList;
+
+import ru.kpsug.db.DBOperator;
 
 public class IndexerStarter {
     public static void main(String[] args) {

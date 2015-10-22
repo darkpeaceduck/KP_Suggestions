@@ -1,4 +1,4 @@
-package kp.indexer;
+package ru.kpsug.indexer;
 
 import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
@@ -7,6 +7,8 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+
+import ru.kpsug.db.Film;
 
 public class KpParser {
     private static Document removeSpecialChars(Document doc) {

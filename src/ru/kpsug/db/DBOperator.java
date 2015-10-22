@@ -1,4 +1,4 @@
-package kp.indexer;
+package ru.kpsug.db;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;

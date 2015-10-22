@@ -1,10 +1,13 @@
-package kp.indexer;
+package ru.kpsug.indexer;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 
 import org.jsoup.nodes.Document;
+
+import ru.kpsug.db.DBOperator;
+import ru.kpsug.db.Film;
 
 public class Indexer implements Runnable {
     private int page_start;

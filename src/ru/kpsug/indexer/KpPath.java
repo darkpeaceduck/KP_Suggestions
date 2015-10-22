@@ -1,4 +1,4 @@
-package kp.indexer;
+package ru.kpsug.indexer;
 
 public class KpPath {
     public static String getPrefix(){

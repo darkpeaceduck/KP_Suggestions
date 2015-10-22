@@ -1,4 +1,4 @@
-package kp;
+package ru.kpsug;
 
 
 
@@ -11,13 +11,13 @@ import java.util.TreeMap;
 import org.jsoup.nodes.Document;
 import org.junit.Test;
 
-import java.sql.*;
+import ru.kpsug.db.DBOperator;
+import ru.kpsug.db.Film;
+import ru.kpsug.indexer.KpParser;
+import ru.kpsug.indexer.PageLoader;
+import ru.kpsug.indexer.Suggestions;
 
-import kp.indexer.DBOperator;
-import kp.indexer.Film;
-import kp.indexer.KpParser;
-import kp.indexer.PageLoader;
-import kp.indexer.Suggestions;
+import java.sql.*;
 public class TestIndexer {
 
     @Test

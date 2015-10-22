@@ -1,8 +1,10 @@
-package kp.indexer;
+package ru.kpsug.indexer;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.TreeMap;
+
+import ru.kpsug.db.Film;
 
 public class Suggestions {
     public static class Node{

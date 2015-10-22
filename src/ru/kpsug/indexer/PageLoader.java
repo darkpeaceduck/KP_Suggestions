@@ -1,4 +1,4 @@
-package kp.indexer;
+package ru.kpsug.indexer;
 
 import java.io.IOException;
 import java.io.InputStream;
