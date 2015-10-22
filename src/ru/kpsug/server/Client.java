@@ -1,6 +1,8 @@
 package ru.kpsug.server;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.InetAddress;
 import java.net.Socket;
@@ -11,11 +13,13 @@ public class Client {
         try {
             s = new Socket(InetAddress.getByName("127.0.0.1"), 6666);
             OutputStreamWriter outp = new OutputStreamWriter(s.getOutputStream());
-            outp.append("FUCK THE WORLD\n");
+            BufferedReader inp = new BufferedReader(new InputStreamReader(s.getInputStream()));
+            String request = "0=1=373314";
+            outp.append(request);
             outp.flush();
             Thread.sleep(1000);
-            outp.append("FUCK THE WORLD AGAIN\n");
-            outp.flush();
+            String line = inp.readLine();
+            System.out.println(line);
         } catch (IOException e) {
             System.out.println("failed open socket");
         }

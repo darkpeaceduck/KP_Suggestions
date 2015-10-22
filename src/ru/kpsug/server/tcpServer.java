@@ -1,10 +1,9 @@
 package ru.kpsug.server;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.sql.SQLException;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -43,11 +42,13 @@ public class tcpServer{
         // TODO Auto-generated method stub
         ServerSocket server_socket;
         try {
+            db.connect();
             server_socket = new ServerSocket(port);
-        } catch (IOException e1) {
-            // TODO Auto-generated catch block
+        } catch (SQLException | IOException e1) {
+            System.out.println("failed init db and open socket");
             return;
         }
+        System.out.println("success init db and open socket");
         while(true){
             Socket s;
             try {
@@ -55,7 +56,11 @@ public class tcpServer{
                 Thread child = new Thread(new RequestHandler(s, db));
                 child.start();
             } catch (IOException e) {
-                // TODO Auto-generated catch block
+                try {
+                    db.closeAll();
+                } catch (SQLException e1) {
+                    System.out.println("failed close db and than\n");
+                }
                 e.printStackTrace();
             }
         }

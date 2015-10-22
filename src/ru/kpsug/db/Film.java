@@ -73,26 +73,30 @@ public class Film {
         actors.add(name);
     }
     
+    @Override
+    public String toString() {
+        String result = "( ";
+        result+=("id=" + id + "::");
+        result+=("name=" + name + "::");
+        result+=("annotation=" + annotation + "::");
+        result+=("rating=" + rating + "::");
+        result+=("actors=" + actors + "::");
+        result+=("purposes=" + purposes + "::");
+        result+=("suggestions=" + suggestion_links + "::");
+        result += ")";
+        return result;
+    }
     
     public void print(OutputStream stream) throws IOException{
         OutputStreamWriter writer = new OutputStreamWriter(stream);
-        writer.append("id=" + id + "\n");
-        writer.append("name=" + name + "\n");
-        writer.append("annotation=" + annotation + "\n");
-        writer.append("rating=" + rating + "\n");
-        writer.append("actors=" + actors + "\n");
-        writer.append("purposes=" + purposes + "\n");
-        writer.append("suggestions=" + suggestion_links + "\n");
+        writer.append(toString());
         writer.flush();
     }
     
     @Override
     public boolean equals(Object obj) {
         Film with = (Film) obj;
-        return id.toString().equals(with.id.toString()) && name.toString().equals(with.name.toString()) &&
-                purposes.toString().equals(with.purposes.toString()) &&  actors.toString().equals(with.actors.toString())
-                && annotation.toString().equals(with.annotation.toString()) && suggestion_links.toString().equals(with.suggestion_links.toString()) &&
-                rating.toString().equals(with.rating.toString());
+        return toString().equals(with.toString());
     }
     
     public void addSuggestionLink(String link){

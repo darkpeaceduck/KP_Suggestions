@@ -19,7 +19,9 @@ public class RequestHandler implements Runnable{
         String line = null;
         try {
             while((line = reader.readLine()) != null){
-                RequestDispatcher.dispatch(line, this);
+                String response = RequestDispatcher.dispatch(line, this);
+                writer.append(response);
+                writer.flush();
             }
         } catch (IOException e) {
         }
@@ -30,6 +32,7 @@ public class RequestHandler implements Runnable{
     private BufferedWriter writer;
     private Socket socket;
     private DBOperator db;
+    
     public RequestHandler(Socket s, DBOperator db) throws IOException {
         socket = s;
         this.db = db;
@@ -39,9 +42,8 @@ public class RequestHandler implements Runnable{
         writer = new BufferedWriter(new OutputStreamWriter(output));
     }
     
-    String processDb(String id, int depth){
-        Film film = db.selectFilm(id);
-        return null;
+    Suggestions processDb(String id, int depth){
+        return new Suggestions(id, depth, db);
     }
     
 }

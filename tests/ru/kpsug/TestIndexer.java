@@ -22,27 +22,27 @@ public class TestIndexer {
 
     @Test
     public void test() throws IOException {
-        if(false){
-            String id = "397236";
-            Film film = KpParser.parseFilm(PageLoader.loadFilm(id), PageLoader.loadFilmSuggestions(id) );
-            Suggestions sugg = new Suggestions();
-            sugg.buildGraph(film, 2);
-            ArrayList<ArrayList<Suggestions.Node>> result = sugg.getDepthSet();
-            int count = 0;
-            for(ArrayList<Suggestions.Node> ar : result){
-                for(Suggestions.Node node: ar){
-                    System.out.println("FILM WITH " + String.valueOf(count) );
-                    node.getContent().print(System.out);
-                    System.out.println("END---");
-                }
-                count++;
-            }
-            try {
-                film.print(System.out);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
+//        if(false){
+//            String id = "397236";
+//            Film film = KpParser.parseFilm(PageLoader.loadFilm(id), PageLoader.loadFilmSuggestions(id) );
+//            Suggestions sugg = new Suggestions();
+//            sugg.buildGraph(film, 2);
+//            ArrayList<ArrayList<Suggestions.Node>> result = sugg.getDepthSet();
+//            int count = 0;
+//            for(ArrayList<Suggestions.Node> ar : result){
+//                for(Suggestions.Node node: ar){
+//                    System.out.println("FILM WITH " + String.valueOf(count) );
+//                    node.getContent().print(System.out);
+//                    System.out.println("END---");
+//                }
+//                count++;
+//            }
+//            try {
+//                film.print(System.out);
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//        }
     }
     
     @Test
@@ -50,7 +50,7 @@ public class TestIndexer {
         DBOperator db_con =  new DBOperator(null);
         db_con.connect();
         assertTrue(db_con.BuildDatabase());
-        String id = "10602";
+        String id = "373314";
         TreeMap<String, String> cookies = new TreeMap<String, String>();
         cookies.put("PHPSESSID", "1024f7c014ece92d83036ed35488c78d");
         cookies.put("_ym_visorc_22663942", "b");
@@ -66,19 +66,19 @@ public class TestIndexer {
         film.print(System.out);
         assertTrue(db_con.InsertFilm(film));
         assertEquals(db_con.selectFilm(id), film);
-        assertTrue(db_con.deleteFilmFromId(film.getId()));
+//        assertTrue(db_con.deleteFilmFromId(film.getId()));
         db_con.closeAll();
         
     }
     
     @Test
     public void testDbConf(){
-        try {
-            DBOperator db_con = new DBOperator("file.conf");
-        } catch (ClassNotFoundException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+//        try {
+//            DBOperator db_con = new DBOperator("file.conf");
+//        } catch (ClassNotFoundException e) {
+//            // TODO Auto-generated catch block
+//            e.printStackTrace();
+//        }
         
     }
 }
