@@ -15,7 +15,7 @@ import ru.kpsug.db.DBOperator;
 import ru.kpsug.db.Film;
 import ru.kpsug.indexer.KpParser;
 import ru.kpsug.indexer.PageLoader;
-import ru.kpsug.indexer.Suggestions;
+import ru.kpsug.server.Suggestions;
 
 import java.sql.*;
 public class TestIndexer {

@@ -1,10 +1,12 @@
-package ru.kpsug.indexer;
+package ru.kpsug.server;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.TreeMap;
 
 import ru.kpsug.db.Film;
+import ru.kpsug.indexer.KpParser;
+import ru.kpsug.indexer.PageLoader;
 
 public class Suggestions {
     public static class Node{

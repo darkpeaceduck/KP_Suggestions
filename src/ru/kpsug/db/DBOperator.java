@@ -11,8 +11,11 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
+
+import ru.kpsug.conf.ConfigParser;
 
 public class DBOperator {
     private String host = "127.0.0.1";
@@ -27,13 +30,10 @@ public class DBOperator {
     volatile private Statement statement = null;
 
     private void parseConf(String config) throws IOException {
-        BufferedReader reader = new BufferedReader(new InputStreamReader(
-                new FileInputStream(config)));
-        String line = null;
-        while ((line = reader.readLine()) != null) {
-            int split_index = line.indexOf("=");
-            String key = line.substring(0, split_index);
-            String value = line.substring(split_index + 1);
+        Map<String, String> values = ConfigParser.parseConfig(config);
+        for(Entry<String, String> pair : values.entrySet()){
+            String key = pair.getKey()  ;
+            String value = pair.getValue();
             switch (key) {
             case "host":
                 host = value;
@@ -52,7 +52,7 @@ public class DBOperator {
                 break;
             default:
                 break;
-            }
+            } 
         }
     }
 

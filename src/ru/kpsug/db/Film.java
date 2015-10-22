@@ -10,9 +10,9 @@ import java.util.TreeMap;
 public class Film {
     private ArrayList<String> suggestion_links = new ArrayList<>();
     private String id = null;
-    String name = null;
-    String annotation = null;
-    String rating = null;
+    private String name = null;
+    private String annotation = null;
+    private String rating = null;
     private TreeMap<String, ArrayList<String> > purposes = new TreeMap<>();
     private ArrayList<String> actors =new ArrayList<String>();
     

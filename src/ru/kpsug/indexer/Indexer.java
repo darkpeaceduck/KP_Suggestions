@@ -13,7 +13,7 @@ public class Indexer implements Runnable {
     private int page_start;
     private int page_stop;
     private int id;
-    DBOperator db;
+    private DBOperator db;
     private OutputStreamWriter log;
 
     public Indexer(OutputStreamWriter log, int id, DBOperator db, int page_start, int page_stop) {
