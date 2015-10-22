@@ -76,30 +76,23 @@ public class Film {
     
     public void print(OutputStream stream) throws IOException{
         OutputStreamWriter writer = new OutputStreamWriter(stream);
-        writer.append("id = " + id + "\n");
-        writer.append("name = " + name + "\n");
-        writer.append("annotation = " + annotation + "\n");
-        writer.append("rating = " + rating + "\n");
-        writer.append("actors = ");
-        for(String name : actors){
-            writer.append(name + ", ");
-        }
-        writer.append("\n");
-        writer.append("purposes = ");
-        for(Entry<String, ArrayList<String>> purp : purposes.entrySet()){
-            writer.append("( " + purp.getKey() + " :");
-            for(String value : purp.getValue()){
-                writer.append(value + ", ");
-            }
-            writer.append(" ), ");
-        }
-        writer.append("\n");
-        writer.append("suggestions = ");
-        for(String sug : suggestion_links){
-            writer.append(sug + " ,");
-        }
-        writer.append("\n");
+        writer.append("id=" + id + "\n");
+        writer.append("name=" + name + "\n");
+        writer.append("annotation=" + annotation + "\n");
+        writer.append("rating=" + rating + "\n");
+        writer.append("actors=" + actors + "\n");
+        writer.append("purposes=" + purposes + "\n");
+        writer.append("suggestions=" + suggestion_links + "\n");
         writer.flush();
+    }
+    
+    @Override
+    public boolean equals(Object obj) {
+        Film with = (Film) obj;
+        return id.equals(with.id) && name.equals(with.name) &&
+                purposes.equals(with.purposes) &&  actors.equals(with.actors)
+                && annotation.equals(with.annotation) && suggestion_links.equals(with.suggestion_links) &&
+                rating.equals(with.rating);
     }
     
     public void addSuggestionLink(String link){

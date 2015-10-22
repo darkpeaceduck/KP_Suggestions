@@ -80,7 +80,4 @@ public class KpParser {
         return film;
     }
 
-    public static String ParseIdFromLink(String url) {
-        return null;
-    }
 }

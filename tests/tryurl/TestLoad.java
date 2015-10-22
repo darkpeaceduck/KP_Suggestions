@@ -40,20 +40,22 @@ public class TestLoad {
     
     @Test
     public void testDB() throws ClassNotFoundException, SQLException, IOException{
-        DBConnector db_con =  new DBConnector(null);
+        DBOperator db_con =  new DBOperator(null);
         db_con.connect();
-        db_con.BuildDatabase();
-        String id = "397236";
+        assertTrue(db_con.BuildDatabase());
+        String id = "12198";
         Film film = KpParser.parseFilm(PageLoader.loadFilm(id), PageLoader.loadFilmSuggestions(id) );
-        db_con.InsertFilm(film);
+        assertTrue(db_con.InsertFilm(film));
+        assertEquals(db_con.selectFilm(id), film);
         assertTrue(db_con.deleteFilmFromId(film.getId()));
         db_con.closeAll();
+        
     }
     
     @Test
     public void testDbConf(){
         try {
-            DBConnector db_con = new DBConnector("file.conf");
+            DBOperator db_con = new DBOperator("file.conf");
         } catch (ClassNotFoundException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
