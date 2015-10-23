@@ -23,7 +23,6 @@ public class PageLoader {
     public static Document loadFilmWithCookies(String id, TreeMap<String, String> cookies) throws IOException{
         Connection conn = Jsoup.connect(KpPath.makeFilmLink(id)).timeout(timeout).userAgent(user_agent);
         conn = conn.cookies(cookies);
-        conn = conn.referrer("http://www.kinopoisk.ru/");
         return conn.get();
     }
     

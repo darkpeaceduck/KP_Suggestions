@@ -65,7 +65,12 @@ public class TestIndexer {
         Film film = KpParser.parseFilm(doc, PageLoader.loadFilmSuggestions(id) );
         film.print(System.out);
         assertTrue(db_con.InsertFilm(film));
-        assertEquals(db_con.selectFilm(id), film);
+        for(String new_id : film.getSuggestion_links()){
+            Film new_film = KpParser.parseFilm(PageLoader.loadFilm(new_id), PageLoader.loadFilmSuggestions(new_id));
+            new_film.print(System.out);
+            db_con.InsertFilm(new_film);
+        }
+//        assertEquals(db_con.selectFilm(id), film);
 //        assertTrue(db_con.deleteFilmFromId(film.getId()));
         db_con.closeAll();
         

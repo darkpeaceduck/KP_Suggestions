@@ -17,6 +17,7 @@ public class RequestFormatter {
         }
         return words;    
     }
+    
     public static Request parse(String s) {
         Request result = null;
         ArrayList<String> words = parseToLexems(s);
@@ -27,18 +28,23 @@ public class RequestFormatter {
     }
     
     public static String makeResponse(Request request, Suggestions suggestions){
+        if(suggestions.isFailed()){
+            return makeError();
+        }
         String result = "";
         if(request.getType() == 0){
             result += suggestions.getDepthSet().toString();
         } else if(request.getType() == 1){
             result += suggestions.getDepthMap().toString();
-        } else {
+        } else if(request.getType() == 2){
             result += suggestions.getGraph().toString();
+        }  else {
+            return makeError();
         }
         return result;
     }
     
     public static String makeError(){
-        return "";
+        return "&&&ERROR&&&";
     }
 }

@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
-public class Film {
+public class Film implements Comparable<Film>{
     private ArrayList<String> suggestion_links = new ArrayList<>();
     private String id = null;
     private String name = null;
@@ -82,7 +82,7 @@ public class Film {
         result+=("rating=" + rating + "::");
         result+=("actors=" + actors + "::");
         result+=("purposes=" + purposes + "::");
-        result+=("suggestions=" + suggestion_links + "::");
+        result+=("suggestions=" + suggestion_links);
         result += ")";
         return result;
     }
@@ -101,5 +101,9 @@ public class Film {
     
     public void addSuggestionLink(String link){
         suggestion_links.add(link);
+    }
+    @Override
+    public int compareTo(Film with) {
+        return id.compareTo(with.getId());
     }
 }
