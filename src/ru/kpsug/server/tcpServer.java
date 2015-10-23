@@ -17,11 +17,23 @@ import ru.kpsug.conf.ConfigParser;
 import ru.kpsug.db.DBOperator;
 
 public class tcpServer implements Runnable{
+    public static class ServerLog{
+        private PrintWriter log;
+        public ServerLog(OutputStream log) {
+             this.log = new PrintWriter(log);
+        }
+        
+        public synchronized void print(String s){
+                log.println(s);
+                log.flush();
+        }
+    }
     private int port = 6666;
     volatile private DBOperator db;
     volatile private ServerSocket server_socket;
-    volatile private PrintWriter log;
     volatile private BufferedReader control_input;
+    volatile private ServerLog log;
+    
     private void parseConfig(String path) throws IOException{
         Map<String, String> result = ConfigParser.parseConfig(path);
         for(Entry<String, String> pair : result.entrySet()){
@@ -35,14 +47,9 @@ public class tcpServer implements Runnable{
         }
     }
     
-    public void log(String s){
-        synchronized (log) {
-            log.println(s);
-            log.flush();
-        }
-    }
     
-    public String in(){
+    
+    private String in(){
         synchronized (control_input){
             try {
                 return control_input.readLine();
@@ -54,7 +61,7 @@ public class tcpServer implements Runnable{
     
     public tcpServer(String conf_path, InputStream control_input, OutputStream log) {
         this.control_input = new BufferedReader(new InputStreamReader(control_input));
-        this.log = new PrintWriter(log);
+        this.log = new ServerLog(log);
         if(conf_path != null){
             try{
                 parseConfig(conf_path);
@@ -72,10 +79,10 @@ public class tcpServer implements Runnable{
             db.connect();
             server_socket = new ServerSocket(port);
         } catch (SQLException | IOException e1) {
-            log("failed init db and open socket");
+            log.print("failed init db and open socket");
             return;
         }
-        log("success init db and open socket and stream");
+        log.print("success init db and open socket and stream");
         Thread child_control_thread = new Thread(this);
         child_control_thread.start();
         while(true){
@@ -90,31 +97,31 @@ public class tcpServer implements Runnable{
         
         try {
             server_socket.close();
-            log("success closed server socket");
+            log.print("success closed server socket");
             child_control_thread.join();
         } catch (IOException e) {
-            log("failed close socket, now kill child using stop");
+            log.print("failed close socket, now kill child using stop");
             child_control_thread.stop();
         } catch (InterruptedException e) {
-            log("failed join child, now kill child using stop");
+            log.print("failed join child, now kill child using stop");
             child_control_thread.stop();
         }
         try {
             db.closeAll();
         } catch (SQLException e) {
-            log("failed close db");
+            log.print("failed close db");
         }
-        log("OK");
+        log.print("OK");
     }
 
     @Override
     public void run() {
-        log("Child control thread running now");
+        log.print("Child control thread running now");
         while(!server_socket.isClosed()){
             Socket s;
             try {
                 s = server_socket.accept();
-                Thread child = new Thread(new RequestHandler(s, db));
+                Thread child = new Thread(new RequestHandler(s, db, log));
                 child.start();
             } catch (IOException e) {
                 

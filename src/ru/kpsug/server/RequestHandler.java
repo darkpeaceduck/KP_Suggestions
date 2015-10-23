@@ -12,6 +12,7 @@ import java.net.Socket;
 
 import ru.kpsug.db.DBOperator;
 import ru.kpsug.db.Film;
+import ru.kpsug.server.tcpServer.ServerLog;
 
 public class RequestHandler implements Runnable{
 
@@ -21,8 +22,7 @@ public class RequestHandler implements Runnable{
         try {
             while((line = reader.readLine()) != null){
                 String response = RequestDispatcher.dispatch(line, this);
-                System.out.println(line);
-                System.out.println(response);
+                log.print("RQ : \"" + line + "\" || RE : \"" + response + "\"");
                 writer.println(response);
                 writer.flush();
             }
@@ -35,10 +35,12 @@ public class RequestHandler implements Runnable{
     private PrintWriter writer;
     private Socket socket;
     private DBOperator db;
+    private ServerLog log;
     
-    public RequestHandler(Socket s, DBOperator db) throws IOException {
+    public RequestHandler(Socket s, DBOperator db, ServerLog log) throws IOException {
         socket = s;
         this.db = db;
+        this.log = log;
         InputStream input = socket.getInputStream();
         OutputStream output = socket.getOutputStream();
         reader = new BufferedReader(new InputStreamReader(input));
