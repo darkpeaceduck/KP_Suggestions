@@ -57,6 +57,7 @@ public class Suggestions {
         return is_failed;
     }
     
+    
     public Suggestions(String id, int depth, DBOperator db) {
         Film film = db.selectFilm(id);
         if(film != null && depth <= DEPTH_LIMIT){

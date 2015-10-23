@@ -22,7 +22,15 @@ public class RequestFormatter {
         Request result = null;
         ArrayList<String> words = parseToLexems(s);
         if(words.size() >= 3){
-            result = new Request(Integer.parseInt(words.get(0)), Integer.parseInt(words.get(1)), words.get(2));
+            int type, id;
+            try{
+                type = Integer.parseInt(words.get(0));
+                id = Integer.parseInt(words.get(1));
+                int temp = Integer.parseInt(words.get(2));
+            } catch(NumberFormatException excp){
+                return null;
+            }
+            result = new Request(type, id, words.get(2));
         }
         return result;
     }
