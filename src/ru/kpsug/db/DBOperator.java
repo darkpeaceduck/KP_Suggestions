@@ -15,7 +15,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
-import ru.kpsug.conf.ConfigParser;
+import ru.kpsug.utils.ConfigParser;
 
 public class DBOperator {
     private String host = "127.0.0.1";

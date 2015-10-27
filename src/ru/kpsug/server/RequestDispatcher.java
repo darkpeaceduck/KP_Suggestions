@@ -7,14 +7,14 @@ import java.util.StringTokenizer;
 public class RequestDispatcher {
     private static String Recall(Request request, RequestHandler caller) {
           
-       return RequestFormatter.makeResponse(request, caller.processDb(request.getId(), request.getDepth() ));
+       return Formatter.makeResponse(request, caller.processDb(request.getId(), request.getDepth() ));
     }
 
 
     public static String dispatch(String s, RequestHandler caller) {
-        Request parsed_request = RequestFormatter.parse(s);
+        Request parsed_request = Formatter.parse(s);
         if(parsed_request == null){
-            return RequestFormatter.makeError();
+            return Formatter.makeError();
         }
         return Recall(parsed_request, caller);
     }

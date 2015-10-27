@@ -22,9 +22,9 @@ public class RequestHandler implements Runnable{
         try {
             while((line = reader.readLine()) != null){
                 String response = RequestDispatcher.dispatch(line, this);
-                log.print("RQ : \"" + line + "\" || RE : \"" + response + "\"");
                 writer.println(response);
                 writer.flush();
+                log.print("RQ : \"" + line + "\" || RE : \"" + response + "\"");
             }
         } catch (IOException e) {
         }

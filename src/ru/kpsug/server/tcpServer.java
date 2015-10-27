@@ -13,8 +13,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Scanner;
 
-import ru.kpsug.conf.ConfigParser;
 import ru.kpsug.db.DBOperator;
+import ru.kpsug.utils.ConfigParser;
 
 public class tcpServer implements Runnable{
     public static class ServerLog{
