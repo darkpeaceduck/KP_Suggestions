@@ -15,50 +15,59 @@ import org.junit.runners.ParentRunner;
 
 import ru.kpsug.server.Suggestions;
 
-public class Film implements Comparable<Film>{
+public class Film implements Comparable<Film> {
     private ArrayList<String> suggestion_links = new ArrayList<>();
     private String id = null;
     private String name = null;
     private String annotation = null;
     private String rating = null;
-    private TreeMap<String, ArrayList<String> > purposes = new TreeMap<>();
-    private ArrayList<String> actors =new ArrayList<String>();
-    
+    private TreeMap<String, ArrayList<String>> purposes = new TreeMap<>();
+    private ArrayList<String> actors = new ArrayList<String>();
+
     public String getRating() {
         return rating;
     }
+
     public void setRating(String rating) {
         this.rating = rating;
     }
 
-    
     public ArrayList<String> getSuggestion_links() {
         return suggestion_links;
     }
+
     public String getName() {
         return name;
     }
+
     public void setName(String name) {
         this.name = name;
     }
+
     public String getAnnotation() {
         return annotation;
     }
+
     public void setAnnotation(String annotation) {
         this.annotation = annotation;
     }
+
     public TreeMap<String, ArrayList<String>> getPurposes() {
         return purposes;
     }
+
     public void setPurposes(TreeMap<String, ArrayList<String>> purposes) {
         this.purposes = purposes;
     }
+
     public ArrayList<String> getActors() {
         return actors;
     }
+
     public void setActors(ArrayList<String> actors) {
         this.actors = actors;
     }
+
     public void setSuggestion_links(ArrayList<String> suggestion_links) {
         this.suggestion_links = suggestion_links;
     }
@@ -66,70 +75,73 @@ public class Film implements Comparable<Film>{
     public void setId(String id) {
         this.id = id;
     }
+
     public String getId() {
         return id;
     }
-    
-    public void addPurpose(String key, String value){
-        if(!purposes.containsKey(key)){
+
+    public void addPurpose(String key, String value) {
+        if (!purposes.containsKey(key)) {
             purposes.put(key, new ArrayList<String>());
         }
         purposes.get(key).add(value);
     }
-    
-    public void addActor(String name){
+
+    public void addActor(String name) {
         actors.add(name);
     }
-    
+
     @Override
     public String toString() {
         String spec1 = "$$";
         String spec2 = "::";
-        
+
         String result = "(";
-        result+=("id" + spec1 + id + spec2);
-        result+=("name" + spec1 + name + spec2);
-        result+=("annotation"+ spec1 + annotation + spec2);
-        result+=("rating"+ spec1 + rating + spec2);
-        result+=("actors"+ spec1 + actors + spec2);
-        result+=("purposes"+ spec1 + purposes + spec2);
-        result+=("suggestions"+ spec1 + suggestion_links);
+        result += ("id" + spec1 + id + spec2);
+        result += ("name" + spec1 + name + spec2);
+        result += ("annotation" + spec1 + annotation + spec2);
+        result += ("rating" + spec1 + rating + spec2);
+        result += ("actors" + spec1 + actors + spec2);
+        result += ("purposes" + spec1 + purposes + spec2);
+        result += ("suggestions" + spec1 + suggestion_links);
         result += ")";
         return result;
     }
-    
-    private static ArrayList<String> parseArrayList(String s){
+
+    private static ArrayList<String> parseArrayList(String s) {
         ArrayList<String> result = new ArrayList<>();
-        for(String nex : (s.substring(1, s.length() - 1)).split(", ")){
+        for (String nex : (s.substring(1, s.length() - 1)).split(", ")) {
             result.add(nex);
         }
         return result;
     }
-    
-    private static TreeMap<String, ArrayList<String> > parsePurposes(String s){
-        TreeMap<String, ArrayList<String> >  result = new TreeMap<String, ArrayList<String>>();
-        Matcher matcher = Pattern.compile("(^| )([^,]*)=(\\[.*?\\])").matcher(s.substring(1, s.length() - 1)); 
-        while(matcher.find()){
+
+    private static TreeMap<String, ArrayList<String>> parsePurposes(String s) {
+        TreeMap<String, ArrayList<String>> result = new TreeMap<String, ArrayList<String>>();
+        Matcher matcher = Pattern.compile("(^| )([^,]*)=(\\[.*?\\])").matcher(
+                s.substring(1, s.length() - 1));
+        while (matcher.find()) {
             result.put(matcher.group(2), parseArrayList(matcher.group(3)));
-        }   
+        }
         return result;
     }
-    
-    public static Film parse(String s){
-        String spec1= "::";
+
+    public static Film parse(String s) {
+        String spec1 = "::";
         String spec2 = "\\$\\$";
-        
+
         Film film = new Film();
-        StringTokenizer tokenizer= new StringTokenizer(s.substring(1, s.length() - 1));
+        StringTokenizer tokenizer = new StringTokenizer(s.substring(1,
+                s.length() - 1));
         String token;
-        while(true){
-            try{
+        while (true) {
+            try {
                 token = tokenizer.nextToken(spec1);
-            }catch(NoSuchElementException excp){
+            } catch (NoSuchElementException excp) {
                 break;
             }
-            String [] key_value = token.split(spec2);
-            switch(key_value[0]){
+            String[] key_value = token.split(spec2);
+            switch (key_value[0]) {
             case "id":
                 film.setId(key_value[1]);
                 break;
@@ -155,22 +167,23 @@ public class Film implements Comparable<Film>{
         }
         return film;
     }
-    
-    public void print(OutputStream stream) throws IOException{
+
+    public void print(OutputStream stream) throws IOException {
         OutputStreamWriter writer = new OutputStreamWriter(stream);
         writer.append(toString());
         writer.flush();
     }
-    
+
     @Override
     public boolean equals(Object obj) {
         Film with = (Film) obj;
         return toString().equals(with.toString());
     }
-    
-    public void addSuggestionLink(String link){
+
+    public void addSuggestionLink(String link) {
         suggestion_links.add(link);
     }
+
     @Override
     public int compareTo(Film with) {
         return id.compareTo(with.getId());

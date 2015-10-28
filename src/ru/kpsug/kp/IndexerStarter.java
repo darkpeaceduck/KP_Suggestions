@@ -1,4 +1,4 @@
-package ru.kpsug.indexer;
+package ru.kpsug.kp;
 
 import java.io.OutputStreamWriter;
 import java.sql.SQLException;

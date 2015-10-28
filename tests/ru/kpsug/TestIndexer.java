@@ -16,8 +16,8 @@ import org.junit.Test;
 
 import ru.kpsug.db.DBOperator;
 import ru.kpsug.db.Film;
-import ru.kpsug.indexer.KpParser;
-import ru.kpsug.indexer.PageLoader;
+import ru.kpsug.kp.KpParser;
+import ru.kpsug.kp.PageLoader;
 import ru.kpsug.server.Suggestions;
 
 import java.sql.*;

@@ -1,7 +1,10 @@
-package ru.kpsug.indexer;
+package ru.kpsug.kp;
 
+import java.util.ArrayList;
 import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -123,6 +126,30 @@ public class KpParser {
         parseRating(film, doc);
         parseSuggestions(film, doc_suggestions);
         return film;
+    }
+    
+    public static String parseFilmIdFromMainSearchLink(String link){
+         Matcher mt = Pattern.compile("film/([0-9]*)").matcher(link);
+         if(mt.find()){
+             return mt.group(1);
+         }
+         return null;
+    }
+    
+    public static ArrayList<String> parseMainSearch(Document doc){
+        doc = removeSpecialChars(doc);
+        ArrayList<String> result = new ArrayList<String>();
+        Element films = doc.select(".search_results.search_results_last").first();
+        if(films != null){
+            for(Element entry : films.children()){
+                if(entry.hasClass("element")){
+                    Element name = entry.getElementsByClass("info").first().getElementsByClass("name").first();
+                    String film_link = name.getElementsByTag("a").first().attr("href");
+                    result.add(parseFilmIdFromMainSearchLink(film_link));
+                }
+            }   
+        }
+        return result;
     }
 
 }

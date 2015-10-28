@@ -1,4 +1,4 @@
-package ru.kpsug.indexer;
+package ru.kpsug.kp;
 
 public class KpPath {
     public static String getPrefix(){
@@ -19,5 +19,14 @@ public class KpPath {
     
     public static String makeFilmLikeLink(String id){
         return getFilmPrefix() + id + "/" + getLikeSuffix();
+    }
+    
+    public static String makeMainSearchLink(String token){
+//        return getPrefix() + "index.php?first=no&what=&kp_query=" + token;
+        return getPrefix() + "s/type/film/list/1/find/" + token;
+    }
+    
+    public static String getPrefixSearchLink(){
+        return getPrefix() + "handler_search.php";
     }
 }

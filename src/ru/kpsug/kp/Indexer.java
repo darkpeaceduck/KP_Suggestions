@@ -1,4 +1,4 @@
-package ru.kpsug.indexer;
+package ru.kpsug.kp;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -16,7 +16,8 @@ public class Indexer implements Runnable {
     private DBOperator db;
     private OutputStreamWriter log;
 
-    public Indexer(OutputStreamWriter log, int id, DBOperator db, int page_start, int page_stop) {
+    public Indexer(OutputStreamWriter log, int id, DBOperator db,
+            int page_start, int page_stop) {
         super();
         this.db = db;
         this.log = log;
@@ -31,9 +32,9 @@ public class Indexer implements Runnable {
         for (int current_page = page_start; current_page <= page_stop; current_page++) {
             boolean success = true;
             try {
-                Film film = KpParser.parseFilm(
-                        PageLoader.loadFilm(String.valueOf(current_page)),
-                        PageLoader.loadFilmSuggestions(String.valueOf(current_page)));
+                Film film = KpParser.parseFilm(PageLoader.loadFilm(String
+                        .valueOf(current_page)), PageLoader
+                        .loadFilmSuggestions(String.valueOf(current_page)));
                 success = db.InsertFilm(film);
             } catch (Exception e) {
                 success = false;
@@ -41,9 +42,10 @@ public class Indexer implements Runnable {
 
             synchronized (log) {
                 try {
-                    log.append("PROGRESS OF INDEXER  " + String.valueOf(id) + " "
-                            + String.valueOf(current_page) + "/"
-                            + String.valueOf(page_stop) + " LAST WAS " + (success ? "SUCCESS\n" : "FAILED\n"));
+                    log.append("PROGRESS OF INDEXER  " + String.valueOf(id)
+                            + " " + String.valueOf(current_page) + "/"
+                            + String.valueOf(page_stop) + " LAST WAS "
+                            + (success ? "SUCCESS\n" : "FAILED\n"));
                     log.flush();
                 } catch (IOException e) {
                     // TODO Auto-generated catch block
