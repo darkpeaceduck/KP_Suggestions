@@ -139,14 +139,22 @@ public class Film implements Comparable<Film>, JSONParceble {
 
     @Override
     public boolean refreshStateFromJSONString(String s) {
-        Map<String, Object> map;
         try {
-            map = (Map<String, Object>) ConfigParser.getJSONParser().parse(s, ConfigParser.getContainerFactory());
+            return refreshStateFromObject(ConfigParser.getJSONParser().parse(s, ConfigParser.getContainerFactory()));
         } catch (ParseException e) {
             return false;
         }
-        for(Entry<String, Object> entry : map.entrySet()){
-            switch (entry.getKey()) {
+    }
+
+    @Override
+    public boolean refreshStateFromObject(Object object) {
+        System.out.println(object);
+        TreeMap<Object, Object> map;
+        map = (TreeMap<Object, Object>) object;
+        for(Entry<Object, Object> entry : map.entrySet()){
+            System.out.println(entry.getKey());
+            System.out.println(entry.getValue());
+            switch ((String)entry.getKey()) {
             case "id":
                 setId((String) entry.getValue());
                 break;
@@ -172,5 +180,6 @@ public class Film implements Comparable<Film>, JSONParceble {
         }
         return true;
     }
+    
 
 }

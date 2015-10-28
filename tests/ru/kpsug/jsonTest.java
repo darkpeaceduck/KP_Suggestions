@@ -11,6 +11,8 @@ import org.json.simple.*;
 import org.json.simple.parser.ContainerFactory;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+
+import ru.kpsug.db.Film;
 public class jsonTest {
     public static class fig{
         fig(){
@@ -36,16 +38,22 @@ public class jsonTest {
 //            }
 //                                
 //          };
-//
-        TreeMap<String, ArrayList<String>> map = new TreeMap<String, ArrayList<String>>();
-        map.put("12", new ArrayList<String>());
-        map.get("12").add("abacaba");
-        TreeMap<String, Integer> mmap = new TreeMap<String, Integer>();
-        mmap.put("df", 2);
-        map =(TreeMap<String, ArrayList<String>>) (JSONValue.parse(JSONValue.toJSONString(mmap)));
-        for(Entry<String, ArrayList<String>>key : map.entrySet()){
-//            key.getValue().add(3);
-            System.out.println(key.getValue());
-        }
+////
+//        TreeMap<String, ArrayList<String>> map = new TreeMap<String, ArrayList<String>>();
+//        map.put("12", new ArrayList<String>());
+//        map.get("12").add("abacaba");
+//        TreeMap<String, Integer> mmap = new TreeMap<String, Integer>();
+//        mmap.put("df", 2);
+//        map =(TreeMap<String, ArrayList<String>>) (JSONValue.parse(JSONValue.toJSONString(mmap)));
+//        for(Entry<String, ArrayList<String>>key : map.entrySet()){
+////            key.getValue().add(3);
+//            System.out.println(key.getValue());
+//        }
+//        int a = 2;
+//        try{
+//            String s = (String)((Object)a);
+//        }catch(ClassCastException excp){
+//            System.out.println("OK");
+//        }
     }
 }

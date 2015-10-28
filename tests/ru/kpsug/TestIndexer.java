@@ -73,6 +73,7 @@ public class TestIndexer {
         Film new_film = new Film();
         assertTrue(new_film.refreshStateFromJSONString(film.toJSONString()));
         assertEquals(new_film, film);
+//        System.out.println(new_film.getSuggestion_links().get(0));
 //        assertTrue(db_con.InsertFilm(film));
 //        assertEquals(db_con.selectFilm(id), film);
 //        for(String new_id : film.getSuggestion_links()){

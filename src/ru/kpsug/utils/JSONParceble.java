@@ -8,4 +8,5 @@ public interface JSONParceble extends JSONAware{
     
     //refreshing if no parse error, else => oldstate
     public boolean refreshStateFromJSONString(String s);
+    public boolean refreshStateFromObject(Object object);
 }

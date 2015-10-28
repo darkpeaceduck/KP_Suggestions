@@ -59,6 +59,41 @@ public class Suggestions {
             return toJSONObject().toJSONString();
         }
         
+        private ArrayList<Film> parseArrayListFilm(Object object){
+            ArrayList<Object> arr = ( ArrayList<Object> ) object;
+            ArrayList<Film> ret= new ArrayList<Film>();
+            for(Object next : arr){
+                Film new_film = new Film();
+                new_film.refreshStateFromObject(next);
+                ret.add(new_film);
+            }
+            return ret;
+        }
+        
+        void parseEdges(Object object) {
+            TreeMap<Object, Object> map = ( TreeMap<Object, Object> ) object;
+            TreeMap<Film, ArrayList<Film>> new_edges = new TreeMap<Film, ArrayList<Film>>();
+            for(Entry<Object, Object> entry : map.entrySet()){
+//                film.refreshStateFromObject(entry.getKey());
+                Film film = new Film();
+                film.refreshStateFromJSONString((String)entry.getKey());
+                ArrayList<Film> ret =  new ArrayList<Film>();
+                new_edges.put(film, ret);
+            }
+            setEdges(new_edges);
+        }
+        
+        void parseLevels(Object object){
+            TreeMap<Object, Object> map = ( TreeMap<Object, Object> ) object;
+            TreeMap<Film, Integer> new_levels = new TreeMap<Film, Integer>();
+            for(Entry<Object, Object> entry : map.entrySet()){
+                Film film = new Film();
+                film.refreshStateFromJSONString((String)entry.getKey());
+                new_levels.put(film, ((Long)entry.getValue()).intValue());
+            }
+            setLevels(new_levels);
+        }
+        
         @Override
         public JSONObject toJSONObject() {
             JSONObject object = new JSONObject();
@@ -69,19 +104,30 @@ public class Suggestions {
         
         @Override
         public boolean refreshStateFromJSONString(String s) {
-            Map<String, Object> map;
             try {
-                map = (Map<String, Object>) ConfigParser.getJSONParser().parse(s, ConfigParser.getContainerFactory());
+                return refreshStateFromObject(ConfigParser.getJSONParser().parse(s, ConfigParser.getContainerFactory()));
             } catch (ParseException e) {
                 return false;
             }
+        }
+        @Override
+        public boolean refreshStateFromObject(Object object) {
+            TreeMap<String, Object> map;
+            try{
+                map = (TreeMap<String, Object>) object;
+            }catch(ClassCastException excp){
+                return false;
+            }
             for(Entry<String, Object> entry : map.entrySet()){
+                if(!(entry.getKey() instanceof String)){
+                    return false;
+                }
                 switch (entry.getKey()) {
                 case "edges":
-                    setEdges((TreeMap<Film, ArrayList<Film>>) entry.getValue());
+                    parseEdges(entry.getValue());
                     break;
                 case "levels":
-                    setLevels((TreeMap<Film, Integer>) entry.getValue());
+                    parseLevels(entry.getValue());
                     break;
                 }
             }
