@@ -12,6 +12,7 @@ import java.net.Socket;
 
 import ru.kpsug.db.DBOperator;
 import ru.kpsug.db.Film;
+import ru.kpsug.server.Suggestions.SuggestionsResult;
 import ru.kpsug.server.tcpServer.ServerLog;
 
 public class RequestHandler implements Runnable{
@@ -47,8 +48,8 @@ public class RequestHandler implements Runnable{
         writer = new PrintWriter(output);
     }
     
-    Suggestions processDb(String id, int depth){
-        return new Suggestions(id, depth, db);
+    SuggestionsResult processDb(String id, int depth){
+        return Suggestions.getFilmsAround(id, depth, db);
     }
     
 }

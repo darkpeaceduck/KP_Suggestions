@@ -15,6 +15,11 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
+import org.json.simple.JSONArray;
+import org.json.simple.JSONValue;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+
 import ru.kpsug.utils.ConfigParser;
 
 public class DBOperator {
@@ -134,31 +139,11 @@ public class DBOperator {
     
     
     private String writeArrayList(ArrayList<String> arr){
-        String result = "";
-        boolean begin = true;
-        for(String str : arr){
-            if(!begin){
-                result += ",";
-            }
-            result += str;
-            begin = false;
-        }
-        return result;
+        return JSONValue.toJSONString(arr);
     }
 
     private String writePurposes(TreeMap<String, ArrayList<String>> purposes){
-        String result = "";
-        boolean begin = true;
-        for(Entry<String, ArrayList<String>> entry:purposes.entrySet()){
-            if(!begin){
-                result += "@";
-            }
-            result += entry.getKey();
-            result += "#";
-            result += writeArrayList(entry.getValue());
-            begin = false;
-        }
-        return result;
+        return JSONValue.toJSONString(purposes);
     }
     // insert film if not exists
     public boolean InsertFilm(Film film) {
@@ -189,17 +174,19 @@ public class DBOperator {
     }
     
     private ArrayList<String> parseArrayListString(String s){
-        return new ArrayList<String>(Arrays.asList(s.split(",")));
+        try {
+            return (ArrayList<String>)(ConfigParser.getJSONParser()).parse(s, ConfigParser.getContainerFactory());
+        } catch (ParseException e) {
+            return new ArrayList<String>();
+        }
     }
     
     private TreeMap<String, ArrayList<String>> parsePurposes(String s){
-        TreeMap<String, ArrayList<String>> result = new TreeMap<String, ArrayList<String>>();
-        String [] splitted= s.split("@");
-        for(int i = 0; i < splitted.length; i++){
-            String [] key_value = splitted[i].split("#");
-            result.put(key_value[0], parseArrayListString(key_value[1]));
+        try {
+            return (TreeMap<String, ArrayList<String>>)(ConfigParser.getJSONParser()).parse(s, ConfigParser.getContainerFactory());
+        } catch (ParseException e) {
+            return new TreeMap<String, ArrayList<String>>();
         }
-        return result;
     }
 
     public Film selectFilm(String id) {

@@ -3,19 +3,27 @@ package ru.kpsug.db;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.ObjectInputStream.GetField;
 import java.util.ArrayList;
 import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
 import java.util.TreeMap;
 
+import org.json.simple.JSONAware;
+import org.json.simple.JSONObject;
+import org.json.simple.JSONValue;
+import org.json.simple.parser.ParseException;
 import org.junit.runners.ParentRunner;
 
 import ru.kpsug.server.Suggestions;
+import ru.kpsug.utils.ConfigParser;
+import ru.kpsug.utils.JSONParceble;
 
-public class Film implements Comparable<Film> {
+public class Film implements Comparable<Film>, JSONParceble {
     private ArrayList<String> suggestion_links = new ArrayList<>();
     private String id = null;
     private String name = null;
@@ -90,88 +98,28 @@ public class Film implements Comparable<Film> {
     public void addActor(String name) {
         actors.add(name);
     }
+    
+    @Override
+    public JSONObject toJSONObject(){
+        JSONObject object = new JSONObject();
+        object.put("id", id);
+        object.put("name", name);
+        object.put("annotation", annotation);
+        object.put("rating", rating);
+        object.put("actors", actors);
+        object.put("purposes", purposes);
+        object.put("suggestions", suggestion_links);
+        return object;
+    }
 
     @Override
     public String toString() {
-        String spec1 = "$$";
-        String spec2 = "::";
-
-        String result = "(";
-        result += ("id" + spec1 + id + spec2);
-        result += ("name" + spec1 + name + spec2);
-        result += ("annotation" + spec1 + annotation + spec2);
-        result += ("rating" + spec1 + rating + spec2);
-        result += ("actors" + spec1 + actors + spec2);
-        result += ("purposes" + spec1 + purposes + spec2);
-        result += ("suggestions" + spec1 + suggestion_links);
-        result += ")";
-        return result;
+        return toJSONString();
     }
 
-    private static ArrayList<String> parseArrayList(String s) {
-        ArrayList<String> result = new ArrayList<>();
-        for (String nex : (s.substring(1, s.length() - 1)).split(", ")) {
-            result.add(nex);
-        }
-        return result;
-    }
-
-    private static TreeMap<String, ArrayList<String>> parsePurposes(String s) {
-        TreeMap<String, ArrayList<String>> result = new TreeMap<String, ArrayList<String>>();
-        Matcher matcher = Pattern.compile("(^| )([^,]*)=(\\[.*?\\])").matcher(
-                s.substring(1, s.length() - 1));
-        while (matcher.find()) {
-            result.put(matcher.group(2), parseArrayList(matcher.group(3)));
-        }
-        return result;
-    }
-
-    public static Film parse(String s) {
-        String spec1 = "::";
-        String spec2 = "\\$\\$";
-
-        Film film = new Film();
-        StringTokenizer tokenizer = new StringTokenizer(s.substring(1,
-                s.length() - 1));
-        String token;
-        while (true) {
-            try {
-                token = tokenizer.nextToken(spec1);
-            } catch (NoSuchElementException excp) {
-                break;
-            }
-            String[] key_value = token.split(spec2);
-            switch (key_value[0]) {
-            case "id":
-                film.setId(key_value[1]);
-                break;
-            case "name":
-                film.setName(key_value[1]);
-                break;
-            case "annotation":
-                film.setAnnotation(key_value[1]);
-                break;
-            case "rating":
-                film.setRating(key_value[1]);
-                break;
-            case "actors":
-                film.setActors(parseArrayList(key_value[1]));
-                break;
-            case "suggestions":
-                film.setSuggestion_links(parseArrayList(key_value[1]));
-                break;
-            case "purposes":
-                film.setPurposes(parsePurposes(key_value[1]));
-                break;
-            }
-        }
-        return film;
-    }
-
-    public void print(OutputStream stream) throws IOException {
-        OutputStreamWriter writer = new OutputStreamWriter(stream);
-        writer.append(toString());
-        writer.flush();
+    @Override
+    public String toJSONString() {
+        return toJSONObject().toJSONString();
     }
 
     @Override
@@ -188,4 +136,41 @@ public class Film implements Comparable<Film> {
     public int compareTo(Film with) {
         return id.compareTo(with.getId());
     }
+
+    @Override
+    public boolean refreshStateFromJSONString(String s) {
+        Map<String, Object> map;
+        try {
+            map = (Map<String, Object>) ConfigParser.getJSONParser().parse(s, ConfigParser.getContainerFactory());
+        } catch (ParseException e) {
+            return false;
+        }
+        for(Entry<String, Object> entry : map.entrySet()){
+            switch (entry.getKey()) {
+            case "id":
+                setId((String) entry.getValue());
+                break;
+            case "name":
+                setName((String) entry.getValue());
+                break;
+            case "annotation":
+                setAnnotation((String) entry.getValue());
+                break;
+            case "rating":
+                setRating((String) entry.getValue());
+                break;
+            case "actors":
+                setActors((ArrayList<String>) entry.getValue());
+                break;
+            case "suggestions":
+                setSuggestion_links((ArrayList<String>) entry.getValue());
+                break;
+            case "purposes":
+                setPurposes((TreeMap<String, ArrayList<String>>) entry.getValue());
+                break;
+            }
+        }
+        return true;
+    }
+
 }

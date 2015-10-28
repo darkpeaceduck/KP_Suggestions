@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
 
+import ru.kpsug.server.Suggestions.SuggestionsResult;
+
 public class Formatter {
     private static ArrayList<String> parseToLexems(String s){
         ArrayList<String> words = new ArrayList<>();
@@ -35,19 +37,13 @@ public class Formatter {
         return result;
     }
     
-    public static String makeResponse(Request request, Suggestions suggestions){
-        if(suggestions.isFailed()){
+    public static String makeResponse(Request request, SuggestionsResult suggestions_result){
+        if(suggestions_result == null){
             return makeError();
         }
         String result = "";
         if(request.getType() == 0){
-            result += suggestions.getStringDepthSet();
-        } else if(request.getType() == 1){
-            result += suggestions.getStringDepthMap();
-        } else if(request.getType() == 2){
-            result += suggestions.getGraph().toString();
-        }  else {
-            return makeError();
+            result += suggestions_result.toString();
         }
         return result;
     }

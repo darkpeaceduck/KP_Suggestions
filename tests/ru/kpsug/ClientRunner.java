@@ -11,6 +11,7 @@ import ru.kpsug.db.Film;
 import ru.kpsug.server.Client;
 import ru.kpsug.server.Request;
 import ru.kpsug.server.Suggestions;
+import ru.kpsug.server.Suggestions.SuggestionsResult;
 
 public class ClientRunner {
     public static void main(String[] args) throws IOException {
@@ -34,11 +35,17 @@ public class ClientRunner {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
-            client.send(new Request(2, 1, "373314"));
+            client.send(new Request(0, 1, "373314"));
             String result = client.nextResponse();
             System.out.println(result);
-            ArrayList<Suggestions.Edge> ret= Suggestions.Node.parse(result);
-            System.out.println(ret);
+            SuggestionsResult sresult = new SuggestionsResult();
+            sresult.refreshStateFromJSONString(result);
+            for(Entry<Film, Integer> entry: sresult.getLevels().entrySet()){
+                Film film = new Film();
+                film.refreshStateFromJSONString(entry.getKey());
+                System.out.println(entry.getKey());
+                System.out.println(entry.getValue());
+            }
 //          TreeMap<Film, Integer> res = Suggestions.parseDepthMap(result);
 //            System.out.println(res);
 //            for(Entry<Film, Integer> e : res.entrySet()){

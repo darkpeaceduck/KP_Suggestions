@@ -11,6 +11,8 @@ import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.json.simple.JSONStreamAware;
+import org.json.simple.JSONValue;
 import org.jsoup.nodes.Document;
 import org.junit.Test;
 
@@ -50,10 +52,10 @@ public class TestIndexer {
     
     @Test
     public void testDB() throws ClassNotFoundException, SQLException, IOException{
-//        DBOperator db_con =  new DBOperator(null);
-//        db_con.connect();
+        DBOperator db_con =  new DBOperator(null);
+        db_con.connect();
 //        assertTrue(db_con.BuildDatabase());
-//        String id = "373314";
+        String id = "373314";
 //        TreeMap<String, String> cookies = new TreeMap<String, String>();
 //        cookies.put("PHPSESSID", "1024f7c014ece92d83036ed35488c78d");
 //        cookies.put("_ym_visorc_22663942", "b");
@@ -66,17 +68,21 @@ public class TestIndexer {
 //        Document doc = PageLoader.loadFilm(id);
 //        System.out.println(doc);
 //        Film film = KpParser.parseFilm(doc, PageLoader.loadFilmSuggestions(id) );
-//        film.print(System.out);
+//        System.out.println(film);
+        Film film = db_con.selectFilm(id);
+        Film new_film = new Film();
+        assertTrue(new_film.refreshStateFromJSONString(film.toJSONString()));
+        assertEquals(new_film, film);
 //        assertTrue(db_con.InsertFilm(film));
+//        assertEquals(db_con.selectFilm(id), film);
 //        for(String new_id : film.getSuggestion_links()){
 //            Film new_film = KpParser.parseFilm(PageLoader.loadFilm(new_id), PageLoader.loadFilmSuggestions(new_id));
-//            new_film.print(System.out);
+//            System.out.println(new_film);
 //            db_con.InsertFilm(new_film);
+//            assertEquals(db_con.selectFilm(new_id), new_film);
 //        }
-////        assertEquals(db_con.selectFilm(id), film);
 ////        assertTrue(db_con.deleteFilmFromId(film.getId()));
-//        db_con.closeAll();
-        
+        db_con.closeAll();
     }
     
     @Test
@@ -120,11 +126,11 @@ public class TestIndexer {
     
     @Test
     public void test2(){
-        String s = "(373314,453284)(373314,415379)(373314,401779)(373314,22292)(373314,452599)(373314,39864)(373314,251733)";
-        Matcher m = Pattern.compile("\\((.*?),(.*?)\\)").matcher(s);   
-        while (m.find()) {
-            System.out.println("Found: " + m.group(2));
-        }
+//        String s = "(373314,453284)(373314,415379)(373314,401779)(373314,22292)(373314,452599)(373314,39864)(373314,251733)";
+//        Matcher m = Pattern.compile("\\((.*?),(.*?)\\)").matcher(s);   
+//        while (m.find()) {
+//            System.out.println("Found: " + m.group(2));
+//        }
 //        String [] key = s.split("(\\[.*?\\])(, ){0,1}");
 //        String [] values =  s.split("(\\[.*?\\])");
 //        for(String res : key){
