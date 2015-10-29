@@ -37,11 +37,10 @@ public class ClientRunner {
             }
             client.send(new Request(0, 1, "373314"));
             String result = client.nextResponse();
-//            System.out.println(result);
+            System.out.println(result);
             SuggestionsResult sresult = new SuggestionsResult();
             sresult.refreshStateFromJSONString(result);
-            for(Entry<Film, Integer> entry: sresult.getLevels().entrySet()){
-                Film film = new Film();
+            for(Entry<String, Film> entry: sresult.getFilms().entrySet()){
                 System.out.println(entry.getKey());
                 System.out.println(entry.getValue());
             }

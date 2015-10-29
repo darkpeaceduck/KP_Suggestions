@@ -55,5 +55,7 @@ public class jsonTest {
 //        }catch(ClassCastException excp){
 //            System.out.println("OK");
 //        }
+        TreeMap<String, String> map= new TreeMap<>();
+        TreeMap<String, ArrayList<Integer> > mmap = (TreeMap<String, ArrayList<Integer>>)((Object)map);
     }
 }

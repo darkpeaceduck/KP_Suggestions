@@ -146,14 +146,22 @@ public class Film implements Comparable<Film>, JSONParceble {
         }
     }
 
+//    public Film(Film other) {
+//        super();
+//        this.suggestion_links = other.getSuggestion_links();
+//        this.id = other.getId();
+//        this.name = other.getName();
+//        this.annotation = other.getAnnotation();
+//        this.rating = other.getRating();
+//        this.purposes = other.getPurposes();
+//        this.actors = other.getActors();
+//    }
+
     @Override
     public boolean refreshStateFromObject(Object object) {
-        System.out.println(object);
         TreeMap<Object, Object> map;
         map = (TreeMap<Object, Object>) object;
         for(Entry<Object, Object> entry : map.entrySet()){
-            System.out.println(entry.getKey());
-            System.out.println(entry.getValue());
             switch ((String)entry.getKey()) {
             case "id":
                 setId((String) entry.getValue());
