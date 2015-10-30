@@ -17,6 +17,7 @@ import org.jsoup.safety.Whitelist;
 public class PageLoader {
     private static int timeout = 30000;
     private static String user_agent = "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:41.0) Gecko/20100101 Firefox/41.0";
+    
     public static Document loadFilm(String id) throws IOException{
         return Jsoup.connect(KpPath.makeFilmLink(id)).timeout(timeout).userAgent(user_agent).get();
     }
@@ -52,7 +53,6 @@ public class PageLoader {
         conn.data(map);
         conn.referrer(KpPath.getPrefix());
         Document doc = conn.get();
-//        System.out.println(doc.html());
         return doc;
     }
 }

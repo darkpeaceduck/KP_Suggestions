@@ -1,17 +1,21 @@
 package ru.kpsug.kp;
 
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
+import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.json.simple.parser.ParseException;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import ru.kpsug.db.Film;
+import ru.kpsug.utils.ConfigParser;
 
 public class KpParser {
     private static Document removeSpecialChars(Document doc) {
@@ -167,13 +171,48 @@ public class KpParser {
                         }
                     }
                     
-//                    film.setName(name.getElementsByClass("gray").first().html());
-//                    System.out.println  (gray.before("<i").first().html());
-//                    film.setName(gray.first().html().split(",")[0]);
-                    
-//                    System.out.println(film);
                 }
             }   
+        }
+        return result;
+    }
+    
+    public static ArrayList<Film> parsePrefixSearch(Document doc){
+        doc = removeSpecialChars(doc);
+        Map<String, Object> map; 
+        try {
+            String s= doc.body().html();
+            s = s.substring(1, s.length() - 1);
+            map = (Map<String, Object>) ConfigParser.getJSONParser().parse(s, ConfigParser.getContainerFactory());
+        } catch (ParseException e) {
+            return null;
+        }
+        ArrayList<Film> result = new ArrayList<Film>();
+        for(Entry<String, Object> entry : map.entrySet()){
+            if(entry.getKey().equals("query_id")){
+                continue;
+            }
+            Map<String, String> inner_map = (Map<String, String>) entry.getValue();
+            if(inner_map.get("link").matches("(.*)(film)(.*)")){
+                Film new_film = new Film();
+                for(Entry<String, String> inner_entry : inner_map.entrySet()){
+                    switch(inner_entry.getKey()){
+                    case "id":
+                        new_film.setId(inner_entry.getValue());
+                        break;
+                    case "rus":
+                        new_film.setName(inner_entry.getValue());
+                        break;
+                    case "ur_rating":
+                        new_film.setRating(String.valueOf(inner_entry.getValue()));
+                        break;
+                    case "year":
+                        new_film.addPurpose("год", inner_entry.getValue());
+                        break;
+                    }
+                }
+                result.add(new_film);
+            }
         }
         return result;
     }

@@ -22,7 +22,6 @@ public class KpPath {
     }
     
     public static String makeMainSearchLink(String token){
-//        return getPrefix() + "index.php?first=no&what=&kp_query=" + token;
         return getPrefix() + "s/type/film/list/1/find/" + token;
     }
     

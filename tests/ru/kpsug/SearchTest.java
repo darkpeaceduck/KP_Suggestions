@@ -14,8 +14,10 @@ import ru.kpsug.utils.ConfigParser;
 public class SearchTest {
     public static void main(String[] args) {
         try {
+            System.out.println(KpParser.parsePrefixSearch(PageLoader.loadPrefixSearch("фильм")));
 //                Document doc = PageLoader.loadPrefixSearch("зелёная миля");
-                KpParser.parseMainSearch(PageLoader.loadMainSearch("зелёная миля"));
+//                KpParser.parseMainSearch(PageLoader.loadMainSearch("зелёная миля"));
+//            KpParser.parse
 //                System.out.println(doc.body().html());
 //                String s = doc.body().html();
 //                s = s.substring(1, s.length() - 1);
