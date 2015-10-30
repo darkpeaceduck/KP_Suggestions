@@ -3,31 +3,26 @@ package ru.kpsug.kp;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import ru.kpsug.db.Film;
+
 public class Search {
     public static class SearchResult{
-        private ArrayList<String> ids = new ArrayList<String>();
+        private ArrayList<Film> films = new ArrayList<Film>();
         public SearchResult() {
         }
         
-        public SearchResult(ArrayList<String> ids){
-            this.ids = ids;
+        public SearchResult(ArrayList<Film> films){
+            this.films = films;
         }
         
-        public ArrayList<String> getIds() {
-            return ids;
-        }
-
-        public void setIds(ArrayList<String> ids) {
-            this.ids = ids;
-        }
         
-        public void addId(String id){
-            ids.add(id);
+        public void addfilm(Film film){
+            films.add(film);
         }
         
         @Override
         public String toString() {
-            return ids.toString();
+            return films.toString();
         }
     }
     

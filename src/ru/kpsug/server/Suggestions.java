@@ -24,7 +24,7 @@ import ru.kpsug.utils.ConfigParser;
 import ru.kpsug.utils.JSONParceble;
 
 public class Suggestions {
-    public static class SuggestionsResult implements JSONParceble{
+    public static class SuggestionsResult implements JSONParceble {
         private TreeMap<String, ArrayList<String>> edges = new TreeMap<String, ArrayList<String>>();
         private TreeMap<String, Integer> levels = new TreeMap<String, Integer>();
         private TreeMap<String, Film> films;
@@ -37,22 +37,23 @@ public class Suggestions {
             this.edges = edges;
         }
 
-        public void addEdgeOr(String a, String b){
-            if(!edges.containsKey(a)){
+        public void addEdgeOr(String a, String b) {
+            if (!edges.containsKey(a)) {
                 edges.put(a, new ArrayList<String>());
             }
             edges.get(a).add(b);
         }
-        
-        public void addEdge(String a , String b){
+
+        public void addEdge(String a, String b) {
             addEdgeOr(a, b);
             addEdgeOr(b, a);
         }
-       
+
         @Override
         public String toString() {
             return toJSONString();
         }
+
         public TreeMap<String, Integer> getLevels() {
             return levels;
         }
@@ -65,44 +66,31 @@ public class Suggestions {
         public String toJSONString() {
             return toJSONObject().toJSONString();
         }
-        
-//        private ArrayList<Film> parseArrayListFilm(Object object){
-//            ArrayList<Object> arr = ( ArrayList<Object> ) object;
-//            ArrayList<Film> ret= new ArrayList<Film>();
-//            for(Object next : arr){
-//                Film new_film = new Film();
-//                new_film.refreshStateFromObject(next);
-//                ret.add(new_film);
-//            }
-//            return ret;
-//        }
-//        
+
         private void parseEdges(Object object) {
             setEdges((TreeMap<String, ArrayList<String>>) object);
         }
-        
-        
-//        
-        private void parseLevels(Object object){
-            TreeMap<String, Long> map = ( TreeMap<String, Long> ) object;
+
+        private void parseLevels(Object object) {
+            TreeMap<String, Long> map = (TreeMap<String, Long>) object;
             TreeMap<String, Integer> new_levels = new TreeMap<String, Integer>();
-            for(Entry<String, Long> entry : map.entrySet()){
+            for (Entry<String, Long> entry : map.entrySet()) {
                 new_levels.put(entry.getKey(), entry.getValue().intValue());
             }
             setLevels(new_levels);
         }
-        
-        private void parseFilms(Object object){
+
+        private void parseFilms(Object object) {
             TreeMap<String, Object> map = (TreeMap<String, Object>) object;
             TreeMap<String, Film> new_films = new TreeMap<>();
-            for(Entry<String, Object> entry:map.entrySet()){
+            for (Entry<String, Object> entry : map.entrySet()) {
                 Film film = new Film();
                 film.refreshStateFromObject(entry.getValue());
                 new_films.put(entry.getKey(), film);
             }
             setFilms(new_films);
         }
-        
+
         @Override
         public JSONObject toJSONObject() {
             JSONObject object = new JSONObject();
@@ -111,26 +99,27 @@ public class Suggestions {
             object.put("films", films);
             return object;
         }
-        
+
         @Override
         public boolean refreshStateFromJSONString(String s) {
             try {
-                return refreshStateFromObject(ConfigParser.getJSONParser().parse(s, ConfigParser.getContainerFactory()));
+                return refreshStateFromObject(ConfigParser.getJSONParser()
+                        .parse(s, ConfigParser.getContainerFactory()));
             } catch (ParseException e) {
                 return false;
             }
         }
-        
+
         @Override
         public boolean refreshStateFromObject(Object object) {
             TreeMap<String, Object> map;
-            try{
+            try {
                 map = (TreeMap<String, Object>) object;
-            }catch(ClassCastException excp){
+            } catch (ClassCastException excp) {
                 return false;
             }
-            for(Entry<String, Object> entry : map.entrySet()){
-                if(!(entry.getKey() instanceof String)){
+            for (Entry<String, Object> entry : map.entrySet()) {
+                if (!(entry.getKey() instanceof String)) {
                     return false;
                 }
                 switch (entry.getKey()) {
@@ -155,12 +144,13 @@ public class Suggestions {
         public void setFilms(TreeMap<String, Film> films) {
             this.films = films;
         }
-        
+
     }
-    
+
     private static final int DEPTH_LIMIT = 3;
 
-    public static SuggestionsResult getFilmsAround(String id, int depth, DBOperator db) {
+    public static SuggestionsResult getFilmsAround(String id, int depth,
+            DBOperator db) {
         Film film = db.selectFilm(id);
         SuggestionsResult result = null;
         if (film != null && depth <= DEPTH_LIMIT) {
@@ -189,7 +179,7 @@ public class Suggestions {
             }
             result.setLevels(is_level);
             result.setFilms(films);
-        } 
+        }
         return result;
     }
 }
