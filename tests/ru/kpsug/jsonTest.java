@@ -1,4 +1,7 @@
 package ru.kpsug;
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -55,7 +58,13 @@ public class jsonTest {
 //        }catch(ClassCastException excp){
 //            System.out.println("OK");
 //        }
-        TreeMap<String, String> map= new TreeMap<>();
-        TreeMap<String, ArrayList<Integer> > mmap = (TreeMap<String, ArrayList<Integer>>)((Object)map);
+        try {
+            Socket socket = new Socket(InetAddress.getByName("213.180.193.105"), 80);
+        } catch (IOException e) {
+            System.out.println("Failed");
+        } 
+        System.out.println("OK");
+//        TreeMap<String, String> map= new TreeMap<>();
+//        TreeMap<String, ArrayList<Integer> > mmap = (TreeMap<String, ArrayList<Integer>>)((Object)map);
     }
 }

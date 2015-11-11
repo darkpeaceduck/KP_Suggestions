@@ -2,6 +2,7 @@ package ru.kpsug;
 
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Map.Entry;
@@ -14,6 +15,16 @@ import ru.kpsug.server.Suggestions;
 import ru.kpsug.server.Suggestions.SuggestionsResult;
 
 public class ClientRunner {
+    private static String convert(String s){
+//        try {
+//            return new String(s.getBytes("UTF-8"), ("windows-1251"));
+//        } catch (UnsupportedEncodingException e) {
+//            // TODO Auto-generated catch block
+//            e.printStackTrace();
+//        }
+//        return null;
+        return s;
+    }
     public static void main(String[] args) throws IOException {
         Client client = new Client(null);
 //          Socket s = null;
@@ -35,14 +46,11 @@ public class ClientRunner {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
-            client.send(new Request(0, 1, "373314"));
-            String result = client.nextResponse();
-            System.out.println(result);
-            SuggestionsResult sresult = new SuggestionsResult();
-            sresult.refreshStateFromJSONString(result);
+            client.send(new Request(0, 0, "373314"));
+            SuggestionsResult sresult = client.nextResponse();
             for(Entry<String, Film> entry: sresult.getFilms().entrySet()){
-                System.out.println(entry.getKey());
-                System.out.println(entry.getValue());
+                System.out.println(convert(entry.getKey()));
+                System.out.println(convert(entry.getValue().toString()));
             }
 //          TreeMap<Film, Integer> res = Suggestions.parseDepthMap(result);
 //            System.out.println(res);

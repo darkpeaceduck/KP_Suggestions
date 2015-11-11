@@ -44,6 +44,8 @@ public class Formatter {
         String result = "";
         if(request.getType() == 0){
             result += suggestions_result.toString();
+        } else {
+            
         }
         return result;
     }

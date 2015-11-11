@@ -14,7 +14,6 @@ import org.json.simple.JSONAware;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 import org.json.simple.parser.ParseException;
-import org.omg.CORBA.portable.ValueBase;
 
 import ru.kpsug.db.DBOperator;
 import ru.kpsug.db.Film;

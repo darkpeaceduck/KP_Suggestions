@@ -17,7 +17,6 @@ import org.json.simple.JSONAware;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 import org.json.simple.parser.ParseException;
-import org.junit.runners.ParentRunner;
 
 import ru.kpsug.server.Suggestions;
 import ru.kpsug.utils.ConfigParser;

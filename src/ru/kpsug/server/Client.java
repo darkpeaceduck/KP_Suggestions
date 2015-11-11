@@ -11,10 +11,12 @@ import java.net.UnknownHostException;
 import java.util.Map;
 import java.util.TreeMap;
 
+import ru.kpsug.server.Suggestions.SuggestionsResult;
 import ru.kpsug.utils.ConfigParser;
 
 public class Client {
-    private String host = "127.0.0.1";
+    private String host = "10.42.0.1";
+//    private String host = "127.0.0.1";
     private int port = 6666;
     private Socket socket;
     private PrintWriter writer;
@@ -54,15 +56,26 @@ public class Client {
         writer.println(result);
         writer.flush();
     }
-    
-    public String nextResponse() throws IOException{
+        
+    public String nextResponseString() throws IOException{
         return reader.readLine();
     }
+    
+    public SuggestionsResult nextResponse() throws IOException{
+        String s = nextResponseString();
+        SuggestionsResult sresult = new SuggestionsResult();
+        sresult.refreshStateFromJSONString(s);
+        return sresult;
+    }
+    
     
     public void closeSocket() throws IOException{
         reader.close();
         writer.close();
         socket.close();
+        writer = null;
+        reader = null;
+        socket = null;
     }
     
 }

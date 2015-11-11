@@ -24,6 +24,24 @@ public class Search {
         public String toString() {
             return films.toString();
         }
+
+        public ArrayList<Film> getFilms() {
+            return films;
+        }
+
+        public void setFilms(ArrayList<Film> films) {
+            this.films = films;
+        }
+        
+        public int getNumber(){
+            return films.size();
+        }
+        
+        public SearchResult cut(int length){
+            SearchResult new_ret = new SearchResult((ArrayList<Film>) films.subList(0, length));
+            return new_ret;
+        }
+        
     }
     
     public static SearchResult mainSearch(String token){
@@ -31,12 +49,18 @@ public class Search {
         try {
             res = new SearchResult(KpParser.parseMainSearch(PageLoader.loadMainSearch(token)));
         } catch (IOException e) {
+            return null;
         }
         return res;
     }
     
-    public static SearchResult parsePrefixSearch(String token){
-        
-        return null;
+    public static SearchResult prefixSearch(String token){
+        SearchResult ret;
+        try {
+            ret = new SearchResult(KpParser.parsePrefixSearch(PageLoader.loadPrefixSearch(token)));
+        } catch (IOException e) {
+            return null;
+        }
+        return ret;
     }
 }
