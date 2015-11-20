@@ -8,22 +8,22 @@ public class FilmStringPretty {
         result += film.getName();
         result += "(";
         boolean have = false;
-        if(film.getPurposes().containsKey("год")){
+        if(film.getPurposes().containsKey("РіРѕРґ")){
             have = true;
-            result += film.getPurposes().get("год").get(0);
+            result += film.getPurposes().get("РіРѕРґ").get(0);
         }
-        if(film.getPurposes().containsKey("страна")){
+        if(film.getPurposes().containsKey("СЃС‚СЂР°РЅР°")){
             if(have){
                 result += ", ";
             }
-            result += film.getPurposes().get("страна").get(0);
+            result += film.getPurposes().get("СЃС‚СЂР°РЅР°").get(0);
         }
         
-        if(film.getPurposes().containsKey("режиссер")){
+        if(film.getPurposes().containsKey("СЂРµР¶РёСЃСЃРµСЂ")){
             if(have){
                 result += ", ";
             }
-            result += film.getPurposes().get("режиссер").get(0);
+            result += film.getPurposes().get("СЂРµР¶РёСЃСЃРµСЂ").get(0);
         }
         
         if(film.getRating() != null){

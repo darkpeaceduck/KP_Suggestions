@@ -8,15 +8,29 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="ru.kpsug.app.search.ExtendedSearchActivity" >
 
-    <LinearLayout
-        android:id="@+id/o2"
+    <ScrollView
+        android:id="@+id/scrollView1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentRight="true"
-        android:layout_alignParentTop="true"
-        android:orientation="vertical" >
+        android:layout_alignParentTop="true" >
 
-    </LinearLayout>
+        <LinearLayout
+            android:id="@+id/o2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
+        </LinearLayout>
+    </ScrollView>
+
+    <ProgressBar
+        android:id="@+id/progressBar1"
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:visibility="visible"  />
 
 </RelativeLayout>

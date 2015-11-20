@@ -11,6 +11,7 @@ import ru.kpsug.app.R;
 import ru.kpsug.app.R.id;
 import ru.kpsug.app.R.layout;
 import ru.kpsug.app.R.menu;
+import ru.kpsug.app.film.FilmStringPretty;
 import ru.kpsug.db.Film;
 import ru.kpsug.kp.KpParser;
 import ru.kpsug.kp.PageLoader;
@@ -27,6 +28,7 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -49,9 +51,10 @@ public class ExtendedSearchActivity extends Activity {
             List<Film> result= KpParser.parseMainSearch(resultD);
             for (Film item : result) {
                 TextView product = new TextView(ExtendedSearchActivity.this);
-                product.setText(item.toString());
+                product.setText(FilmStringPretty.prefixPrint(item));
                 lm.addView(product);
             }
+            ((ProgressBar)findViewById(R.id.progressBar1)).setVisibility(View.GONE);
         };
     };
     

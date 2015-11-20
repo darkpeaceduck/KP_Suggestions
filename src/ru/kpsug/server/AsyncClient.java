@@ -1,5 +1,7 @@
 package ru.kpsug.server;
 
+import java.io.InputStream;
+
 import ru.kpsug.server.Suggestions.SuggestionsResult;
 
 public class AsyncClient {  
@@ -39,7 +41,7 @@ public class AsyncClient {
     
     volatile Client client = null;
     
-    public AsyncClient(String conf){
+    public AsyncClient(InputStream conf){
         client = new Client(conf);
     }
     

@@ -25,18 +25,15 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 public class SearchActivity extends Activity {
-    
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        final AutoCompleteTextView text = (AutoCompleteTextView) findViewById(R.id.autoCompleteTextView1);
-        final AutoCompleteAdapter adapter = new AutoCompleteAdapter(this,
-                R.layout.down2, R.id.textView1);
+    private void createAutoComplete(){
+        final DelayAutoCompleteTextView text = (DelayAutoCompleteTextView) findViewById(R.id.autoCompleteTextView1);
+        final AutoCompleteAdapter adapter = new AutoCompleteAdapter(this,R.layout.down2, R.id.textView1);
         text.setAdapter(adapter);
+        text.setLoadingIndicator((ProgressBar) findViewById(R.id.progress_bar));
         text.setOnItemClickListener(new OnItemClickListener(){
             @Override
             public void onItemClick(AdapterView<?> parent, View view,
@@ -56,6 +53,12 @@ public class SearchActivity extends Activity {
                 startActivity(intent);
             }
         });
+    }
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        createAutoComplete();
         startService(new Intent(this, ConnectionService.class));
     }
 

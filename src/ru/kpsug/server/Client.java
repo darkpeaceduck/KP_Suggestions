@@ -2,6 +2,7 @@ package ru.kpsug.server;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
@@ -15,15 +16,14 @@ import ru.kpsug.server.Suggestions.SuggestionsResult;
 import ru.kpsug.utils.ConfigParser;
 
 public class Client {
-    private String host = "10.42.0.1";
-//    private String host = "127.0.0.1";
+    private String host = "127.0.0.1";
     private int port = 6666;
     private Socket socket;
     private PrintWriter writer;
     private BufferedReader reader;
     
-    void parseConfig(String config) throws IOException{
-        Map<String, String> parsed = ConfigParser.parseConfig(config);
+    void parseConfig(InputStream config) throws IOException{
+        Map<String, String> parsed = ConfigParser.parseConfigInp(config);
         if(parsed.containsKey("host")){
             host = parsed.get("host");
         }
@@ -32,15 +32,13 @@ public class Client {
         }
     }
     
-    public Client(String conf) {
-        if(conf != null){
+    public Client(InputStream input) {
+        if(input != null){
             try{
-                parseConfig(conf);
+                parseConfig(input);
             }catch(IOException e){
-                
             }
         }
-        
     }
     
     public void connect() throws UnknownHostException, IOException{
