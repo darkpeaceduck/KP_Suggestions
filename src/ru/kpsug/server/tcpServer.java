@@ -28,6 +28,7 @@ public class tcpServer implements Runnable{
                 log.flush();
         }
     }
+    
     private int port = 6666;
     volatile private DBOperator db;
     volatile private ServerSocket server_socket;
@@ -101,10 +102,10 @@ public class tcpServer implements Runnable{
             child_control_thread.join();
         } catch (IOException e) {
             log.print("failed close socket, now kill child using stop");
-            child_control_thread.stop();
+            child_control_thread.interrupt();
         } catch (InterruptedException e) {
             log.print("failed join child, now kill child using stop");
-            child_control_thread.stop();
+            child_control_thread.interrupt();
         }
         try {
             db.closeAll();

@@ -23,11 +23,13 @@ public class AsyncClient {
                         } catch (Exception e) {}
                         return;
                     }
-                    try {
-                        if(callback != null){
-                            callback.run(result);
-                        }
-                    } catch (Exception e) {}
+                    finally {
+                        try {
+                            if(callback != null){
+                                callback.run(result);
+                            }
+                        } catch (Exception e) {}
+                    }
                 }
             }));
             thread.start();

@@ -14,7 +14,7 @@ import ru.kpsug.utils.ConfigParser;
 public class SearchTest {
     public static void main(String[] args) {
         try {
-            System.out.println(KpParser.parseMainSearch(PageLoader.loadMainSearch("зелен")));
+            System.out.println(KpParser.parseMainSearch(PageLoader.loadMainSearch("ты")));
 //                Document doc = PageLoader.loadPrefixSearch("������ ����");
 //                KpParser.parseMainSearch(PageLoader.loadMainSearch("������ ����"));
 //            KpParser.parse

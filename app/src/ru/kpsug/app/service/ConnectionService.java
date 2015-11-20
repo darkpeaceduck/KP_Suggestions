@@ -12,7 +12,7 @@ import ru.kpsug.server.Suggestions.SuggestionsResult;
 
 public class ConnectionService extends Service {
 
-    private AsyncClient client = null;
+    private AsyncClient dbClient = null;
 
     public class ConnectionBinder extends Binder {
         public ConnectionService getService() {
@@ -32,9 +32,9 @@ public class ConnectionService extends Service {
 
     @Override
     public void onCreate() {
-        client = new AsyncClient(null);
+        dbClient = new AsyncClient(null);
         try {
-            client.connect(null, null).join();
+            dbClient.connect(null, null).join();
         } catch (InterruptedException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -45,42 +45,21 @@ public class ConnectionService extends Service {
     @Override
     public void onDestroy() {
         try {
-            client.closeSocket(null, null).join();
+            dbClient.closeSocket(null, null).join();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
         super.onDestroy();
     }
     
-    private class sendSaver implements AsyncClient.innerFunc<SuggestionsResult, Object>{
-        private SuggestionsResult result = null;
-        @Override
-        public Object run(SuggestionsResult result) throws Exception {
-            this.result = result;
-            return null;
-        }
-        
-        public SuggestionsResult getResult(){
-            return result;
-        }
-        
-    }
-    
-    public SuggestionsResult send(String id){ 
-        final sendSaver saver = new sendSaver();
-        try {
-            client.send(null, new innerFunc<Object, Object>() {
-                @Override
-                public Object run(Object param) throws Exception {
-                    client.nextResponse(null, saver).join();
-                    return null;
-                }
-            }, new Request(0, 0, id)).join();
-        } catch (InterruptedException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        return saver.getResult();
+    public void requestToDb(String id, final AsyncClient.innerFunc<SuggestionsResult, Object> saver){
+        dbClient.send(null, new innerFunc<Object, Object>() {
+            @Override
+            public Object run(Object param) throws Exception {
+                dbClient.nextResponse(null, saver);
+                return null;
+            }
+        }, new Request(0, 0, id));
     }
     
 

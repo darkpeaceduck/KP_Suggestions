@@ -34,7 +34,7 @@ public class KpParser {
                 .first();
         for (Element child : info_block.children()) {
             String purp_name = child.getElementsByClass("type").first().html();
-            if (purp_name.equals("рейтинг MPAA")) {
+            if (purp_name.equals("СЂРµР№С‚РёРЅРі MPAA")) {
                 continue;
             }
             for (Element td : child.children()) {
@@ -144,6 +144,7 @@ public class KpParser {
         doc = removeSpecialChars(doc);
         ArrayList<Film> result = new ArrayList<Film>();
         Element films = doc.select(".search_results.search_results_last").first();
+//        System.out.println(doc.html());
         if(films != null){
             for(Element entry : films.children()){
                 if(entry.hasClass("element")){
@@ -151,18 +152,21 @@ public class KpParser {
                     Element info = entry.getElementsByClass("info").first();
                     Element name = info.getElementsByClass("name").first();
                     Elements gray = info.getElementsByClass("gray");
+                    Element year = name.getElementsByTag("span").first();
                     film.setId(parseFilmIdFromMainSearchLink(name.getElementsByTag("a").first().attr("href")));
                     film.setName(name.getElementsByTag("a").first().html());
-                    film.addPurpose("год", name.getElementsByTag("span").first().html());
+                    if(year != null) {
+                        film.addPurpose("РіРѕРґ", name.getElementsByTag("span").first().html());
+                    }
                     String rating  =entry.getElementsByClass("right").first().child(0).attr("title").split(" ")[0];
                     if(rating.length() > 0){
                         film.setRating(rating);
                     }
                     Element director_inner = info.getElementsByClass("director").first();
                     if(director_inner != null){
-                        film.addPurpose("режиссер", director_inner.child(0).html());
+                        film.addPurpose("СЂРµР¶РёСЃСЃРµСЂ", director_inner.child(0).html());
                     }
-                    film.addPurpose("страна", gray.get(1).html().split("(,)|(\\.\\.\\.)")[0]);
+                    film.addPurpose("СЃС‚СЂР°РЅР°", gray.get(1).html().split("(,)|(\\.\\.\\.)")[0]);
                     Elements actorsElements = gray.get(2).getElementsByClass("lined");
                     for(Element actor : actorsElements){
                         String actor_name = actor.html();
@@ -170,7 +174,7 @@ public class KpParser {
                             film.addActor(actor_name);
                         }
                     }
-                    
+                    result.add(film);
                 }
             }   
         }
@@ -207,7 +211,7 @@ public class KpParser {
                         new_film.setRating(String.valueOf(inner_entry.getValue()));
                         break;
                     case "year":
-                        new_film.addPurpose("год", inner_entry.getValue());
+                        new_film.addPurpose("РіРѕРґ", inner_entry.getValue());
                         break;
                     }
                 }
