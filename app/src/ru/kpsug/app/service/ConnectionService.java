@@ -55,14 +55,18 @@ public class ConnectionService extends Service {
         super.onDestroy();
     }
     
-    public void requestToDb(String id, final AsyncClient.innerFunc<SuggestionsResult, Object> saver){
+    public void requestToDb(String id, Integer level, final AsyncClient.innerFunc<SuggestionsResult, Object> saver){
         dbClient.send(null, new innerFunc<Object, Object>() {
             @Override
             public Object run(Object param) throws Exception {
                 dbClient.nextResponse(null, saver);
                 return null;
             }
-        }, new Request(0, 0, id));
+        }, new Request(0, level, id));
+    }
+    
+    public void requestToDb(String id, final AsyncClient.innerFunc<SuggestionsResult, Object> saver){
+        requestToDb(id, 0, saver);
     }
     
     @Override

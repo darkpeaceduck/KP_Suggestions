@@ -3,6 +3,7 @@ package ru.kpsug.server;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.TreeSet;
@@ -25,11 +26,20 @@ import ru.kpsug.utils.JSONParceble;
 public class Suggestions {
     public static class SuggestionsResult implements JSONParceble {
         private TreeMap<String, ArrayList<String>> edges = new TreeMap<String, ArrayList<String>>();
-        private TreeMap<String, Integer> levels = new TreeMap<String, Integer>();
+        private TreeMap<String, Integer> levels;
+        private Map<Integer, List<String>> levelsEdges;
         private TreeMap<String, Film> films;
+        
+        public Map<Integer, List<String>> getLevelsEdges() {
+            return levelsEdges;
+        }
 
         public TreeMap<String, ArrayList<String>> getEdges() {
             return edges;
+        }
+
+        public void setLevelsEdges(Map<Integer, List<String>> levelsEdges) {
+            this.levelsEdges = levelsEdges;
         }
 
         public void setEdges(TreeMap<String, ArrayList<String>> edges) {
@@ -69,6 +79,15 @@ public class Suggestions {
         private void parseEdges(Object object) {
             setEdges((TreeMap<String, ArrayList<String>>) object);
         }
+        
+        private void parseLevelsEdges(Object object){
+            Map<String, List<String>> result = ((Map<String, List<String>>) object);
+            Map<Integer, List<String>> outp = new TreeMap<Integer, List<String>>();
+            for(Entry<String, List<String>> item : result.entrySet()){
+                outp.put(Integer.parseInt(item.getKey()), item.getValue());
+            }
+            setLevelsEdges(outp);
+        }
 
         private void parseLevels(Object object) {
             TreeMap<String, Long> map = (TreeMap<String, Long>) object;
@@ -96,6 +115,7 @@ public class Suggestions {
             object.put("edges", edges);
             object.put("levels", levels);
             object.put("films", films);
+            object.put("levelsEdges", levelsEdges);
             return object;
         }
 
@@ -131,6 +151,9 @@ public class Suggestions {
                 case "films":
                     parseFilms(entry.getValue());
                     break;
+                case "levelsEdges":
+                    parseLevelsEdges(entry.getValue());
+                    break;
                 }
             }
             return true;
@@ -155,11 +178,18 @@ public class Suggestions {
         if (film != null && depth <= DEPTH_LIMIT) {
             result = new SuggestionsResult();
             TreeMap<String, Integer> is_level = new TreeMap<String, Integer>();
+            Map<Integer, List<String>> re_is_level= new TreeMap<Integer, List<String>>();
             TreeMap<String, Film> films = new TreeMap<String, Film>();
-            films.put(film.getId(), film);
+            
             is_level.put(film.getId(), 0);
+            
+            re_is_level.put(0, new ArrayList<String>());
+            re_is_level.get(0).add(film.getId());
+            
             ArrayList<Film> q = new ArrayList<Film>();
             q.add(film);
+            films.put(film.getId(), film);
+            
             int head_position = 0;
             while (q.size() > head_position) {
                 Film current = q.get(head_position++);
@@ -169,6 +199,10 @@ public class Suggestions {
                         if (!is_level.containsKey(link)) {
                             Film new_film = db.selectFilm(link);
                             is_level.put(new_film.getId(), current_depth + 1);
+                            if(!re_is_level.containsKey(current_depth + 1)){
+                                re_is_level.put(current_depth + 1, new ArrayList<String>());
+                            }
+                            re_is_level.get(current_depth + 1).add(new_film.getId());
                             q.add(new_film);
                             result.addEdge(film.getId(), new_film.getId());
                             films.put(link, new_film);
@@ -178,6 +212,7 @@ public class Suggestions {
             }
             result.setLevels(is_level);
             result.setFilms(films);
+            result.setLevelsEdges(re_is_level);
         }
         return result;
     }

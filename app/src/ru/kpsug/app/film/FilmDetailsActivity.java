@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Map.Entry;
 
 import ru.kpsug.app.R;
+import ru.kpsug.app.search.ExtendedSearchActivity;
+import ru.kpsug.app.search.SearchActivity;
 import ru.kpsug.app.service.ConnectionService;
 import ru.kpsug.db.Film;
 import ru.kpsug.server.AsyncClient;
@@ -19,6 +21,9 @@ import android.os.IBinder;
 import android.os.Message;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
 import android.widget.TextView;
 
 public class FilmDetailsActivity extends Activity {
@@ -77,7 +82,17 @@ public class FilmDetailsActivity extends Activity {
         }
     }
 
-
+    private void initSugButtion(){
+        ((Button)findViewById(R.id.button1)).setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(FilmDetailsActivity.this, SuggestionsActivity.class);  
+                intent.putExtra("id", id);
+                startActivity(intent);
+            }
+        });
+    }
+    
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -89,6 +104,7 @@ public class FilmDetailsActivity extends Activity {
         purposesView = (TextView) findViewById(R.id.textView2);
         annotationView = (TextView) findViewById(R.id.textView3);
         actorsView = (TextView) findViewById(R.id.textView4);
+        initSugButtion();
         bindService(new Intent(this, ConnectionService.class), conn,
                 Context.BIND_AUTO_CREATE);
     }

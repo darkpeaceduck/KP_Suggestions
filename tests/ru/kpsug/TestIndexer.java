@@ -50,11 +50,21 @@ public class TestIndexer {
 //        }
     }
     
+    private void forFilm(DBOperator db, String id) throws IOException{
+        Film film = db.selectFilm(id);
+        System.out.println(film.getName());
+        for(String new_id : film.getSuggestion_links()){
+            Film new_film = KpParser.parseFilm(PageLoader.loadFilm(new_id), PageLoader.loadFilmSuggestions(new_id));
+            System.out.println(new_film.getName());
+            db.InsertFilm(new_film);
+        }
+    }
+    
     @Test
     public void testDB() throws ClassNotFoundException, SQLException, IOException{
         DBOperator db_con =  new DBOperator(null);
         db_con.connect();
-//        assertTrue(db_con.BuildDatabase());
+        assertTrue(db_con.BuildDatabase());
         String id = "373314";
 //        TreeMap<String, String> cookies = new TreeMap<String, String>();
 //        cookies.put("PHPSESSID", "1024f7c014ece92d83036ed35488c78d");
@@ -65,24 +75,23 @@ public class TestIndexer {
 //        cookies.put("user_country", "ru");
 //        cookies.put("yandexuid", "251607371445295272");
 //        
-//        Document doc = PageLoader.loadFilm(id);
+        Document doc = PageLoader.loadFilm(id);
 //        System.out.println(doc);
-//        Film film = KpParser.parseFilm(doc, PageLoader.loadFilmSuggestions(id) );
+        Film film = KpParser.parseFilm(doc, PageLoader.loadFilmSuggestions(id) );
 //        System.out.println(film);
-        Film film = db_con.selectFilm(id);
-        System.out.print(film);
+        System.out.print(film.getName());
+        db_con.InsertFilm(film);
+        forFilm(db_con, id);
+        for(String new_id : film.getSuggestion_links()){
+            forFilm(db_con, new_id);
+        }
 //        Film new_film = new Film();
 //        assertTrue(new_film.refreshStateFromJSONString(film.toJSONString()));
 //        assertEquals(new_film, film);
 //        System.out.println(new_film.getSuggestion_links().get(0));
 //        assertTrue(db_con.InsertFilm(film));
 //        assertEquals(db_con.selectFilm(id), film);
-//        for(String new_id : film.getSuggestion_links()){
-//            Film new_film = KpParser.parseFilm(PageLoader.loadFilm(new_id), PageLoader.loadFilmSuggestions(new_id));
-//            System.out.println(new_film);
-//            db_con.InsertFilm(new_film);
-//            assertEquals(db_con.selectFilm(new_id), new_film);
-//        }
+       
 ////        assertTrue(db_con.deleteFilmFromId(film.getId()));
         db_con.closeAll();
     }

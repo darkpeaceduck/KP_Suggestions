@@ -143,8 +143,15 @@ public class KpParser {
     public static ArrayList<Film> parseMainSearch(Document doc){
         doc = removeSpecialChars(doc);
         ArrayList<Film> result = new ArrayList<Film>();
-        Element films = doc.select(".search_results.search_results_last").first();
-//        System.out.println(doc.html());
+        Elements elem= doc.getElementsByClass("search_results");
+        //in older version here was doc.select
+        Element films = null;
+        for(Element item : elem){
+            if(item.classNames().contains("search_results_last")){
+                films=item;
+            }
+        }
+        //
         if(films != null){
             for(Element entry : films.children()){
                 if(entry.hasClass("element")){
