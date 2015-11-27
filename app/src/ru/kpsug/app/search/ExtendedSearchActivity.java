@@ -11,6 +11,7 @@ import ru.kpsug.app.R;
 import ru.kpsug.app.R.id;
 import ru.kpsug.app.R.layout;
 import ru.kpsug.app.R.menu;
+import ru.kpsug.app.film.FilmDetailsActivity;
 import ru.kpsug.app.film.FilmStringPretty;
 import ru.kpsug.db.Film;
 import ru.kpsug.kp.KpParser;
@@ -19,6 +20,7 @@ import ru.kpsug.kp.Search.SearchResult;
 import android.support.v7.app.ActionBarActivity;
 import android.app.ActionBar.LayoutParams;
 import android.app.Activity;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
@@ -49,9 +51,17 @@ public class ExtendedSearchActivity extends Activity {
         
         protected void onPostExecute(Document resultD) {
             List<Film> result= KpParser.parseMainSearch(resultD);
-            for (Film item : result) {
+            for (final Film item : result) {
                 TextView product = new TextView(ExtendedSearchActivity.this);
                 product.setText(FilmStringPretty.prefixPrint(item));
+                product.setOnClickListener(new OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent intent = new Intent(ExtendedSearchActivity.this, FilmDetailsActivity.class);  
+                        intent.putExtra("id", item.getId());
+                        startActivity(intent);
+                    }
+                });
                 lm.addView(product);
             }
             ((ProgressBar)findViewById(R.id.progressBar1)).setVisibility(View.GONE);

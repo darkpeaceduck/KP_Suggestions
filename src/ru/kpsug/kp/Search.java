@@ -48,7 +48,7 @@ public class Search {
         SearchResult res = null;
         try {
             res = new SearchResult(KpParser.parseMainSearch(PageLoader.loadMainSearch(token)));
-        } catch (IOException e) {
+        } catch (Exception e) {
             return null;
         }
         return res;
@@ -58,7 +58,7 @@ public class Search {
         SearchResult ret;
         try {
             ret = new SearchResult(KpParser.parsePrefixSearch(PageLoader.loadPrefixSearch(token)));
-        } catch (IOException e) {
+        } catch (Exception e) {
             return null;
         }
         return ret;
