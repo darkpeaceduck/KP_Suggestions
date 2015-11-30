@@ -33,6 +33,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 public class SuggestionsActivity extends ActionBarActivity {
@@ -61,11 +62,14 @@ public class SuggestionsActivity extends ActionBarActivity {
         }
         
         protected void onPostExecute(Object result) {
-            mSectionsPagerAdapter.setResult((SuggestionsResult)result);
+            refreshPages((SuggestionsResult) result);
         };
     };
     
-
+    private void refreshPages(SuggestionsResult result){
+        mSectionsPagerAdapter.setResult(result);
+        ((ProgressBar)findViewById(R.id.progressBar1)).setVisibility(View.GONE);
+    }
     
     private final ServiceConnection conn = new ServiceConnection() {
         @Override

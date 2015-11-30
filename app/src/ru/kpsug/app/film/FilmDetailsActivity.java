@@ -25,6 +25,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 public class FilmDetailsActivity extends Activity {
@@ -73,6 +74,7 @@ public class FilmDetailsActivity extends Activity {
         purposesView.setText(s);
         annotationView.setText(film.getAnnotation());
         actorsView.setText(film.getActors().toString());
+        ((ProgressBar)findViewById(R.id.progressBar1)).setVisibility(View.GONE);
     }
 
     private void initSugButtion(){

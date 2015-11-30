@@ -33,7 +33,7 @@ public class SearchActivity extends Activity {
         final DelayAutoCompleteTextView text = (DelayAutoCompleteTextView) findViewById(R.id.autoCompleteTextView1);
         final AutoCompleteAdapter adapter = new AutoCompleteAdapter(this,R.layout.down2, R.id.textView1);
         text.setAdapter(adapter);
-        text.setLoadingIndicator((ProgressBar) findViewById(R.id.progress_bar));
+        text.setLoadingIndicator((ProgressBar) findViewById(R.id.progressBar));
         text.setOnItemClickListener(new OnItemClickListener(){
             @Override
             public void onItemClick(AdapterView<?> parent, View view,

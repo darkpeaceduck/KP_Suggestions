@@ -18,25 +18,22 @@
         android:ems="10"
         android:hint="Введите название фильма" />
 
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/autoCompleteTextView1"
+        android:layout_alignRight="@+id/autoCompleteTextView1"
+        android:layout_marginRight="34dp" />
+
     <Button
         android:id="@+id/button1"
         style="?android:attr/buttonStyleSmall"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/autoCompleteTextView1"
         android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
         android:text="GO" />
-
-    <ProgressBar
-        android:id="@+id/progress_bar"
-        style="?android:attr/progressBarStyleLarge"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/autoCompleteTextView1"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="151dp"
-        android:minHeight="160dip"
-        android:minWidth="160dip"
-        android:visibility="visible" />
 
 </RelativeLayout>

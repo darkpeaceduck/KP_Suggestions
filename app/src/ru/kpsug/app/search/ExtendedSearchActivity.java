@@ -27,6 +27,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -64,7 +65,8 @@ public class ExtendedSearchActivity extends Activity {
     
     private void applyResultChanges(){
         for (final Film item : result) {
-            TextView product = new TextView(ExtendedSearchActivity.this);
+            View v = LayoutInflater.from(ExtendedSearchActivity.this).inflate(R.layout.list_item, null);
+            TextView product = (TextView) v.findViewById(R.id.tadaText);
             product.setText(FilmStringPretty.prefixPrint(item));
             product.setOnClickListener(new OnClickListener() {
                 @Override
@@ -74,7 +76,7 @@ public class ExtendedSearchActivity extends Activity {
                     startActivity(intent);
                 }
             });
-            lm.addView(product);
+            lm.addView(v);
         }
         ((ProgressBar)findViewById(R.id.progressBar1)).setVisibility(View.GONE);
     }

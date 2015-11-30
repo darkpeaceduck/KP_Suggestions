@@ -47,7 +47,8 @@ public class SuggestionsActivityFragment extends Fragment{
     private void viewPage(final View rootView){
         LinearLayout lm = (LinearLayout) rootView.findViewById(R.id.LinearLayout2);
         for (final Film item : pagedFilms) {
-            TextView product = new TextView(rootView.getContext());
+            View v = LayoutInflater.from(rootView.getContext()).inflate(R.layout.list_item, null);
+            TextView product = (TextView) v.findViewById(R.id.tadaText);
             product.setText(FilmStringPretty.prefixPrint(item));
             product.setOnClickListener(new OnClickListener() {
                 @Override
@@ -57,7 +58,7 @@ public class SuggestionsActivityFragment extends Fragment{
                     startActivity(intent);
                 }
             });
-            lm.addView(product);
+            lm.addView(v);
         }
     }
     
