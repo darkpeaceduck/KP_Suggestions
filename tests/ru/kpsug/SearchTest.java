@@ -9,12 +9,13 @@ import org.jsoup.nodes.Document;
 import ru.kpsug.kp.KpParser;
 import ru.kpsug.kp.PageLoader;
 import ru.kpsug.kp.Search;
+import ru.kpsug.kp.PageLoader.PageLoaderException;
 import ru.kpsug.utils.ConfigParser;
 
 public class SearchTest {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         try {
-            System.out.println(KpParser.parseMainSearch(PageLoader.loadMainSearch("ты")));
+            System.out.println(KpParser.parseFilm(PageLoader.loadFilm("373314"), null));
 //                Document doc = PageLoader.loadPrefixSearch("������ ����");
 //                KpParser.parseMainSearch(PageLoader.loadMainSearch("������ ����"));
 //            KpParser.parse
@@ -26,7 +27,7 @@ public class SearchTest {
 //                Object value = map.get("0");
 //                map = (TreeMap<String, Object>) value;
 //                System.out.println(value);
-            } catch (IOException e) {
+            } catch (PageLoaderException e) {
                 System.out.println("NOPE!");
             }
 //         System.out.println(Search.mainSearch(token));

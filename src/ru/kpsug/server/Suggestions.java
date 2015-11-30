@@ -26,9 +26,9 @@ import ru.kpsug.utils.JSONParceble;
 public class Suggestions {
     public static class SuggestionsResult implements JSONParceble {
         private TreeMap<String, ArrayList<String>> edges = new TreeMap<String, ArrayList<String>>();
-        private TreeMap<String, Integer> levels;
-        private Map<Integer, List<String>> levelsEdges;
-        private TreeMap<String, Film> films;
+        private TreeMap<String, Integer> levels = new TreeMap<String, Integer>();
+        private Map<Integer, List<String>> levelsEdges =new TreeMap<Integer, List<String>>();
+        private TreeMap<String, Film> films = new TreeMap<String, Film>();
         
         public Map<Integer, List<String>> getLevelsEdges() {
             return levelsEdges;

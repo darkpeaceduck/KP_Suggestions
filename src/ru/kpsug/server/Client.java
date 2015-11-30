@@ -41,13 +41,13 @@ public class Client {
         }
     }
     
-    public void connect() throws UnknownHostException, IOException{
+    public synchronized void  connect() throws UnknownHostException, IOException{
         socket =new Socket(InetAddress.getByName(host), port); 
         writer = new PrintWriter(socket.getOutputStream());
         reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
     }
     
-    public void send(Request request) {
+    public synchronized  void send(Request request) {
         String result = String.valueOf(request.getType());
         result += "=" + request.getDepth();
         result += "=" + request.getId();
@@ -55,11 +55,15 @@ public class Client {
         writer.flush();
     }
         
-    public String nextResponseString() throws IOException{
-        return reader.readLine();
+    public synchronized String nextResponseString() throws IOException{
+        String ret = reader.readLine();
+        if(ret == null){
+            throw new IOException();
+        }
+        return ret;
     }
     
-    public SuggestionsResult nextResponse() throws IOException{
+    public synchronized SuggestionsResult nextResponse() throws IOException{
         String s = nextResponseString();
         SuggestionsResult sresult = new SuggestionsResult();
         sresult.refreshStateFromJSONString(s);
@@ -67,13 +71,24 @@ public class Client {
     }
     
     
-    public void closeSocket() throws IOException{
-        reader.close();
-        writer.close();
-        socket.close();
+    public synchronized void closeSocket() throws IOException{
+        if(reader != null){
+            reader.close();
+        }
+        if(writer != null){
+            writer.close();
+        }
+        if(socket != null){
+            socket.close();
+        }
         writer = null;
         reader = null;
         socket = null;
+    }
+    
+    public synchronized void reconnect() throws IOException{
+        closeSocket();
+        connect();
     }
     
 }

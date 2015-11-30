@@ -24,31 +24,35 @@ public class KpParser {
 
     private static void parseSuggestions(Film film, Document doc) {
         Elements films = doc.getElementsByAttributeValueStarting("id", "tr_");
-        for (Element new_sug : films) {
-            film.addSuggestionLink(new_sug.attr("id").substring(3));
+        if(!films.isEmpty()){
+            for (Element new_sug : films) {
+                film.addSuggestionLink(new_sug.attr("id").substring(3));
+            }
         }
     }
 
     private static void parseInfoBlock(Film film, Document doc) {
-        Element info_block = doc.getElementsByClass("info").first().children()
-                .first();
-        for (Element child : info_block.children()) {
-            String purp_name = child.getElementsByClass("type").first().html();
-            if (purp_name.equals("рейтинг MPAA")) {
-                continue;
-            }
-            for (Element td : child.children()) {
-                if (td.className() != "type") {
-                    Elements as = td.getElementsByTag("a");
-                    if (as != null) {
-                        for (Element a : as) {
-                            if (a.html().equals("...")) {
-                                break;
+        Elements info = doc.getElementsByClass("info");
+        if(!info.isEmpty() && !info.first().children().isEmpty()){
+            Element info_block = info.first().children().first();
+            for (Element child : info_block.children()) {
+                String purp_name = child.getElementsByClass("type").first().html();
+                if (purp_name.equals("рейтинг MPAA")) {
+                    continue;
+                }
+                for (Element td : child.children()) {
+                    if (td.className() != "type") {
+                        Elements as = td.getElementsByTag("a");
+                        if (as != null) {
+                            for (Element a : as) {
+                                if (a.html().equals("...")) {
+                                    break;
+                                }
+                                film.addPurpose(purp_name, a.html());
                             }
-                            film.addPurpose(purp_name, a.html());
+                        } else {
+                            film.addPurpose(purp_name, td.html());
                         }
-                    } else {
-                        film.addPurpose(purp_name, td.html());
                     }
                 }
             }

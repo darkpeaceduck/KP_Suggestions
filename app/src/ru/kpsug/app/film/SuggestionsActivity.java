@@ -21,6 +21,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -53,18 +54,15 @@ public class SuggestionsActivity extends ActionBarActivity {
 
     private final int PAGES_NUMBER = 2;
     
-    private Handler mainChangeHandler = new Handler(){
-        public void handleMessage(Message msg) {
-            mSectionsPagerAdapter.setResult((SuggestionsResult)msg.obj);
-         }
-    };
-    
-    private AsyncClient.innerFunc<SuggestionsResult, Object> detailsSendSaver =  new AsyncClient.innerFunc<SuggestionsResult, Object>(){
+    private AsyncTask<SuggestionsResult, Object, Object> detailsSendSaver =  new AsyncTask<SuggestionsResult, Object, Object>(){
         @Override
-        public Object run(SuggestionsResult result) throws Exception {
-            mainChangeHandler.sendMessage(mainChangeHandler.obtainMessage(0, result));
-            return null;
+        protected Object doInBackground(SuggestionsResult... params) {
+            return params[0];
         }
+        
+        protected void onPostExecute(Object result) {
+            mSectionsPagerAdapter.setResult((SuggestionsResult)result);
+        };
     };
     
 

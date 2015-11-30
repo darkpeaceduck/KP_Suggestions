@@ -15,6 +15,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -35,18 +36,15 @@ public class FilmDetailsActivity extends Activity {
     private TextView annotationView = null;
     private TextView actorsView = null;
     
-    private Handler mainChangeHandler = new Handler(){
-        public void handleMessage(Message msg) {
-            refreshFilmData((SuggestionsResult)msg.obj);
-         }
-    };
-    
-    private AsyncClient.innerFunc<SuggestionsResult, Object> detailsSendSaver =  new AsyncClient.innerFunc<SuggestionsResult, Object>(){
+    private AsyncTask<Film, Object, Object> detailsSendSaver =  new AsyncTask<Film, Object, Object>(){
         @Override
-        public Object run(SuggestionsResult result) throws Exception {
-            mainChangeHandler.sendMessage(mainChangeHandler.obtainMessage(0, result));
-            return null;
+        protected Object doInBackground(Film... params) {
+            return params[0];
         }
+        
+        protected void onPostExecute(Object result) {
+            refreshFilmData((Film)result);
+        };
     };
     
     private ServiceConnection conn = new ServiceConnection() {
@@ -63,23 +61,18 @@ public class FilmDetailsActivity extends Activity {
     };
     
     
-    private void refreshFilmData(SuggestionsResult sresult) {
-        if (sresult != null) {
-            Film film = sresult.getFilms().get(id);
-            if (film != null) {
-                filmNameView.setText(film.getName());
-                ratingView.setText(film.getRating());
-                String s = "";
-                for (Entry<String, ArrayList<String>> entry : film
-                        .getPurposes().entrySet()) {    
-                    s += entry.getKey() + " - " + entry.getValue();
-                    s += "\n";
-                }
-                purposesView.setText(s);
-                annotationView.setText(film.getAnnotation());
-                actorsView.setText(film.getActors().toString());
-            }
+    private void refreshFilmData(Film film) {
+        filmNameView.setText(film.getName());
+        ratingView.setText(film.getRating());
+        String s = "";
+        for (Entry<String, ArrayList<String>> entry : film
+                .getPurposes().entrySet()) {    
+            s += entry.getKey() + " - " + entry.getValue();
+            s += "\n";
         }
+        purposesView.setText(s);
+        annotationView.setText(film.getAnnotation());
+        actorsView.setText(film.getActors().toString());
     }
 
     private void initSugButtion(){

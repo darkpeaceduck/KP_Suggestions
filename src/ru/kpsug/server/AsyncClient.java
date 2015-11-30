@@ -92,4 +92,14 @@ public class AsyncClient {
             }
         }, onCatch, callback, null);
     }
+    
+    public synchronized Thread reconnect(innerFunc<?, ?> onCatch, innerFunc<Object, ?> callback){
+        return threadWrapper.run(new innerFunc<Object, Object>() {
+            @Override
+            public Object run(Object param) throws Exception {
+                client.reconnect();
+                return null;
+            }
+        }, onCatch, callback, null);
+    }
 }

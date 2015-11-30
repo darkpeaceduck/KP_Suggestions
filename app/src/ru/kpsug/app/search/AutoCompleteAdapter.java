@@ -6,6 +6,7 @@ import ru.kpsug.app.R;
 import ru.kpsug.app.film.FilmStringPretty;
 import ru.kpsug.db.Film;
 import ru.kpsug.kp.Search;
+import ru.kpsug.kp.Search.SearchException;
 import ru.kpsug.kp.Search.SearchResult;
 import android.content.Context;
 import android.util.Log;
@@ -54,11 +55,13 @@ public class AutoCompleteAdapter extends BaseAdapter implements Filterable {
             protected FilterResults performFiltering(CharSequence constraint) {
                 FilterResults filterResults = new FilterResults();
                 if (constraint != null) {
-                    SearchResult result = Search.prefixSearch(constraint
-                            .toString());
-                    if (result != null) {
+                    SearchResult result;
+                    try {
+                        result = Search.prefixSearch(constraint
+                                .toString());
                         filterResults.values = result.getFilms();
                         filterResults.count = result.getNumber();
+                    } catch (SearchException e) {
                     }
                 }
                 return filterResults;

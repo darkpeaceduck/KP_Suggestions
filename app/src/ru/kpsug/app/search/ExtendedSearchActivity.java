@@ -1,6 +1,7 @@
 package ru.kpsug.app.search;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,6 +17,9 @@ import ru.kpsug.app.film.FilmStringPretty;
 import ru.kpsug.db.Film;
 import ru.kpsug.kp.KpParser;
 import ru.kpsug.kp.PageLoader;
+import ru.kpsug.kp.PageLoader.PageLoaderException;
+import ru.kpsug.kp.Search;
+import ru.kpsug.kp.Search.SearchException;
 import ru.kpsug.kp.Search.SearchResult;
 import android.support.v7.app.ActionBarActivity;
 import android.app.ActionBar.LayoutParams;
@@ -37,36 +41,43 @@ import android.widget.Toast;
 
 public class ExtendedSearchActivity extends Activity {
     private LinearLayout lm;
-    private AsyncTask<String, Object, Document> searchLoadingTask = new AsyncTask<String, Object, Document>(){
+    private List<Film> result = null;
+    private AsyncTask<String, Object, ArrayList<Film>> searchLoadingTask = new AsyncTask<String, Object, ArrayList<Film>>(){
         @Override
-        protected Document doInBackground(String... params) {
+        protected ArrayList<Film> doInBackground(String... params) {
+            Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
+            ArrayList<Film> films = new ArrayList<Film>();
             try {
-                return PageLoader.loadMainSearch(URLEncoder.encode(params[0], "UTF-8"));
-            } catch (IOException e) {
-                // TODO Auto-generated catch block
+                SearchResult result= Search.mainSearch(params[0]);
+                films = result.getFilms();
+            } catch (SearchException e) {
                 e.printStackTrace();
             }
-            return null;
+            return films;
         }
         
-        protected void onPostExecute(Document resultD) {
-            List<Film> result= KpParser.parseMainSearch(resultD);
-            for (final Film item : result) {
-                TextView product = new TextView(ExtendedSearchActivity.this);
-                product.setText(FilmStringPretty.prefixPrint(item));
-                product.setOnClickListener(new OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Intent intent = new Intent(ExtendedSearchActivity.this, FilmDetailsActivity.class);  
-                        intent.putExtra("id", item.getId());
-                        startActivity(intent);
-                    }
-                });
-                lm.addView(product);
-            }
-            ((ProgressBar)findViewById(R.id.progressBar1)).setVisibility(View.GONE);
+        protected void onPostExecute(ArrayList<Film> result) {
+            ExtendedSearchActivity.this.result = result;
+            applyResultChanges();
         };
     };
+    
+    private void applyResultChanges(){
+        for (final Film item : result) {
+            TextView product = new TextView(ExtendedSearchActivity.this);
+            product.setText(FilmStringPretty.prefixPrint(item));
+            product.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(ExtendedSearchActivity.this, FilmDetailsActivity.class);  
+                    intent.putExtra("id", item.getId());
+                    startActivity(intent);
+                }
+            });
+            lm.addView(product);
+        }
+        ((ProgressBar)findViewById(R.id.progressBar1)).setVisibility(View.GONE);
+    }
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {

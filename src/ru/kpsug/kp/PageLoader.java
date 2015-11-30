@@ -1,29 +1,19 @@
 package ru.kpsug.kp;
 
 
-import java.awt.print.PageFormat;
-import java.io.InputStream;
-import java.io.ObjectInputStream.GetField;
-import java.net.URL;
-import java.net.URLConnection;
-import java.util.Map.Entry;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.TreeMap;
 
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Document.OutputSettings;
-import org.jsoup.safety.Cleaner;
-import org.jsoup.safety.Whitelist;
 
   
 
 public class PageLoader {
     public static class PageLoaderException extends Exception{
-
-        /**
-         * 
-         */
         private static final long serialVersionUID = -2155291161920319692L;
     };
     
@@ -61,14 +51,25 @@ public class PageLoader {
     }
     
     
+    private static String convertToUtf(String token) throws PageLoaderException{
+        String result = null;
+        try {
+            result = URLEncoder.encode(token, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+            throw new PageLoaderException();
+        }
+        return result;
+    }
+    
     public static Document loadMainSearch(String token) throws PageLoaderException{
-        return getWrapper(Jsoup.connect(KpPath.makeMainSearchLink(token)).timeout(timeout).userAgent(user_agent));
+        return getWrapper(Jsoup.connect(KpPath.makeMainSearchLink(convertToUtf(token))).timeout(timeout).userAgent(user_agent));
     }
     
     public static Document loadPrefixSearch(String token) throws PageLoaderException{
         Connection conn =  Jsoup.connect(KpPath.getPrefixSearchLink()).timeout(timeout).userAgent(user_agent);
         TreeMap<String, String> map = new TreeMap<String, String>();
-        map.put("q", token);
+        map.put("q", convertToUtf(token));
         map.put("query_id", "0.7698689627452319");
         map.put("type", "jsonp");
         map.put("topsuggest", "true");

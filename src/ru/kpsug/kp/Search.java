@@ -44,22 +44,28 @@ public class Search {
         
     }
     
-    public static SearchResult mainSearch(String token){
+    public static class SearchException extends Exception{
+        private static final long serialVersionUID = 8385837171526199624L;
+    }
+    
+    public static SearchResult mainSearch(String token) throws SearchException{
         SearchResult res = null;
         try {
             res = new SearchResult(KpParser.parseMainSearch(PageLoader.loadMainSearch(token)));
         } catch (Exception e) {
-            return null;
+            e.printStackTrace();
+            throw new SearchException();
         }
         return res;
     }
     
-    public static SearchResult prefixSearch(String token){
+    public static SearchResult prefixSearch(String token) throws SearchException{
         SearchResult ret;
         try {
             ret = new SearchResult(KpParser.parsePrefixSearch(PageLoader.loadPrefixSearch(token)));
-        } catch (Exception e) {
-            return null;
+        }  catch (Exception e) {
+            e.printStackTrace();
+            throw new SearchException();
         }
         return ret;
     }

@@ -15,6 +15,24 @@ import ru.kpsug.server.Suggestions;
 import ru.kpsug.server.Suggestions.SuggestionsResult;
 
 public class ClientRunner {
+    public static void re(Client client){
+        while(true){
+            try {
+                Thread.sleep(200);
+            } catch (InterruptedException e1) {
+                // TODO Auto-generated catch block
+                e1.printStackTrace();
+            }
+            try {
+                client.reconnect();
+            } catch (IOException e2) {
+                System.out.println("io host");
+                continue;
+            }
+            break;
+        }
+    }
+    
     public static void main(String[] args) throws IOException {
             Client client = new Client(null);
 //          Socket s = null;
@@ -29,15 +47,27 @@ public class ClientRunner {
 //              System.out.println(line);
             try {
                 client.connect();
-            } catch (UnknownHostException e) {
+            } catch (Exception e) {
                 // TODO Auto-generated catch block
-                e.printStackTrace();
-            } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                re(client);
             }
-            client.send(new Request(0, 0, "373314"));
-            SuggestionsResult sresult = client.nextResponse();
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException e1) {
+                // TODO Auto-generated catch block
+                e1.printStackTrace();
+            } 
+            SuggestionsResult sresult = null ;
+            while(true){
+                client.send(new Request(0, 0, "373314"));
+                try{
+                     sresult = client.nextResponse();
+                }catch(IOException ex){
+                    re(client);
+                    continue;
+                }
+                break;
+            }
             for(Entry<String, Film> entry: sresult.getFilms().entrySet()){
                 System.out.println(Double.parseDouble(entry.getValue().getRating()));
             }
