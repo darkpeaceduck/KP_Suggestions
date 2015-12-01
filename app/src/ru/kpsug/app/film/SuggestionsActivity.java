@@ -46,7 +46,7 @@ public class SuggestionsActivity extends ActionBarActivity {
      * {@link android.support.v4.app.FragmentStatePagerAdapter}.
      */
     SuggestionsActivityFragmentAdapter mSectionsPagerAdapter;
-    /**
+    /** 
      * The {@link ViewPager} that will host the section contents.
      */
     ViewPager mViewPager;

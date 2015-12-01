@@ -30,7 +30,26 @@ public class KpParser {
             }
         }
     }
+    
+    public static class FuckupException extends RuntimeException{
 
+        /**
+         * 
+         */
+        public FuckupException(String doc) {
+            super(doc);
+        }
+        private static final long serialVersionUID = -8661040999826285826L;
+        
+    }
+    
+    private static void indetificateFuckup(Document doc) throws FuckupException{
+        String rawHtml = doc.html();
+        if(rawHtml.contains("Если вы видите эту страницу, значит с вашего IP-адреса поступило необычно много запросов.")){
+            throw new FuckupException(rawHtml);
+        }
+    }
+    
     private static void parseInfoBlock(Film film, Document doc) {
         Elements info = doc.getElementsByClass("info");
         if(!info.isEmpty() && !info.first().children().isEmpty()){
@@ -122,9 +141,10 @@ public class KpParser {
         }
     }
 
-    public static Film parseFilm(Document doc, Document doc_suggestions) {
+    public static Film parseFilm(Document doc, Document doc_suggestions) throws FuckupException {
         Film film = new Film();
         doc = removeSpecialChars(doc);
+        indetificateFuckup(doc);
         doc_suggestions = removeSpecialChars(doc_suggestions);
         parseId(film, doc);
         parseName(film, doc);

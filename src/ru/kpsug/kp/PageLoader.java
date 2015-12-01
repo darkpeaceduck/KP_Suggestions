@@ -7,6 +7,7 @@ import java.net.URLEncoder;
 import java.util.TreeMap;
 
 import org.jsoup.Connection;
+import org.jsoup.HttpStatusException;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
@@ -22,29 +23,35 @@ public class PageLoader {
     private static int timeout = 30000;
     private static String user_agent = "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:41.0) Gecko/20100101 Firefox/41.0";
     
-    private static Document getWrapper(Connection conn) throws PageLoaderException{
+    private static Document getWrapper(Connection conn) throws PageLoaderException, HttpStatusException{
         try{
             return conn.get();
+        }catch(HttpStatusException e){
+            throw e;
         }catch(Exception excp){
             excp.printStackTrace();
             throw new PageLoaderException();
         }
     }
     
-    public static Document loadFilm(String id) throws Exception{
-        return getWrapper(Jsoup.connect(KpPath.makeFilmLink(id)).timeout(timeout).userAgent(user_agent));
+    private static Connection doi(Connection conn){
+        return conn.referrer(KpPath.getPrefix());
     }
-    public static Document loadFilmWithCookies(String id, TreeMap<String, String> cookies) throws PageLoaderException{
+    
+    public static Document loadFilm(String id) throws Exception{
+        return getWrapper(doi(Jsoup.connect(KpPath.makeFilmLink(id)).timeout(timeout).userAgent(user_agent)));
+    }
+    public static Document loadFilmWithCookies(String id, TreeMap<String, String> cookies) throws PageLoaderException, HttpStatusException{
         Connection conn = Jsoup.connect(KpPath.makeFilmLink(id)).timeout(timeout).userAgent(user_agent);
         conn = conn.cookies(cookies);   
         return getWrapper(conn);
     }
     
-    public static Document loadFilmSuggestions(String id) throws PageLoaderException{
-        return  getWrapper(Jsoup.connect(KpPath.makeFilmLikeLink(id)).timeout(timeout).userAgent(user_agent));
+    public static Document loadFilmSuggestions(String id) throws PageLoaderException,HttpStatusException{
+        return  getWrapper(doi(Jsoup.connect(KpPath.makeFilmLikeLink(id)).timeout(timeout).userAgent(user_agent)));
     }
     
-    public static Document loadFilmSuggestionsWithCookies(String id, TreeMap<String, String> cookies) throws PageLoaderException{
+    public static Document loadFilmSuggestionsWithCookies(String id, TreeMap<String, String> cookies) throws PageLoaderException, HttpStatusException{
         Connection conn = Jsoup.connect(KpPath.makeFilmLikeLink(id)).timeout(timeout).userAgent(user_agent);
         conn = conn.cookies(cookies);
         return getWrapper(conn);
@@ -62,11 +69,11 @@ public class PageLoader {
         return result;
     }
     
-    public static Document loadMainSearch(String token) throws PageLoaderException{
+    public static Document loadMainSearch(String token) throws PageLoaderException, HttpStatusException{
         return getWrapper(Jsoup.connect(KpPath.makeMainSearchLink(convertToUtf(token))).timeout(timeout).userAgent(user_agent));
     }
     
-    public static Document loadPrefixSearch(String token) throws PageLoaderException{
+    public static Document loadPrefixSearch(String token) throws PageLoaderException, HttpStatusException{
         Connection conn =  Jsoup.connect(KpPath.getPrefixSearchLink()).timeout(timeout).userAgent(user_agent);
         TreeMap<String, String> map = new TreeMap<String, String>();
         map.put("q", convertToUtf(token));
