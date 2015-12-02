@@ -7,6 +7,7 @@ import ru.kpsug.app.R.id;
 import ru.kpsug.app.R.layout;
 import ru.kpsug.app.R.menu;
 import ru.kpsug.app.R.string;
+import ru.kpsug.app.search.SearchActivity;
 import ru.kpsug.app.service.ConnectionService;
 import ru.kpsug.server.AsyncClient;
 import ru.kpsug.server.Suggestions;
@@ -54,9 +55,9 @@ public class SuggestionsActivity extends AppCompatActivity{
     ConnectionService.ConnectionBinder mbinder;
     String id;
 
-    private final int PAGES_NUMBER = 2;
+    private volatile int PAGES_NUMBER = 2;
     
-    private AsyncTask<SuggestionsResult, Object, Object> detailsSendSaver =  new AsyncTask<SuggestionsResult, Object, Object>(){
+    private class detailsSendSaver extends AsyncTask<SuggestionsResult, Object, Object>{
         @Override
         protected Object doInBackground(SuggestionsResult... params) {
             return params[0];
@@ -72,6 +73,14 @@ public class SuggestionsActivity extends AppCompatActivity{
         ((ProgressBar)findViewById(R.id.progressBar1)).setVisibility(View.GONE);
     }
     
+    private void load(){
+        mSectionsPagerAdapter = new SuggestionsActivityFragmentAdapter(
+                getSupportFragmentManager());
+        mViewPager.setAdapter(mSectionsPagerAdapter);
+        ((ProgressBar)findViewById(R.id.progressBar1)).setVisibility(View.VISIBLE);
+        mbinder.getService().requestToDb(id, PAGES_NUMBER, new detailsSendSaver());
+    }
+    
     private final ServiceConnection conn = new ServiceConnection() {
         @Override
         public void onServiceDisconnected(ComponentName name) {
@@ -81,7 +90,7 @@ public class SuggestionsActivity extends AppCompatActivity{
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
             mbinder = (ConnectionService.ConnectionBinder) service;
-            mbinder.getService().requestToDb(id, PAGES_NUMBER, detailsSendSaver);
+            load();
         }
     };
 
@@ -93,12 +102,7 @@ public class SuggestionsActivity extends AppCompatActivity{
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
         id = getIntent().getStringExtra("id");
-        mSectionsPagerAdapter = new SuggestionsActivityFragmentAdapter(
-                getSupportFragmentManager());
-        
-        // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.pager);
-        mViewPager.setAdapter(mSectionsPagerAdapter);
         bindService(new Intent(this, ConnectionService.class), conn,
                 Context.BIND_AUTO_CREATE);
     }
@@ -115,6 +119,7 @@ public class SuggestionsActivity extends AppCompatActivity{
         getMenuInflater().inflate(R.menu.suggestions, menu);
         return true;
     }
+    
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -122,7 +127,30 @@ public class SuggestionsActivity extends AppCompatActivity{
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_search) {
+            Intent intent = new Intent(this, SearchActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+            startActivity(intent);
+            return true;
+        }
+        if(id == R.id.action_level2){
+            PAGES_NUMBER = 2;
+            load();
+            return true;
+        }
+        if(id == R.id.action_level3){
+            PAGES_NUMBER = 3;
+            load();
+            return true;
+        }
+        if(id == R.id.action_level4){
+            PAGES_NUMBER = 4;
+            load();
+            return true;
+        }
+        if(id == R.id.action_level5){
+            PAGES_NUMBER = 5;
+            load();
             return true;
         }
         return super.onOptionsItemSelected(item);

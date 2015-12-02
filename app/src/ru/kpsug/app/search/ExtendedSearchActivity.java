@@ -22,6 +22,7 @@ import ru.kpsug.kp.Search;
 import ru.kpsug.kp.Search.SearchException;
 import ru.kpsug.kp.Search.SearchResult;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.app.ActionBar.LayoutParams;
 import android.app.Activity;
 import android.content.Intent;
@@ -40,7 +41,7 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class ExtendedSearchActivity extends Activity {
+public class ExtendedSearchActivity extends AppCompatActivity {
     private LinearLayout lm;
     private List<Film> result = null;
     private AsyncTask<String, Object, ArrayList<Film>> searchLoadingTask = new AsyncTask<String, Object, ArrayList<Film>>(){
@@ -107,6 +108,12 @@ public class ExtendedSearchActivity extends Activity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
         if (id == R.id.action_settings) {
+            return true;
+        }
+        if (id == R.id.action_search) {
+            Intent intent = new Intent(this, SearchActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+            startActivity(intent);
             return true;
         }
         return super.onOptionsItemSelected(item);

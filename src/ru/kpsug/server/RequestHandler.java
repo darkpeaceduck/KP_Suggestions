@@ -25,7 +25,7 @@ public class RequestHandler implements Runnable{
                 String response = RequestDispatcher.dispatch(line, this);
                 writer.println(response);
                 writer.flush();
-                log.print("RQ : \"" + line + "\" || RE : \"" + response + "\"");
+                log.print("RQ : \"" + line + "\" || RE : \"" + response.substring(0, 1) + "\"");
             }
         } catch (IOException e) {
         }

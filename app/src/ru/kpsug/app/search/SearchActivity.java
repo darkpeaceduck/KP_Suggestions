@@ -59,7 +59,6 @@ public class SearchActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         createAutoComplete();
-        startService(new Intent(this, ConnectionService.class));
     }
 
     @Override
@@ -71,7 +70,6 @@ public class SearchActivity extends Activity {
     
     @Override
     protected void onDestroy() {
-        stopService(new Intent(this, ConnectionService.class));
         super.onDestroy();
     }
     

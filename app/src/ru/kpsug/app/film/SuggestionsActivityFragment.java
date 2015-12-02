@@ -27,21 +27,7 @@ public class SuggestionsActivityFragment extends Fragment{
     public SuggestionsActivityFragment(List<Film> pagedFilms) {
         this.pagedFilms = pagedFilms;
         //SEE, sorting here
-        Collections.sort(this.pagedFilms, new Comparator<Film>() {
-
-            @Override
-            public int compare(Film lhs, Film rhs) {
-                String r1 = lhs.getRating();
-                String r2 = rhs.getRating();
-                if(r1 == null){
-                    return (r2 == null ? 0 : 1);
-                }
-                if(r2 == null){
-                    return -1;
-                }
-                return Double.compare(Double.parseDouble(r2), Double.parseDouble(r1)); 
-            }
-        });
+//        Collections.sort(this.pagedFilms, Film.getFilmRatingComparator());
     }
     
     private void viewPage(final View rootView){

@@ -4,9 +4,10 @@
     <string name="app_name">kpsug</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
+    <string name="action_search">Перейти к поиску</string>
     <string name="title_activity_film_details">FilmDetails</string>
-    <string name="title_activity_extended_search">ExtendedSearch</string>
-    <string name="title_activity_suggestions">SuggestionsActivity</string>
+    <string name="title_activity_extended_search">Extended Search</string>
+    <string name="title_activity_suggestions">Suggestions</string>
     <string name="title_section1">Section 1</string>
     <string name="title_section2">Section 2</string>
     <string name="title_section3">Section 3</string>
