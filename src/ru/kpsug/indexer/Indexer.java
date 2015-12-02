@@ -1,87 +1,127 @@
 package ru.kpsug.indexer;
 
-import java.util.concurrent.locks.ReentrantLock;
+import java.sql.SQLException;
+import java.util.Deque;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 import ru.kpsug.db.DBOperator;
 import ru.kpsug.db.Film;
-import ru.kpsug.kp.KpParser;
-import ru.kpsug.kp.KpParser.FuckupException;
-import ru.kpsug.kp.PageLoader;
-import ru.kpsug.kp.PageLoader.PageLoaderException;
+import ru.kpsug.kp.KpPath;
 
-public class Indexer implements Runnable {
-    private int page_start;
-    private int page_stop;
-    private int id;
-    private DBOperator db;
-    private IndexerWaiter waiter;
-    
-    private void waitForTryer(){
-        ReentrantLock lock = waiter.getLock();
-        lock.lock();
-        try{
-            try {
-                while(waiter.isFuckup()){
-                    System.out.println(id + " GOIND TO SLEEP");
-                    waiter.getWaiterWhileFuckup().await();
-                    System.out.println(id + " WAKED UP");
-                }
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }finally{
-            lock.unlock();
+public class Indexer {
+    public static void bfs(int page_start, int page_end, int depth, DBOperator db, IndexerWaiter waiter, ExecutorService exec, String prefix){
+        Map<Integer, Integer> used = new HashMap<>();
+        Deque<Integer> queue= new LinkedList<>();
+        Deque<Future<?>> queueFut= new LinkedList<>();
+        for (int i = page_start; i <=page_end; i++) {
+            queue.push(i);
+            queueFut.push(exec.submit(new SimpleTask(0, db, i, i, waiter, KpPath.getFilmPrefix())));
+            used.put(i, 0);
         }
-    }
-    
-    
-    public Indexer(int id, DBOperator db,
-            int page_start, int page_stop, IndexerWaiter waiter) {
-        super();
-        this.db = db;
-        this.id = id;
-        this.page_start = page_start;
-        this.page_stop = page_stop;
-        this.waiter = waiter;
-    }
-
-    private void writeLog(Integer id,Integer current_page, boolean success){
-            System.out.append("PROGRESS OF INDEXER  " + String.valueOf(id)
-                    + " " + String.valueOf(current_page) + "/"
-                    + String.valueOf(page_stop) + " LAST WAS "
-                    + (success ? "SUCCESS\n" : "FAILED\n"));
-            System.out.flush();
-    }
-    
-    @Override
-    public void run() {
-        System.out.println("STARTING INDEXER " + String.valueOf(id));
-        for (int current_page = page_start; current_page <= page_stop; current_page++) {
-            waitForTryer();
-            boolean success = true;
-            Film film = db.selectFilm(String.valueOf(current_page));
-            if(film != null){
-                writeLog(id, current_page, success);
+        while(!queue.isEmpty()){
+            Integer id = queue.getFirst();
+            queue.pop();
+            Future<?> fut = queueFut.getFirst();
+            queueFut.pop();
+            Integer h = used.get(id);
+            try {
+                fut.get();
+            } catch (InterruptedException | ExecutionException e) {
+                e.printStackTrace();
                 continue;
             }
-            try {
-                film = KpParser.parseFilm(PageLoader.loadFilm(String
-                        .valueOf(current_page)), PageLoader
-                        .loadFilmSuggestions(String.valueOf(current_page)));
-            } catch (FuckupException | PageLoaderException e1) {
-                e1.printStackTrace();
-                waiter.fuckupDetect();
-                success = false;
-            } catch (Exception e1) {
-                e1.printStackTrace();
-                success = false;
+            if(h < depth){
+                Film film = db.selectFilm(String.valueOf(id));
+                if(film == null){
+                    continue;
+                }
+                for(String go : film.getSuggestion_links()){
+                    Integer goInt = Integer.parseInt(go); 
+                    if(!used.containsKey(goInt)){
+                        used.put(goInt, h+1);
+                        queue.push(goInt);
+                        queueFut.push(exec.submit(new SimpleTask(0, db, goInt, goInt, waiter, KpPath.makeFilmPrefix(prefix))));
+                    }
+                }
             }
-            if (success) {
-                success = db.InsertFilm(film);
-            }
-
-            writeLog(id, current_page, success);
         }
-        System.out.println("OVER INDEXER " + String.valueOf(id));
+    }
+    
+    public static void bfsAtOneTask(int page_start,int page_end, int depth, DBOperator db, IndexerWaiter waiter, ExecutorService exec, String prefix){
+        for (int i = page_start; i <=page_end; i++) {
+            Runnable task = new BfsTask(0, db, i, waiter, KpPath.makeFilmPrefix(prefix), depth);
+            exec.execute(task);
+        }
+    }
+    
+    public static void normal(int page_start,int page_end, int num, DBOperator db, IndexerWaiter waiter, ExecutorService exec, String prefix){
+        for (int i = page_start; i <=page_end; i+= num) {
+            Runnable task = new SimpleTask(i - page_start, db, i, Math.min(page_end, i + num), waiter, KpPath.makeFilmPrefix(prefix));
+            exec.execute(task);
+        }
+    }
+    
+    public static void main(String[] args) {
+
+        if (args.length < 5) {
+            System.out.println("wrong number of arguments");
+            return;
+        }
+        int page_start = Integer.parseInt(args[0]);
+        int page_end = Integer.parseInt(args[1]);
+        int threads = Integer.parseInt(args[2]);
+        int param = Integer.parseInt(args[4]);
+        String prefix = (args.length < 6 ? KpPath.getPrefix() : args[5]);
+        
+        
+        IndexerWaiter waiter = new IndexerWaiter();
+        DBOperator db;
+        try {
+            db = new DBOperator(null);
+            db.connect();
+        } catch (Exception excp) {
+            System.out.println("couldnt init db");
+            return;
+        }
+        System.out.println("success init db");
+        System.out.println(args[3]);
+
+        threads = Math.min(threads, page_end - page_start + 1);
+        ExecutorService exec = Executors.newFixedThreadPool(threads);
+        new Thread(waiter).start();
+
+        switch(args[3]){
+        case "normal":
+            normal(page_start, page_end, param, db, waiter, exec, prefix);
+            break;
+        case "bfs":
+            bfsAtOneTask(page_start, page_end, param, db, waiter, exec, prefix);
+            break;
+        case "multibfs":
+            bfs(page_start, page_end, param, db, waiter, exec, prefix);
+            break;
+        }
+        
+        exec.shutdown();
+        try {
+            exec.awaitTermination(1000, TimeUnit.DAYS);
+        } catch (InterruptedException e1) {
+            e1.printStackTrace();
+        }
+        waiter.off();
+
+        try {
+            db.closeAll();
+        } catch (SQLException e) {
+            System.out.println("couldnt close db");
+        }
+        System.out.println("OK");
     }
 }

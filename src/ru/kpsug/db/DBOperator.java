@@ -30,14 +30,14 @@ public class DBOperator {
     private String password = "postgres";
     private static final String field_size = "5000";
     private static final String films_table = "films";
-    
+
     volatile private Connection connect = null;
     volatile private Statement statement = null;
 
     private void parseConf(String config) throws IOException {
         Map<String, String> values = ConfigParser.parseConfig(config);
-        for(Entry<String, String> pair : values.entrySet()){
-            String key = pair.getKey()  ;
+        for (Entry<String, String> pair : values.entrySet()) {
+            String key = pair.getKey();
             String value = pair.getValue();
             switch (key) {
             case "host":
@@ -57,12 +57,12 @@ public class DBOperator {
                 break;
             default:
                 break;
-            } 
+            }
         }
     }
 
     // null if from hardcode constants
-    public DBOperator(String conf_path)  {
+    public DBOperator(String conf_path) {
         if (conf_path != null) {
             try {
                 parseConf(conf_path);
@@ -70,7 +70,6 @@ public class DBOperator {
             }
         }
     }
-
 
     public void connect() throws SQLException {
         connect = DriverManager.getConnection("jdbc:postgresql://" + host + ":"
@@ -82,7 +81,6 @@ public class DBOperator {
             connect.close();
         }
     }
-
 
     public synchronized boolean executeUpdate(String query) {
         if (statement == null) {
@@ -135,27 +133,43 @@ public class DBOperator {
                 + "name varchar(" + field_size + "))";
         return executeUpdate(main_query);
     }
-    
-    
-    
-    private String writeArrayList(ArrayList<String> arr){
+
+    private String writeArrayList(ArrayList<String> arr) {
         return JSONValue.toJSONString(arr);
     }
 
-    private String writePurposes(TreeMap<String, ArrayList<String>> purposes){
+    private String writePurposes(TreeMap<String, ArrayList<String>> purposes) {
         return JSONValue.toJSONString(purposes);
     }
+
     // insert film if not exists
     public boolean InsertFilm(Film film) {
         String main_query = "insert into " + films_table + " (id, "
                 + "purposes," + " links, " + "annotation, " + "rating,"
                 + " name , actors)  SELECT " + film.getId() + "," + " '"
-                + writePurposes(film.getPurposes()) + "'," + " '" + writeArrayList(film.getSuggestion_links())
-                + "', " + "'" + film.getAnnotation() + "', " + "'"
-                + film.getRating() + "', " + "'" + film.getName() + "', '"
-                + writeArrayList(film.getActors()) + "' WHERE NOT EXISTS (  SELECT id FROM "
-                + films_table + " WHERE id = " + film.getId() + ");";
+                + writePurposes(film.getPurposes()) + "'," + " '"
+                + writeArrayList(film.getSuggestion_links()) + "', " + "'"
+                + film.getAnnotation() + "', " + "'" + film.getRating() + "', "
+                + "'" + film.getName() + "', '"
+                + writeArrayList(film.getActors())
+                + "' WHERE NOT EXISTS (  SELECT id FROM " + films_table
+                + " WHERE id = " + film.getId() + ");";
         return executeUpdate(main_query);
+    }
+
+    public boolean UpdateFilm(Film film) {
+        String main_query = "UPDATE " + films_table + " SET id=" + film.getId()
+                + " , purposes='" + film.getPurposes() + "', links='"
+                + writeArrayList(film.getSuggestion_links()) + "', annotation='"
+                + film.getAnnotation() + "', rating='" + film.getRating()
+                + "', name='" + film.getName() + "', actors='"
+                + writeArrayList(film.getActors()) + "' WHERE id=" + film.getId();
+        return executeUpdate(main_query);
+    }
+    
+    public boolean InsertWithUpdate(Film film){
+        return UpdateFilm(film) && 
+        InsertFilm(film);
     }
 
     public boolean deleteFilmFromId(String id) {
@@ -172,18 +186,21 @@ public class DBOperator {
             return null;
         }
     }
-    
-    private ArrayList<String> parseArrayListString(String s){
+
+    private ArrayList<String> parseArrayListString(String s) {
         try {
-            return (ArrayList<String>)(ConfigParser.getJSONParser()).parse(s, ConfigParser.getContainerFactory());
+            return (ArrayList<String>) (ConfigParser.getJSONParser()).parse(s,
+                    ConfigParser.getContainerFactory());
         } catch (ParseException e) {
             return new ArrayList<String>();
         }
     }
-    
-    private TreeMap<String, ArrayList<String>> parsePurposes(String s){
+
+    private TreeMap<String, ArrayList<String>> parsePurposes(String s) {
         try {
-            return (TreeMap<String, ArrayList<String>>)(ConfigParser.getJSONParser()).parse(s, ConfigParser.getContainerFactory());
+            return (TreeMap<String, ArrayList<String>>) (ConfigParser
+                    .getJSONParser()).parse(s,
+                    ConfigParser.getContainerFactory());
         } catch (ParseException e) {
             return new TreeMap<String, ArrayList<String>>();
         }
@@ -202,31 +219,31 @@ public class DBOperator {
         }
         Film film = new Film();
         String value = "";
-        if((value = getResultSetValue(set, "id")) == null){
+        if ((value = getResultSetValue(set, "id")) == null) {
             return null;
         }
         film.setId(value);
-        if((value = getResultSetValue(set, "name")) == null){
+        if ((value = getResultSetValue(set, "name")) == null) {
             return null;
         }
         film.setName(value);
-        if((value = getResultSetValue(set, "rating")) == null){
+        if ((value = getResultSetValue(set, "rating")) == null) {
             return null;
         }
         film.setRating(value);
-        if((value = getResultSetValue(set, "annotation")) == null){
+        if ((value = getResultSetValue(set, "annotation")) == null) {
             return null;
         }
         film.setAnnotation(value);
-        if((value = getResultSetValue(set, "links")) == null){
+        if ((value = getResultSetValue(set, "links")) == null) {
             return null;
         }
         film.setSuggestion_links(parseArrayListString(value));
-        if((value = getResultSetValue(set, "actors")) == null){
+        if ((value = getResultSetValue(set, "actors")) == null) {
             return null;
         }
         film.setActors(parseArrayListString(value));
-        if((value = getResultSetValue(set, "purposes")) == null){
+        if ((value = getResultSetValue(set, "purposes")) == null) {
             return null;
         }
         film.setPurposes(parsePurposes(value));

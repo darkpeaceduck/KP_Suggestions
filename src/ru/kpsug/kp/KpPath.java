@@ -5,8 +5,16 @@ public class KpPath {
         return "http://www.kinopoisk.ru/";
     }
     
+    public static String getFilmSuffix(){
+        return "film/";
+    }
+    
+    public static String makeFilmPrefix(String pref){
+        return pref + getFilmSuffix();
+    }
+    
     public static String getFilmPrefix(){
-        return getPrefix() + "film/"; 
+        return makeFilmPrefix(getPrefix());
     }
     
     public static String getLikeSuffix(){
@@ -14,11 +22,20 @@ public class KpPath {
     }
     
     public static String makeFilmLink(String id){
-        return getFilmPrefix() + id;
+        return makeFilmFromUrlPrefixLink(getFilmPrefix(), id);
     }
     
+    public static String makeFilmFromUrlPrefixLink(String prefix, String id){
+        return prefix + id;
+    }
+    
+    public static String makeFilmLikeUrlPrefixLink(String prefix, String id){
+        return prefix + id + "/" + getLikeSuffix();
+    }
+    
+    
     public static String makeFilmLikeLink(String id){
-        return getFilmPrefix() + id + "/" + getLikeSuffix();
+        return makeFilmLikeUrlPrefixLink(getFilmPrefix(), id);
     }
     
     public static String makeMainSearchLink(String token){
@@ -28,4 +45,5 @@ public class KpPath {
     public static String getPrefixSearchLink(){
         return getPrefix() + "handler_search.php";
     }
+    
 }

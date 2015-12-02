@@ -57,6 +57,10 @@ public class PageLoader {
         return getWrapper(conn);
     }
     
+    public static Document loadUrl(String url) throws HttpStatusException, PageLoaderException{
+        return getWrapper(Jsoup.connect(url).timeout(timeout).userAgent(user_agent));
+    }
+    
     
     private static String convertToUtf(String token) throws PageLoaderException{
         String result = null;

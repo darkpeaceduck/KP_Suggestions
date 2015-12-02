@@ -118,4 +118,21 @@ public class IndexerWaiter implements Runnable {
         }
         System.out.println("WAITER OVER");
     }
+    
+    public void waitForTryer(String id){
+        lock.lock();
+        try{
+            try {
+                while(isFuckup()){
+                    System.out.println(id + " GOIND TO SLEEP");
+                    getWaiterWhileFuckup().await();
+                    System.out.println(id + " WAKED UP");
+                }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }finally{
+            lock.unlock();
+        }
+    }
 }

@@ -198,6 +198,9 @@ public class Suggestions {
                     for (String link : current.getSuggestion_links()) {
                         if (!is_level.containsKey(link)) {
                             Film new_film = db.selectFilm(link);
+                            if(new_film == null){
+                                continue;
+                            }
                             is_level.put(new_film.getId(), current_depth + 1);
                             if(!re_is_level.containsKey(current_depth + 1)){
                                 re_is_level.put(current_depth + 1, new ArrayList<String>());

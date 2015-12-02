@@ -149,7 +149,7 @@ public class KpParser {
         parseId(film, doc);
         parseName(film, doc);
         parseInfoBlock(film, doc);
-        parseActors(film, doc);
+        parseActors(film, doc); 
         parseAnnotation(film, doc);
         parseRating(film, doc);
         parseSuggestions(film, doc_suggestions);
