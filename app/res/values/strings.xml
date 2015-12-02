@@ -5,7 +5,7 @@
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
     <string name="action_search">Перейти к поиску</string>
-    <string name="title_activity_film_details">FilmDetails</string>
+    <string name="title_activity_film_details">Film Details</string>
     <string name="title_activity_extended_search">Extended Search</string>
     <string name="title_activity_suggestions">Suggestions</string>
     <string name="title_section1">Section 1</string>
