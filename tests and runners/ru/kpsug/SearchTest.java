@@ -16,14 +16,10 @@ import ru.kpsug.utils.ConfigParser;
 
 public class SearchTest {
     public static void main(String[] args) throws Exception {
-        DBOperator db_con =  new DBOperator(null);
-        try {
-            db_con.connect();
-            Film film = db_con.selectFilm("12000");
-            System.out.println(film);
-        }catch(Exception e){
-            
-        }
+        System.setProperty("socksProxyHost", "127.0.0.1"); // set proxy server
+        System.setProperty("socksProxyPort", "12345");
+        Film film = KpParser.parseFilm(PageLoader.loadFilm("30012"), PageLoader.loadFilmSuggestions("30012"));
+        System.out.println(film);
     }
 
 }

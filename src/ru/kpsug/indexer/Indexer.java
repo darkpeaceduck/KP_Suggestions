@@ -78,8 +78,12 @@ public class Indexer {
         int page_end = Integer.parseInt(args[1]);
         int threads = Integer.parseInt(args[2]);
         int param = Integer.parseInt(args[4]);
-        String prefix = (args.length < 6 ? KpPath.getPrefix() : args[5]);
-        
+        String prefix = KpPath.getPrefix();
+        if(args.length >= 7){
+            System.setProperty("socksProxyHost", args[5]); // set proxy server
+            System.setProperty("socksProxyPort", args[6]); 
+        }
+        System.out.println(prefix);
         
         IndexerWaiter waiter = new IndexerWaiter();
         DBOperator db;
