@@ -39,7 +39,7 @@
             android:enabled="true" />
 
         <activity
-            android:name="ru.kpsug.app.film.SuggestionsActivity"
+            android:name=".film.SuggestionsActivity"
             android:configChanges="orientation|screenSize"
             android:label="@string/title_activity_suggestions" >
         </activity>

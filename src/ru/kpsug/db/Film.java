@@ -9,6 +9,7 @@ import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
@@ -202,10 +203,35 @@ public class Film implements Comparable<Film>, JSONParceble {
                 if(r2 == null){
                     return -1;
                 }
-                return Double.compare(Double.parseDouble(r2), Double.parseDouble(r1)); 
+                int value = Double.compare(Double.parseDouble(r2), Double.parseDouble(r1));
+                if(value !=0 ){
+                    return value;
+                }
+                return lhs.compareTo(rhs);
             }
         };
     }
     
+    public static Comparator<Film> getFilmYearComparator(){
+        return new Comparator<Film>() {
+
+            @Override
+            public int compare(Film lhs, Film rhs) {
+                List<String> r1 = lhs.getPurposes().get("год");
+                List<String> r2 = rhs.getPurposes().get("год");
+                if(r1 == null){
+                    return (r2 == null ? 0 : 1);
+                }
+                if(r2 == null){
+                    return -1;
+                }
+                int value = Integer.compare(Integer.parseInt(r2.get(0)), Integer.parseInt(r1.get(0))); 
+                if(value !=0 ){
+                    return value;
+                }
+                return lhs.compareTo(rhs);
+            }
+        };
+    }
 
 }

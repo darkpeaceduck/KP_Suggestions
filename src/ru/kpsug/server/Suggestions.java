@@ -29,13 +29,39 @@ public class Suggestions {
     public static class SuggestionsResult implements JSONParceble {
         private Map<Integer, List<String>> levelsEdges =new TreeMap<Integer, List<String>>();
         private TreeMap<String, Film> films = new TreeMap<String, Film>();
-        
+        private static final int MAX_LIMIT = 100;
         public Map<Integer, List<String>> getLevelsEdges() {
             return levelsEdges;
         }
 
         public void setLevelsEdges(Map<Integer, List<String>> levelsEdges) {
             this.levelsEdges = levelsEdges;
+        }
+        
+        public List<Film> getFilmsSortedByRating(int position, int limit){
+            List<Film> pagedFilms = new ArrayList<>();
+            if(levelsEdges.get(position) != null)
+            for(String id : levelsEdges.get(position)){
+                if(limit == 0){
+                    break;
+                }
+                limit--;
+                pagedFilms.add(films.get(id));
+            }
+            System.out.println("OKOKO " + String.valueOf(pagedFilms.size()));
+            return pagedFilms;
+        }
+        
+        public List<Film> getFilmSortedByYearMore(int position, int limit){
+            List<Film> films= getFilmsSortedByRating(position, MAX_LIMIT);
+            Collections.sort(films, Film.getFilmYearComparator());
+            return films.subList(0, Math.min(films.size(), limit));
+        }
+        
+        public List<Film> getFilmSortedByYearLess(int position, int limit){
+            List<Film> films= getFilmSortedByYearMore(position, MAX_LIMIT);
+            Collections.reverse(films);
+            return films.subList(0, Math.min(films.size(), limit));
         }
         
         
@@ -141,7 +167,7 @@ public class Suggestions {
     
 
     private static final int DEPTH_LIMIT = 10;
-    private static final int MAX_FILMS_ON_LEVEL = 15;
+    private static final int MAX_FILMS_ON_LEVEL = 50;
     private static final int MAX_RUNTIME_FILMS_ON_LEVEL = 100;
     
     private static Set<Film> getSetWithComp(){

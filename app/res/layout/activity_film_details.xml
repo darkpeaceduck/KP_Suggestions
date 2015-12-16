@@ -2,6 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/a2"
     android:layout_width="match_parent"
+    android:scrollbars="none"
     android:layout_height="match_parent" >
 
     <RelativeLayout
@@ -64,7 +65,7 @@
             android:layout_centerHorizontal="true"
             android:layout_below="@+id/textView4"
             android:layout_marginTop="17dp"
-            android:text="Suggestions" />
+            android:text="@string/title_activity_suggestions" />
 
         <ProgressBar
             android:id="@+id/progressBar1"
@@ -83,6 +84,17 @@
             android:layout_marginTop="17dp"
             android:text="Rating"
             android:textAppearance="?android:attr/textAppearanceLarge" />
+
+        <Button
+            android:id="@+id/button2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/button1"
+            android:layout_alignParentRight="true"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@+id/button1"
+            android:layout_marginTop="17dp"
+            android:text="@string/link_to_kp_button" />
 
     </RelativeLayout>
 

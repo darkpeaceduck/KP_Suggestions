@@ -1,15 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">kpsug</string>
-    <string name="hello_world">Hello world!</string>
-    <string name="action_settings">Settings</string>
+    <string name="app_name">KS</string>
+    <string name="action_settings">Настройки</string>
     <string name="action_search">Перейти к поиску</string>
-    <string name="title_activity_film_details">Film Details</string>
-    <string name="title_activity_extended_search">Extended Search</string>
-    <string name="title_activity_suggestions">Suggestions</string>
+    <string name="action_depth_dialog">Глубина</string>
+    <string name="action_limit_dialog">Лимит</string>
+    <string name="action_sorted_dialog">Сортировка</string>
+    <string name="title_activity_film_details">Детали</string>
+    <string name="title_activity_extended_search">Расширенный поиск</string>
+    <string name="title_activity_suggestions">Предложения</string>
     <string name="title_section1">Section 1</string>
     <string name="title_section2">Section 2</string>
     <string name="title_section3">Section 3</string>
+    <string name="title_depth_dialog">Глубина</string>
+    <string name="title_limit_dialog">Лимит фильмов на странице</string>
+    <string name="title_sorted_dialog">Сортировка по</string>
+    <string name="depth_dialog_button_text">OK</string>
+    <string name="search_button_text">поиск</string>
+    <string name="search_hint_text">Введите название фильма</string>
+    <string name="sorted_dialog_radio1">Рейтингу</string>
+    <string name="sorted_dialog_radio2">Неубыванию года</string>
+    <string name="sorted_dialog_radio3">Невозрастанию года</string>
+    <string name="link_to_kp_button">Открыть в браузере</string>
+    
 
 </resources>

@@ -16,7 +16,14 @@ import ru.kpsug.db.Film;
 import ru.kpsug.kp.KpPath;
 
 public class Indexer {
-    public static void bfs(int page_start, int page_end, int depth, DBOperator db, IndexerWaiter waiter, ExecutorService exec, String prefix){
+    private static int page_start;
+    private static int page_end;
+    private static int depth;
+    private static DBOperator db;
+    private static IndexerWaiter waiter;
+    private static ExecutorService exec;
+    private static String prefix;
+    public static void bfs(){
         Map<Integer, Integer> used = new HashMap<>();
         Deque<Integer> queue= new LinkedList<>();
         Deque<Future<?>> queueFut= new LinkedList<>();
@@ -54,14 +61,14 @@ public class Indexer {
         }
     }
     
-    public static void bfsAtOneTask(int page_start,int page_end, int depth, DBOperator db, IndexerWaiter waiter, ExecutorService exec, String prefix){
+    public static void bfsAtOneTask(){
         for (int i = page_start; i <=page_end; i++) {
             Runnable task = new BfsTask(0, db, i, waiter, KpPath.makeFilmPrefix(prefix), depth);
             exec.execute(task);
         }
     }
     
-    public static void normal(int page_start,int page_end, int num, DBOperator db, IndexerWaiter waiter, ExecutorService exec, String prefix){
+    public static void normal(int num){
         for (int i = page_start; i <=page_end; i+= num) {
             Runnable task = new SimpleTask(i - page_start, db, i, Math.min(page_end, i + num), waiter, KpPath.makeFilmPrefix(prefix));
             exec.execute(task);
@@ -74,19 +81,18 @@ public class Indexer {
             System.out.println("wrong number of arguments");
             return;
         }
-        int page_start = Integer.parseInt(args[0]);
-        int page_end = Integer.parseInt(args[1]);
+        page_start = Integer.parseInt(args[0]);
+        page_end = Integer.parseInt(args[1]);
         int threads = Integer.parseInt(args[2]);
         int param = Integer.parseInt(args[4]);
-        String prefix = KpPath.getPrefix();
+        prefix = KpPath.getPrefix();
         if(args.length >= 7){
             System.setProperty("socksProxyHost", args[5]); // set proxy server
             System.setProperty("socksProxyPort", args[6]); 
         }
         System.out.println(prefix);
         
-        IndexerWaiter waiter = new IndexerWaiter();
-        DBOperator db;
+        waiter = new IndexerWaiter();
         try {
             db = new DBOperator(null);
             db.connect();
@@ -98,18 +104,18 @@ public class Indexer {
         System.out.println(args[3]);
 
         threads = Math.min(threads, page_end - page_start + 1);
-        ExecutorService exec = Executors.newFixedThreadPool(threads);
+        exec = Executors.newFixedThreadPool(threads);
         new Thread(waiter).start();
 
         switch(args[3]){
         case "normal":
-            normal(page_start, page_end, param, db, waiter, exec, prefix);
+            normal(param);
             break;
         case "bfs":
-            bfsAtOneTask(page_start, page_end, param, db, waiter, exec, prefix);
+            bfsAtOneTask();
             break;
         case "multibfs":
-            bfs(page_start, page_end, param, db, waiter, exec, prefix);
+            bfs();
             break;
         }
         

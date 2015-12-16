@@ -9,24 +9,19 @@
         android:title="@string/action_search"
         app:showAsAction="never"/>
     <item
-        android:id="@+id/action_level2"
+        android:id="@+id/action_depth_dialog"
         android:orderInCategory="100"
-        android:title="DEPTH 2"
+        android:title="@string/action_depth_dialog"
         app:showAsAction="never"/>
     <item
-        android:id="@+id/action_level3"
+        android:id="@+id/action_limit_dialog"
         android:orderInCategory="100"
-        android:title="DEPTH 3"
+        android:title="@string/action_limit_dialog"
         app:showAsAction="never"/>
     <item
-        android:id="@+id/action_level4"
+        android:id="@+id/action_sorted_dialog"
         android:orderInCategory="100"
-        android:title="DEPTH 4"
-        app:showAsAction="never"/>
-    <item
-        android:id="@+id/action_level5"
-        android:orderInCategory="100"
-        android:title="DEPTH 5"
+        android:title="@string/action_sorted_dialog"
         app:showAsAction="never"/>
 
 </menu>

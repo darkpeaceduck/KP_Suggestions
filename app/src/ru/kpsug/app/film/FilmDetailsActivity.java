@@ -8,6 +8,7 @@ import ru.kpsug.app.search.ExtendedSearchActivity;
 import ru.kpsug.app.search.SearchActivity;
 import ru.kpsug.app.service.ConnectionService;
 import ru.kpsug.db.Film;
+import ru.kpsug.kp.KpPath;
 import ru.kpsug.server.AsyncClient;
 import ru.kpsug.server.Suggestions.SuggestionsResult;
 import android.app.Activity;
@@ -15,6 +16,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -85,6 +87,13 @@ public class FilmDetailsActivity extends AppCompatActivity{
                 Intent intent = new Intent(FilmDetailsActivity.this, SuggestionsActivity.class);  
                 intent.putExtra("id", id);
                 startActivity(intent);
+            }
+        });
+        ((Button)findViewById(R.id.button2)).setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(KpPath.makeFilmLink(id)));
+                startActivity(browserIntent);
             }
         });
     }

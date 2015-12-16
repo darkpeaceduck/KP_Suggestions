@@ -7,6 +7,7 @@ import ru.kpsug.app.R.id;
 import ru.kpsug.app.R.layout;
 import ru.kpsug.app.R.menu;
 import ru.kpsug.app.R.string;
+import ru.kpsug.app.film.SuggestionsActivityFragmentAdapter.SortedMode;
 import ru.kpsug.app.search.SearchActivity;
 import ru.kpsug.app.service.ConnectionService;
 import ru.kpsug.server.AsyncClient;
@@ -54,9 +55,11 @@ public class SuggestionsActivity extends AppCompatActivity{
     ViewPager mViewPager;
     ConnectionService.ConnectionBinder mbinder;
     String id;
+    DepthDialog depthDlg;
+    LimitDialog limitDlg;
+    SortedDialog sortedDlg;
+    private static final int DEFAULT_LEVEL = 2;
 
-    private volatile int PAGES_NUMBER = 2;
-    
     private class detailsSendSaver extends AsyncTask<SuggestionsResult, Object, Object>{
         @Override
         protected Object doInBackground(SuggestionsResult... params) {
@@ -73,12 +76,18 @@ public class SuggestionsActivity extends AppCompatActivity{
         ((ProgressBar)findViewById(R.id.progressBar1)).setVisibility(View.GONE);
     }
     
-    private void load(){
-        mSectionsPagerAdapter = new SuggestionsActivityFragmentAdapter(
-                getSupportFragmentManager());
+    public void onLoad(int page){
         mViewPager.setAdapter(mSectionsPagerAdapter);
         ((ProgressBar)findViewById(R.id.progressBar1)).setVisibility(View.VISIBLE);
-        mbinder.getService().requestToDb(id, PAGES_NUMBER, new detailsSendSaver());
+        mbinder.getService().requestToDb(id, page, new detailsSendSaver());
+    }
+    
+    public void onLimitChange(int limit){
+        mSectionsPagerAdapter.setLimit(limit);
+    }
+    
+    public void onSortedModeChange(SortedMode mode){
+        mSectionsPagerAdapter.setSortedMode(mode);
     }
     
     private final ServiceConnection conn = new ServiceConnection() {
@@ -90,7 +99,7 @@ public class SuggestionsActivity extends AppCompatActivity{
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
             mbinder = (ConnectionService.ConnectionBinder) service;
-            load();
+            onLoad(DEFAULT_LEVEL);
         }
     };
 
@@ -101,10 +110,16 @@ public class SuggestionsActivity extends AppCompatActivity{
 
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
-        id = getIntent().getStringExtra("id");
+        Intent incomingIntent = getIntent();
+        id = incomingIntent.getStringExtra("id");
         mViewPager = (ViewPager) findViewById(R.id.pager);
         bindService(new Intent(this, ConnectionService.class), conn,
                 Context.BIND_AUTO_CREATE);
+        depthDlg = new DepthDialog(this);
+        limitDlg = new LimitDialog(this);
+        sortedDlg = new SortedDialog(this);
+        mSectionsPagerAdapter = new SuggestionsActivityFragmentAdapter(
+                getSupportFragmentManager());
     }
     
     @Override
@@ -133,24 +148,16 @@ public class SuggestionsActivity extends AppCompatActivity{
             startActivity(intent);
             return true;
         }
-        if(id == R.id.action_level2){
-            PAGES_NUMBER = 2;
-            load();
+        if(id == R.id.action_depth_dialog){
+            depthDlg.show(getFragmentManager(), "depth_dialog");
             return true;
         }
-        if(id == R.id.action_level3){
-            PAGES_NUMBER = 3;
-            load();
+        if(id == R.id.action_limit_dialog){
+            limitDlg.show(getFragmentManager(), "limit_dialog");
             return true;
         }
-        if(id == R.id.action_level4){
-            PAGES_NUMBER = 4;
-            load();
-            return true;
-        }
-        if(id == R.id.action_level5){
-            PAGES_NUMBER = 5;
-            load();
+        if(id == R.id.action_sorted_dialog){
+            sortedDlg.show(getFragmentManager(), "sorted_dialog");
             return true;
         }
         return super.onOptionsItemSelected(item);

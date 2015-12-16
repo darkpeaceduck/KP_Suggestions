@@ -80,6 +80,12 @@ public class IndexerWaiter implements Runnable {
                     continue;
                 } catch (PageLoaderException e1) {
                     System.out.println("NO, CANT CONNECT");
+                    try {
+                        Thread.sleep(200);
+                    } catch (InterruptedException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    }
                     continue;
                 } catch (Exception excp) {
                     break;

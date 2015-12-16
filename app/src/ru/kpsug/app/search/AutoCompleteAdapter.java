@@ -57,8 +57,7 @@ public class AutoCompleteAdapter extends BaseAdapter implements Filterable {
                 if (constraint != null) {
                     SearchResult result;
                     try {
-                        result = Search.prefixSearch(constraint
-                                .toString());
+                        result = Search.prefixSearch(constraint.toString());
                         filterResults.values = result.getFilms();
                         filterResults.count = result.getNumber();
                     } catch (SearchException e) {
@@ -120,5 +119,5 @@ public class AutoCompleteAdapter extends BaseAdapter implements Filterable {
         text.setText(FilmStringPretty.prefixPrint(item));
         return view;
     }
-    
+
 }

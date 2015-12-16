@@ -23,15 +23,15 @@ import android.widget.TextView;
 
 public class SuggestionsActivityFragment extends Fragment{
     private List<Film> pagedFilms;
+    private LinearLayout lm;
+    private View rootView;
     
     public SuggestionsActivityFragment(List<Film> pagedFilms) {
         this.pagedFilms = pagedFilms;
-        //SEE, sorting here
-//        Collections.sort(this.pagedFilms, Film.getFilmRatingComparator());
     }
     
-    private void viewPage(final View rootView){
-        LinearLayout lm = (LinearLayout) rootView.findViewById(R.id.LinearLayout2);
+    private void refresh(){
+        lm.removeAllViews();
         for (final Film item : pagedFilms) {
             View v = LayoutInflater.from(rootView.getContext()).inflate(R.layout.list_item, null);
             TextView product = (TextView) v.findViewById(R.id.tadaText);
@@ -46,6 +46,11 @@ public class SuggestionsActivityFragment extends Fragment{
             });
             lm.addView(v);
         }
+    }
+    private void viewPage(final View rootView){
+        lm = (LinearLayout) rootView.findViewById(R.id.LinearLayout2);
+        this.rootView = rootView;
+        refresh();
     }
     
     @Override
