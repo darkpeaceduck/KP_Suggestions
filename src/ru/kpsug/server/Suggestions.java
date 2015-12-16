@@ -48,7 +48,6 @@ public class Suggestions {
                 limit--;
                 pagedFilms.add(films.get(id));
             }
-            System.out.println("OKOKO " + String.valueOf(pagedFilms.size()));
             return pagedFilms;
         }
         

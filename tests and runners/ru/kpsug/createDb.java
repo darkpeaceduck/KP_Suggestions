@@ -4,14 +4,11 @@ import static org.junit.Assert.*;
 
 import java.sql.SQLException;
 
-import org.junit.Test;
 
 import ru.kpsug.db.DBOperator;
 
 public class createDb {
-
-    @Test
-    public void test() {
+    public static void main(String[] args) {
         DBOperator db_con =  new DBOperator(null);
         try {
             db_con.connect();
@@ -21,5 +18,4 @@ public class createDb {
             e.printStackTrace();
         }
     }
-
 }
