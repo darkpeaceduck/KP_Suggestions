@@ -3,8 +3,8 @@ package ru.kpsug.app.search;
 import java.util.Set;
 
 import ru.kpsug.app.R;
-import ru.kpsug.app.film.FilmDetailsActivity;
 import ru.kpsug.app.service.HistoryKeeperService;
+import ru.kpsug.app.service.IntentFactory;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -33,30 +33,59 @@ public class HistoryActivity extends AppCompatActivity {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
             mbinderHistory = (HistoryKeeperService.HistoryKeeperBinder) service;
-            viewHistory(mbinderHistory.getService().getHistoryStr());
+            viewHistory();
         }
     };
 
+    private void viewHistory() {
+        if (mbinderHistory != null) {
+            viewHistory(mbinderHistory.getService().getHistoryStr());
+        }
+    }
+
     private void viewHistory(Set<String> value) {
+        clearViewHistory();
         for (final String str : value) {
             View v = LayoutInflater.from(this)
                     .inflate(R.layout.list_item, null);
             TextView product = (TextView) v.findViewById(R.id.tadaText);
-            product.setText((new HistoryKeeperService.Node(str)).toString());
-            product.setText(str);
+            final HistoryKeeperService.Node node = new HistoryKeeperService.Node(
+                    str);
+            product.setText(node.prettyPrint());
             product.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent intent = new Intent(HistoryActivity.this,
-                            FilmDetailsActivity.class);
-                    intent.putExtra("id",
-                            new HistoryKeeperService.Node(str).getId());
-                    startActivity(intent);
+                    switch (node.getType()) {
+                    case SUGGESTIONS:
+                        startActivity(IntentFactory.createSuggestionsActivity(
+                                HistoryActivity.this, node.getId()));
+                        break;
+                    case EXTENDED_SEARCH:
+                        startActivity(IntentFactory
+                                .createExtendedSearchActivity(
+                                        HistoryActivity.this, node.getInfo()));
+                        break;
+                    case FILM:
+                        startActivity(IntentFactory.createFilmDetailsActivity(
+                                HistoryActivity.this, node.getId()));
+                    }
+
                 }
             });
             lm.addView(v);
         }
+    }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        viewHistory();
+    }
+
+    void clearViewHistory() {
+        if (lm.getChildCount() > 1) {
+            lm.removeViews(1, lm.getChildCount() - 1);
+        }
     }
 
     @Override
@@ -71,7 +100,7 @@ public class HistoryActivity extends AppCompatActivity {
                         if (mbinderHistory != null) {
                             mbinderHistory.getService().cleanHistory();
                         }
-                        lm.removeViews(1, lm.getChildCount() - 1);
+                        clearViewHistory();
                     }
                 });
         bindService(new Intent(this, HistoryKeeperService.class), connHistory,

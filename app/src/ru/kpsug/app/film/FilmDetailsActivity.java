@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.Map.Entry;
 
 import ru.kpsug.app.R;
-import ru.kpsug.app.search.SearchActivity;
 import ru.kpsug.app.service.ConnectionService;
 import ru.kpsug.app.service.HistoryKeeperService;
+import ru.kpsug.app.service.IntentFactory;
 import ru.kpsug.app.service.HistoryKeeperService.Node;
 import ru.kpsug.db.Film;
 import ru.kpsug.kp.KpPath;
@@ -14,7 +14,6 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -107,19 +106,16 @@ public class FilmDetailsActivity extends AppCompatActivity {
                                             FilmStringPretty
                                                     .prefixPrint(savedFilm)));
                         }
-                        Intent intent = new Intent(FilmDetailsActivity.this,
-                                SuggestionsActivity.class);
-                        intent.putExtra("id", id);
-                        startActivity(intent);
+                        startActivity(IntentFactory.createSuggestionsActivity(
+                                FilmDetailsActivity.this, id));
                     }
                 });
         ((Button) findViewById(R.id.button2))
                 .setOnClickListener(new OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Intent browserIntent = new Intent(Intent.ACTION_VIEW,
-                                Uri.parse(KpPath.makeFilmLink(id)));
-                        startActivity(browserIntent);
+                        startActivity(IntentFactory.createBrowserIntent(KpPath
+                                .makeFilmLink(id)));
                     }
                 });
     }
@@ -159,9 +155,7 @@ public class FilmDetailsActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.action_search) {
-            Intent intent = new Intent(this, SearchActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-            startActivity(intent);
+            startActivity(IntentFactory.createSearchActivity(this));
             return true;
         }
         return super.onOptionsItemSelected(item);

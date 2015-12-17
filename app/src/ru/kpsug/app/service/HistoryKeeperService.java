@@ -17,11 +17,16 @@ public class HistoryKeeperService extends Service {
         public static enum Type {
             SUGGESTIONS, EXTENDED_SEARCH, FILM,
         }
-
-        private Type type = Type.FILM;
-        private String info = "no_info";
-        private String id = "0";
+        
+        private static final Type TYPE_DEFAULT = Type.FILM;
+        private static final String INFO_DEFAUT = "no_info";
+        private static final String ID_DEFAUT = "0";
         private final static String sep = "~~~~~~";
+        
+        private Type type = TYPE_DEFAULT;
+        private String info = INFO_DEFAUT;
+        private String id = ID_DEFAUT;
+    
 
         public Node(Type type, String id, String info) {
             super();
@@ -70,6 +75,29 @@ public class HistoryKeeperService extends Service {
         @Override
         public String toString() {
             return getStringType(type) + sep + id + sep + info;
+        }
+        
+        public String prettyPrint(){
+            String result = "";
+            switch (type) {
+            case SUGGESTIONS:
+                result += "Предположения на фильм : ";
+                break;
+            case EXTENDED_SEARCH:
+                result += "Расширенный поиск слова : ";
+                break;
+            case FILM:
+                result += "Детали фильма : ";
+            }
+            return result + info;
+        }
+        
+        public Type getType(){
+            return type;
+        }
+        
+        public String getInfo(){
+            return info;
         }
     }
 

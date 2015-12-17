@@ -2,8 +2,8 @@ package ru.kpsug.app.film;
 
 import ru.kpsug.app.R;
 import ru.kpsug.app.film.SuggestionsActivityFragmentAdapter.SortedMode;
-import ru.kpsug.app.search.SearchActivity;
 import ru.kpsug.app.service.ConnectionService;
+import ru.kpsug.app.service.IntentFactory;
 import ru.kpsug.server.Suggestions.SuggestionsResult;
 import android.support.v7.app.AppCompatActivity;
 import android.content.ComponentName;
@@ -108,9 +108,7 @@ public class SuggestionsActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.action_search) {
-            Intent intent = new Intent(this, SearchActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-            startActivity(intent);
+            startActivity(IntentFactory.createSearchActivity(this));
             return true;
         }
         if (id == R.id.action_depth_dialog) {

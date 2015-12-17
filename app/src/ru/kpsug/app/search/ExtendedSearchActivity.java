@@ -3,16 +3,14 @@ package ru.kpsug.app.search;
 import java.util.ArrayList;
 import java.util.List;
 
-
 import ru.kpsug.app.R;
-import ru.kpsug.app.film.FilmDetailsActivity;
 import ru.kpsug.app.film.FilmStringPretty;
+import ru.kpsug.app.service.IntentFactory;
 import ru.kpsug.db.Film;
 import ru.kpsug.kp.Search;
 import ru.kpsug.kp.Search.SearchException;
 import ru.kpsug.kp.Search.SearchResult;
 import android.support.v7.app.AppCompatActivity;
-import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -56,10 +54,8 @@ public class ExtendedSearchActivity extends AppCompatActivity {
             product.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent intent = new Intent(ExtendedSearchActivity.this,
-                            FilmDetailsActivity.class);
-                    intent.putExtra("id", item.getId());
-                    startActivity(intent);
+                    startActivity(IntentFactory.createFilmDetailsActivity(
+                            ExtendedSearchActivity.this, item.getId()));
                 }
             });
             lm.addView(v);
@@ -88,9 +84,7 @@ public class ExtendedSearchActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.action_search) {
-            Intent intent = new Intent(this, SearchActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-            startActivity(intent);
+            startActivity(IntentFactory.createSearchActivity(this));
             return true;
         }
         return super.onOptionsItemSelected(item);

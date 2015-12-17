@@ -1,9 +1,8 @@
 package ru.kpsug.app.search;
 
-
 import ru.kpsug.app.R;
-import ru.kpsug.app.film.FilmDetailsActivity;
 import ru.kpsug.app.service.HistoryKeeperService;
+import ru.kpsug.app.service.IntentFactory;
 import ru.kpsug.app.service.HistoryKeeperService.Node;
 import android.app.Activity;
 import android.content.ComponentName;
@@ -34,7 +33,7 @@ public class SearchActivity extends Activity {
             mbinderHistory = (HistoryKeeperService.HistoryKeeperBinder) service;
         }
     };
-    
+
     private void createAutoComplete() {
         final DelayAutoCompleteTextView text = (DelayAutoCompleteTextView) findViewById(R.id.autoCompleteTextView1);
         final AutoCompleteAdapter adapter = new AutoCompleteAdapter(this,
@@ -46,10 +45,8 @@ public class SearchActivity extends Activity {
             public void onItemClick(AdapterView<?> parent, View view,
                     int position, long id) {
                 text.setText("");
-                Intent intent = new Intent(SearchActivity.this,
-                        FilmDetailsActivity.class);
-                intent.putExtra("id", adapter.getItem(position).getId());
-                startActivity(intent);
+                startActivity(IntentFactory.createFilmDetailsActivity(
+                        SearchActivity.this, adapter.getItem(position).getId()));
             }
         });
         ((Button) findViewById(R.id.button1))
@@ -62,11 +59,10 @@ public class SearchActivity extends Activity {
                                     new Node(Node.Type.EXTENDED_SEARCH, "0",
                                             word));
                         }
-                        Intent intent = new Intent(SearchActivity.this,
-                                ExtendedSearchActivity.class);
-                        intent.putExtra("word", word);
                         text.setText("");
-                        startActivity(intent);
+                        startActivity(IntentFactory
+                                .createExtendedSearchActivity(
+                                        SearchActivity.this, word));
                     }
                 });
     }

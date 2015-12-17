@@ -3,8 +3,8 @@ package ru.kpsug.app.film;
 import java.util.List;
 
 import ru.kpsug.app.R;
+import ru.kpsug.app.service.IntentFactory;
 import ru.kpsug.db.Film;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -33,10 +33,8 @@ public class SuggestionsActivityFragment extends Fragment {
             product.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent intent = new Intent(rootView.getContext(),
-                            FilmDetailsActivity.class);
-                    intent.putExtra("id", item.getId());
-                    startActivity(intent);
+                    startActivity(IntentFactory.createFilmDetailsActivity(
+                            rootView.getContext(), item.getId()));
                 }
             });
             lm.addView(v);
