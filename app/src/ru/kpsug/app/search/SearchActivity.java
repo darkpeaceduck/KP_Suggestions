@@ -93,6 +93,7 @@ public class SearchActivity extends Activity {
         int id = item.getItemId();
         if (id == R.id.action_history) {
             startActivity(new Intent(this, HistoryActivity.class));
+            return true;
         }
         return super.onOptionsItemSelected(item);
     }

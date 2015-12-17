@@ -111,6 +111,10 @@ public class SuggestionsActivity extends AppCompatActivity {
             startActivity(IntentFactory.createSearchActivity(this));
             return true;
         }
+        if(id == R.id.action_history){
+            startActivity(IntentFactory.createHistoryActivity(this));
+            return true;
+        }
         if (id == R.id.action_depth_dialog) {
             depthDlg.show(getFragmentManager(), "depth_dialog");
             return true;

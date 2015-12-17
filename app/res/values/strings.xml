@@ -26,8 +26,7 @@
     <string name="link_to_kp_button">Открыть в браузере</string>
     <string name="history_tag">history</string>
     <string name="history_file_tag">history</string>
-    <string name="title_activity_history">HistoryActivity</string>
-    <string name="hello_world">Hello world!</string>
+    <string name="title_activity_history">История</string>
     <string name="button_clean_history">Очистить историю</string>
 
 </resources>

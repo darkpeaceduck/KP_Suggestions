@@ -158,6 +158,10 @@ public class FilmDetailsActivity extends AppCompatActivity {
             startActivity(IntentFactory.createSearchActivity(this));
             return true;
         }
+        if(id == R.id.action_history){
+            startActivity(IntentFactory.createHistoryActivity(this));
+            return true;
+        }
         return super.onOptionsItemSelected(item);
     }
 }

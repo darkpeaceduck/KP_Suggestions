@@ -121,6 +121,11 @@ public class HistoryActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == R.id.action_search) {
+            startActivity(IntentFactory.createSearchActivity(this));
+            return true;
+        }
         return super.onOptionsItemSelected(item);
     }
 }
