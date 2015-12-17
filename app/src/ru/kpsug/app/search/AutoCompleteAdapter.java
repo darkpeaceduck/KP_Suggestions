@@ -2,7 +2,6 @@ package ru.kpsug.app.search;
 
 import java.util.ArrayList;
 
-import ru.kpsug.app.R;
 import ru.kpsug.app.film.FilmStringPretty;
 import ru.kpsug.db.Film;
 import ru.kpsug.kp.Search;
@@ -20,14 +19,13 @@ import android.widget.TextView;
 
 public class AutoCompleteAdapter extends BaseAdapter implements Filterable {
 
-    private final Context context;
+    private static final int FIELD_ID_DEFAULT = 0;
     private ArrayList<Film> results = new ArrayList<Film>();
     private LayoutInflater mInflater;
-    private int mFieldId = 0;
+    private int mFieldId = FIELD_ID_DEFAULT;
     private int mResource;
 
     public AutoCompleteAdapter(Context context, int ResId, int mFieldId) {
-        this.context = context;
         this.mInflater = LayoutInflater.from(context);
         this.mResource = ResId;
         this.mFieldId = mFieldId;
@@ -81,7 +79,6 @@ public class AutoCompleteAdapter extends BaseAdapter implements Filterable {
         return filter;
     }
 
-    /* imported for ArrayAdapter */
 
     public View getView(int position, View convertView, ViewGroup parent) {
         return createViewFromResource(mInflater, position, convertView, parent,
@@ -101,11 +98,8 @@ public class AutoCompleteAdapter extends BaseAdapter implements Filterable {
 
         try {
             if (mFieldId == 0) {
-                // If no custom field is assigned, assume the whole resource is
-                // a TextView
                 text = (TextView) view;
             } else {
-                // Otherwise, find the TextView field within the layout
                 text = (TextView) view.findViewById(mFieldId);
             }
         } catch (ClassCastException e) {

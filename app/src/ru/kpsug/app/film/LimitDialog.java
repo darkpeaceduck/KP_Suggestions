@@ -1,12 +1,9 @@
 package ru.kpsug.app.film;
 
 import ru.kpsug.app.R;
-import ru.kpsug.app.search.SearchActivity;
-import android.app.Activity;
 import android.app.DialogFragment;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,10 +13,12 @@ import android.widget.Button;
 import android.widget.SeekBar;
 
 public class LimitDialog extends DialogFragment implements OnClickListener {
+    private static final int MAXPART_DEFAULT = 50;
+    private static final int MINPART_DEFAULT = 1;
     private SeekBar seekBar;
     private Button seekBarValue;
-    private int maxPart = 50;
-    private int minPart = 1;
+    private int maxPart = MAXPART_DEFAULT;
+    private int minPart = MINPART_DEFAULT;
     private int numPart = maxPart - minPart + 1;
     private Context context;
     private int currentValue = minPart;
@@ -39,8 +38,8 @@ public class LimitDialog extends DialogFragment implements OnClickListener {
 
     private void changeValue(int progress) {
         currentValue = progress;
-        seekBarValue.setText(getString(R.string.depth_dialog_button_text) + " ("
-                + String.valueOf(progress) + ")");
+        seekBarValue.setText(getString(R.string.depth_dialog_button_text)
+                + " (" + String.valueOf(progress) + ")");
     }
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -50,7 +49,7 @@ public class LimitDialog extends DialogFragment implements OnClickListener {
         seekBar = (SeekBar) v.findViewById(R.id.seekBar1);
         seekBar.setProgress(0);
         seekBar.incrementProgressBy(DEFAUT_SCALE);
-        seekBar.setMax(numPart* DEFAUT_SCALE - 1);
+        seekBar.setMax(numPart * DEFAUT_SCALE - 1);
         seekBarValue = (Button) v.findViewById(R.id.btnYes);
         changeValue(minPart);
 
@@ -75,19 +74,19 @@ public class LimitDialog extends DialogFragment implements OnClickListener {
             }
         });
         seekBarValue.setOnClickListener(new OnClickListener() {
-            
+
             @Override
             public void onClick(View v) {
-                if(((Object) context) instanceof SuggestionsActivity){
+                if (((Object) context) instanceof SuggestionsActivity) {
                     SuggestionsActivity controller = (SuggestionsActivity) context;
                     controller.onLimitChange(currentValue);
                     LimitDialog.this.dismiss();
                 } else {
-                    //TODO
+                    // TODO
                 }
             }
         });
-        
+
         return v;
 
     }

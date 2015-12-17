@@ -11,13 +11,14 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 
 public class SuggestionsActivityFragmentAdapter extends
         FragmentStatePagerAdapter {
-    private SuggestionsResult result = null;
-    private int pageLimit = 10;
-
+    
     public enum SortedMode {
         YEAR_LESS, YEAR_MORE, RATING;
     }
 
+    private final static int PAGELIMIT_DEFAULT = 10;
+    private SuggestionsResult result = null;
+    private int pageLimit = PAGELIMIT_DEFAULT;
     private SortedMode mode = SortedMode.RATING;
 
     public SuggestionsActivityFragmentAdapter(FragmentManager fm) {

@@ -1,16 +1,9 @@
 package ru.kpsug.app.film;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 
 import ru.kpsug.app.R;
-import ru.kpsug.app.search.ExtendedSearchActivity;
-import ru.kpsug.app.search.SearchActivity;
 import ru.kpsug.db.Film;
-import ru.kpsug.server.Suggestions.SuggestionsResult;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -21,25 +14,27 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-public class SuggestionsActivityFragment extends Fragment{
+public class SuggestionsActivityFragment extends Fragment {
     private List<Film> pagedFilms;
     private LinearLayout lm;
     private View rootView;
-    
+
     public SuggestionsActivityFragment(List<Film> pagedFilms) {
         this.pagedFilms = pagedFilms;
     }
-    
-    private void refresh(){
+
+    private void refresh() {
         lm.removeAllViews();
         for (final Film item : pagedFilms) {
-            View v = LayoutInflater.from(rootView.getContext()).inflate(R.layout.list_item, null);
+            View v = LayoutInflater.from(rootView.getContext()).inflate(
+                    R.layout.list_item, null);
             TextView product = (TextView) v.findViewById(R.id.tadaText);
             product.setText(FilmStringPretty.prefixPrint(item));
             product.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent intent = new Intent(rootView.getContext(), FilmDetailsActivity.class);  
+                    Intent intent = new Intent(rootView.getContext(),
+                            FilmDetailsActivity.class);
                     intent.putExtra("id", item.getId());
                     startActivity(intent);
                 }
@@ -47,12 +42,13 @@ public class SuggestionsActivityFragment extends Fragment{
             lm.addView(v);
         }
     }
-    private void viewPage(final View rootView){
+
+    private void viewPage(final View rootView) {
         lm = (LinearLayout) rootView.findViewById(R.id.LinearLayout2);
         this.rootView = rootView;
         refresh();
     }
-    
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState) {

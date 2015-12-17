@@ -1,12 +1,9 @@
 package ru.kpsug.app.film;
 
 import ru.kpsug.app.R;
-import ru.kpsug.app.search.SearchActivity;
-import android.app.Activity;
 import android.app.DialogFragment;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,14 +11,15 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.SeekBar;
-import android.widget.TextView;
 
 public class DepthDialog extends DialogFragment implements OnClickListener {
+    private final static int MAXPART_DEFAULT = 5;
+    private final static int MINPART_DEFAULT = 2;
     private SeekBar seekBar;
     private Button seekBarValue;
-    private int maxPart = 5;
-    private int minPart = 2;
-    private int numPart = 4;
+    private int maxPart = MAXPART_DEFAULT;
+    private int minPart = MINPART_DEFAULT;
+    private int numPart = maxPart - minPart + 1;
     private Context context;
     private int currentValue = minPart;
     private final static int DEFAUT_SCALE = 10;
