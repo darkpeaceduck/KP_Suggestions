@@ -7,6 +7,8 @@ import ru.kpsug.app.R;
 import ru.kpsug.app.search.ExtendedSearchActivity;
 import ru.kpsug.app.search.SearchActivity;
 import ru.kpsug.app.service.ConnectionService;
+import ru.kpsug.app.service.HistoryKeeperService;
+import ru.kpsug.app.service.HistoryKeeperService.Node;
 import ru.kpsug.db.Film;
 import ru.kpsug.kp.KpPath;
 import ru.kpsug.server.AsyncClient;
@@ -34,11 +36,13 @@ import android.widget.TextView;
 public class FilmDetailsActivity extends AppCompatActivity{
     private String id = null;
     private ConnectionService.ConnectionBinder mbinder = null;
+    private HistoryKeeperService.HistoryKeeperBinder mbinderHistory = null;
     private TextView filmNameView = null;
     private TextView ratingView = null;
     private TextView purposesView = null;
     private TextView annotationView = null;
     private TextView actorsView = null;
+    private Film savedFilm = null;
     
     private AsyncTask<Film, Object, Object> detailsSendSaver =  new AsyncTask<Film, Object, Object>(){
         @Override
@@ -64,8 +68,22 @@ public class FilmDetailsActivity extends AppCompatActivity{
         }
     };
     
+
+    private ServiceConnection connHistory = new ServiceConnection() {
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+
+        }
+
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            mbinderHistory = (HistoryKeeperService.HistoryKeeperBinder) service;
+        }
+    };
+    
     
     private void refreshFilmData(Film film) {
+        savedFilm = film;
         filmNameView.setText(film.getName());
         ratingView.setText(film.getRating());
         String s = "";
@@ -78,12 +96,18 @@ public class FilmDetailsActivity extends AppCompatActivity{
         annotationView.setText(film.getAnnotation());
         actorsView.setText(film.getActors().toString());
         ((ProgressBar)findViewById(R.id.progressBar1)).setVisibility(View.GONE);
+        if(mbinderHistory != null){
+            mbinderHistory.getService().writeToHistory(new Node(Node.Type.FILM, id, FilmStringPretty.prefixPrint(film)));
+        }
     }
 
     private void initSugButtion(){
         ((Button)findViewById(R.id.button1)).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(mbinderHistory != null){
+                    mbinderHistory.getService().writeToHistory(new Node(Node.Type.SUGGESTIONS, id, FilmStringPretty.prefixPrint(savedFilm)));
+                }
                 Intent intent = new Intent(FilmDetailsActivity.this, SuggestionsActivity.class);  
                 intent.putExtra("id", id);
                 startActivity(intent);
@@ -112,11 +136,14 @@ public class FilmDetailsActivity extends AppCompatActivity{
         initSugButtion();
         bindService(new Intent(this, ConnectionService.class), conn,
                 Context.BIND_AUTO_CREATE);
+        bindService(new Intent(this, HistoryKeeperService.class), connHistory,
+                Context.BIND_AUTO_CREATE);
     }
 
     @Override
     protected void onDestroy() {
         unbindService(conn);
+        unbindService(connHistory);
         super.onDestroy();
     }
 
@@ -130,9 +157,6 @@ public class FilmDetailsActivity extends AppCompatActivity{
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            return true;
-        }
         if (id == R.id.action_search) {
             Intent intent = new Intent(this, SearchActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);

@@ -7,6 +7,7 @@
     <string name="action_depth_dialog">Глубина</string>
     <string name="action_limit_dialog">Лимит</string>
     <string name="action_sorted_dialog">Сортировка</string>
+    <string name="action_history">История</string>
     <string name="title_activity_film_details">Детали</string>
     <string name="title_activity_extended_search">Расширенный поиск</string>
     <string name="title_activity_suggestions">Предложения</string>
@@ -23,6 +24,10 @@
     <string name="sorted_dialog_radio2">Неубыванию года</string>
     <string name="sorted_dialog_radio3">Невозрастанию года</string>
     <string name="link_to_kp_button">Открыть в браузере</string>
-    
+    <string name="history_tag">history</string>
+    <string name="history_file_tag">history</string>
+    <string name="title_activity_history">HistoryActivity</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="button_clean_history">Очистить историю</string>
 
 </resources>

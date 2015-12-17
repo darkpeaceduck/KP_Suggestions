@@ -37,11 +37,18 @@
         <service
             android:name=".service.ConnectionService"
             android:enabled="true" />
+        <service
+            android:name=".service.HistoryKeeperService"
+            android:enabled="true" />
 
         <activity
             android:name=".film.SuggestionsActivity"
             android:configChanges="orientation|screenSize"
             android:label="@string/title_activity_suggestions" >
+        </activity>
+        <activity
+            android:name="ru.kpsug.app.search.HistoryActivity"
+            android:label="@string/title_activity_history" >
         </activity>
     </application>
 

@@ -1,12 +1,12 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="ru.kpsug.app.MainActivity" >
+    tools:context="ru.kpsug.app.HistoryActivity" >
 
     <item
-        android:id="@+id/action_history"
+        android:id="@+id/action_search"
         android:orderInCategory="100"
-        android:title="@string/action_history"
+        android:title="@string/action_settings"
         app:showAsAction="never"/>
 
 </menu>
