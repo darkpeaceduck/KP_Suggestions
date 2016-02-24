@@ -1,0 +1,32 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="ru.kpsug.app.SuggestionsActivity" >
+
+    <item
+        android:id="@+id/action_search"
+        android:orderInCategory="100"
+        android:title="@string/action_search"
+        app:showAsAction="never"/>
+     <item
+        android:id="@+id/action_history"
+        android:orderInCategory="100"
+        android:title="@string/action_history"
+        app:showAsAction="never"/>
+    <item
+        android:id="@+id/action_depth_dialog"
+        android:orderInCategory="100"
+        android:title="@string/action_depth_dialog"
+        app:showAsAction="never"/>
+    <item
+        android:id="@+id/action_limit_dialog"
+        android:orderInCategory="100"
+        android:title="@string/action_limit_dialog"
+        app:showAsAction="never"/>
+    <item
+        android:id="@+id/action_sorted_dialog"
+        android:orderInCategory="100"
+        android:title="@string/action_sorted_dialog"
+        app:showAsAction="never"/>
+
+</menu>
