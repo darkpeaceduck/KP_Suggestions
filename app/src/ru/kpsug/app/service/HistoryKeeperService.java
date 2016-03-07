@@ -13,7 +13,7 @@ import android.os.Binder;
 import android.os.IBinder;
 
 public class HistoryKeeperService extends Service {
-    public static class Node {
+    public static class HistorySetNode {
         public static enum Type {
             SUGGESTIONS, EXTENDED_SEARCH, FILM,
         }
@@ -28,7 +28,7 @@ public class HistoryKeeperService extends Service {
         private String id = ID_DEFAUT;
     
 
-        public Node(Type type, String id, String info) {
+        public HistorySetNode(Type type, String id, String info) {
             super();
             this.id = id;
             this.type = type;
@@ -39,7 +39,7 @@ public class HistoryKeeperService extends Service {
             return id;
         }
 
-        public Node(String s) {
+        public HistorySetNode(String s) {
             String[] parts = s.split(sep);
             if (parts.length == 3) {
                 type = getTypeString(parts[0]);
@@ -106,12 +106,12 @@ public class HistoryKeeperService extends Service {
     private Context context = null;
     private SharedPreferences pref = null;
     private Set<String> currentStringSet = new HashSet<String>();
-    private Set<Node> currentNodeSet = new HashSet<Node>();
+    private Set<HistorySetNode> currentNodeSet = new HashSet<HistorySetNode>();
 
     private void transformSets() {
-        currentNodeSet = new HashSet<Node>();
+        currentNodeSet = new HashSet<HistorySetNode>();
         for (String str : currentStringSet) {
-            currentNodeSet.add(new Node(str));
+            currentNodeSet.add(new HistorySetNode(str));
         }
     }
 
@@ -126,7 +126,7 @@ public class HistoryKeeperService extends Service {
         transformSets();
     }
 
-    public Set<Node> getHistory() {
+    public Set<HistorySetNode> getHistory() {
         return currentNodeSet;
     }
 
@@ -134,7 +134,7 @@ public class HistoryKeeperService extends Service {
         return currentStringSet;
     }
 
-    public void writeToHistory(Node node) {
+    public void writeToHistory(HistorySetNode node) {
         currentNodeSet.add(node);
         currentStringSet.add(node.toString());
         writeHistory();

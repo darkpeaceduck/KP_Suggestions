@@ -1,25 +1,23 @@
-package ru.kpsug.app.film;
+package ru.kpsug.app.adapter;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import ru.kpsug.db.Film;
-import ru.kpsug.server.Suggestions.SuggestionsResult;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
+import ru.kpsug.app.activity.fragment.SuggestionsActivityFragment;
+import ru.kpsug.app.etc.SuggestionsActivitySortedMode;
+import ru.kpsug.db.Film;
+import ru.kpsug.server.Suggestions.SuggestionsResult;
 
 public class SuggestionsActivityFragmentAdapter extends
         FragmentStatePagerAdapter {
     
-    public enum SortedMode {
-        YEAR_LESS, YEAR_MORE, RATING;
-    }
-
     private final static int PAGELIMIT_DEFAULT = 10;
     private SuggestionsResult result = null;
     private int pageLimit = PAGELIMIT_DEFAULT;
-    private SortedMode mode = SortedMode.RATING;
+    private SuggestionsActivitySortedMode mode = SuggestionsActivitySortedMode.RATING;
 
     public SuggestionsActivityFragmentAdapter(FragmentManager fm) {
         super(fm);
@@ -40,7 +38,7 @@ public class SuggestionsActivityFragmentAdapter extends
         notifyDataSetChanged();
     }
 
-    public void setSortedMode(SortedMode mode) {
+    public void setSortedMode(SuggestionsActivitySortedMode mode) {
         this.mode = mode;
         notifyDataSetChanged();
     }

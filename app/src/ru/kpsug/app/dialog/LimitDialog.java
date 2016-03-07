@@ -1,9 +1,7 @@
-package ru.kpsug.app.film;
+package ru.kpsug.app.dialog;
 
-import ru.kpsug.app.R;
 import android.app.DialogFragment;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,27 +9,34 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.SeekBar;
+import ru.kpsug.app.R;
+import ru.kpsug.app.activity.SuggestionsActivity;
 
-public class DepthDialog extends DialogFragment implements OnClickListener {
-    private final static int MAXPART_DEFAULT = 5;
-    private final static int MINPART_DEFAULT = 2;
+public class LimitDialog extends DialogFragment implements OnClickListener {
+	public static final String TAG = "limit_dialog";
+	
+    private static final int MAXPART_DEFAULT = 50;
+    private static final int MINPART_DEFAULT = 1;
+    private static final int DEFAUT_SCALE = 10;
+
     private SeekBar seekBar;
     private Button seekBarValue;
+    private Context context;
+    
     private int maxPart = MAXPART_DEFAULT;
     private int minPart = MINPART_DEFAULT;
     private int numPart = maxPart - minPart + 1;
-    private Context context;
     private int currentValue = minPart;
-    private final static int DEFAUT_SCALE = 10;
+    
 
-    public DepthDialog(int maxPart, int minPart) {
+    public LimitDialog(int maxPart, int minPart) {
         super();
         this.minPart = minPart;
         this.maxPart = maxPart;
         this.numPart = maxPart - minPart + 1;
     }
 
-    public DepthDialog(Context context) {
+    public LimitDialog(Context context) {
         super();
         this.context = context;
     }
@@ -42,11 +47,12 @@ public class DepthDialog extends DialogFragment implements OnClickListener {
                 + " (" + String.valueOf(progress) + ")");
     }
 
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState) {
-        getDialog().setTitle(R.string.title_depth_dialog);
+        getDialog().setTitle(R.string.title_limit_dialog);
         View v = inflater.inflate(R.layout.depth_dialog, null);
-        seekBar = (SeekBar) v.findViewById(R.id.seekBar1);
+        seekBar = (SeekBar) v.findViewById(R.id.seekBarDepthDialog);
         seekBar.setProgress(0);
         seekBar.incrementProgressBy(DEFAUT_SCALE);
         seekBar.setMax(numPart * DEFAUT_SCALE - 1);
@@ -63,15 +69,18 @@ public class DepthDialog extends DialogFragment implements OnClickListener {
                 changeValue(minPart + progress / DEFAUT_SCALE);
             }
 
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
+			@Override
+			public void onStartTrackingTouch(SeekBar seekBar) {
+				// TODO Auto-generated method stub
+				
+			}
 
-            }
+			@Override
+			public void onStopTrackingTouch(SeekBar seekBar) {
+				// TODO Auto-generated method stub
+				
+			}
 
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-
-            }
         });
         seekBarValue.setOnClickListener(new OnClickListener() {
 
@@ -79,12 +88,9 @@ public class DepthDialog extends DialogFragment implements OnClickListener {
             public void onClick(View v) {
                 if (((Object) context) instanceof SuggestionsActivity) {
                     SuggestionsActivity controller = (SuggestionsActivity) context;
-                    controller.onLoad(currentValue);
-                    DepthDialog.this.dismiss();
-                } else {
-                    // TODO
-                }
-
+                    controller.onLimitChange(currentValue);
+                    LimitDialog.this.dismiss();
+                } 
             }
         });
 
@@ -92,15 +98,8 @@ public class DepthDialog extends DialogFragment implements OnClickListener {
 
     }
 
+    @Override
     public void onClick(View v) {
         dismiss();
-    }
-
-    public void onDismiss(DialogInterface dialog) {
-        super.onDismiss(dialog);
-    }
-
-    public void onCancel(DialogInterface dialog) {
-        super.onCancel(dialog);
     }
 }

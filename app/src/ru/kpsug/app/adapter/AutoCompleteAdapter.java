@@ -1,8 +1,9 @@
-package ru.kpsug.app.search;
+package ru.kpsug.app.adapter;
 
 import java.util.ArrayList;
+import java.util.List;
 
-import ru.kpsug.app.film.FilmStringPretty;
+import ru.kpsug.app.etc.FilmStringPretty;
 import ru.kpsug.db.Film;
 import ru.kpsug.kp.Search;
 import ru.kpsug.kp.Search.SearchException;
@@ -20,15 +21,17 @@ import android.widget.TextView;
 public class AutoCompleteAdapter extends BaseAdapter implements Filterable {
 
     private static final int FIELD_ID_DEFAULT = 0;
-    private ArrayList<Film> results = new ArrayList<Film>();
-    private LayoutInflater mInflater;
-    private int mFieldId = FIELD_ID_DEFAULT;
-    private int mResource;
+    
+    private List<Film> results = new ArrayList<Film>();
+    private LayoutInflater inflater;
+    
+    private int fieldId = FIELD_ID_DEFAULT;
+    private int resource;
 
     public AutoCompleteAdapter(Context context, int ResId, int mFieldId) {
-        this.mInflater = LayoutInflater.from(context);
-        this.mResource = ResId;
-        this.mFieldId = mFieldId;
+        this.inflater = LayoutInflater.from(context);
+        this.resource = ResId;
+        this.fieldId = mFieldId;
     }
 
     @Override
@@ -68,7 +71,7 @@ public class AutoCompleteAdapter extends BaseAdapter implements Filterable {
             protected void publishResults(CharSequence constraint,
                     FilterResults results) {
                 if (results != null && results.count > 0) {
-                    AutoCompleteAdapter.this.results = (ArrayList<Film>) results.values;
+                    AutoCompleteAdapter.this.results = (List<Film>) results.values;
                     notifyDataSetChanged();
                 } else {
                     notifyDataSetInvalidated();
@@ -79,12 +82,12 @@ public class AutoCompleteAdapter extends BaseAdapter implements Filterable {
         return filter;
     }
 
-
+    @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        return createViewFromResource(mInflater, position, convertView, parent,
-                mResource);
+        return createViewFromResource(inflater, position, convertView, parent,
+                resource);
     }
-
+    
     private View createViewFromResource(LayoutInflater inflater, int position,
             View convertView, ViewGroup parent, int resource) {
         View view;
@@ -97,10 +100,10 @@ public class AutoCompleteAdapter extends BaseAdapter implements Filterable {
         }
 
         try {
-            if (mFieldId == 0) {
+            if (fieldId == 0) {
                 text = (TextView) view;
             } else {
-                text = (TextView) view.findViewById(mFieldId);
+                text = (TextView) view.findViewById(fieldId);
             }
         } catch (ClassCastException e) {
             Log.e("ArrayAdapter",

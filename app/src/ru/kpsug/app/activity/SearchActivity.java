@@ -1,9 +1,11 @@
-package ru.kpsug.app.search;
+package ru.kpsug.app.activity;
 
 import ru.kpsug.app.R;
+import ru.kpsug.app.adapter.AutoCompleteAdapter;
+import ru.kpsug.app.etc.DelayAutoCompleteTextView;
+import ru.kpsug.app.etc.IntentFactory;
 import ru.kpsug.app.service.HistoryKeeperService;
-import ru.kpsug.app.service.IntentFactory;
-import ru.kpsug.app.service.HistoryKeeperService.Node;
+import ru.kpsug.app.service.HistoryKeeperService.HistorySetNode;
 import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
@@ -22,25 +24,27 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 
 public class SearchActivity extends AppCompatActivity {
-    private HistoryKeeperService.HistoryKeeperBinder mbinderHistory = null;
+    private HistoryKeeperService.HistoryKeeperBinder binderHistory = null;
+    
     private ServiceConnection connHistory = new ServiceConnection() {
         @Override
-        public void onServiceDisconnected(ComponentName name) {
-
-        }
-
-        @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
-            mbinderHistory = (HistoryKeeperService.HistoryKeeperBinder) service;
+            binderHistory = (HistoryKeeperService.HistoryKeeperBinder) service;
         }
+
+		@Override
+		public void onServiceDisconnected(ComponentName name) {
+			// TODO Auto-generated method stub
+			
+		}
     };
 
     private void createAutoComplete() {
-        final DelayAutoCompleteTextView text = (DelayAutoCompleteTextView) findViewById(R.id.autoCompleteTextView1);
+        final DelayAutoCompleteTextView text = (DelayAutoCompleteTextView) findViewById(R.id.autoCompleteTextViewMainActivity);
         final AutoCompleteAdapter adapter = new AutoCompleteAdapter(this,
-                R.layout.down2, R.id.textView1);
+                R.layout.down2, R.id.textViewName);
         text.setAdapter(adapter);
-        text.setLoadingIndicator((ProgressBar) findViewById(R.id.progressBar));
+        text.setLoadingIndicator((ProgressBar) findViewById(R.id.progressBarMainActivity));
         text.setOnItemClickListener(new OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view,
@@ -50,14 +54,14 @@ public class SearchActivity extends AppCompatActivity {
                         SearchActivity.this, adapter.getItem(position).getId()));
             }
         });
-        ((Button) findViewById(R.id.button1))
+        ((Button) findViewById(R.id.buttonSearch))
                 .setOnClickListener(new OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         String word = text.getText().toString();
-                        if (mbinderHistory != null) {
-                            mbinderHistory.getService().writeToHistory(
-                                    new Node(Node.Type.EXTENDED_SEARCH, "0",
+                        if (binderHistory != null) {
+                            binderHistory.getService().writeToHistory(
+                                    new HistorySetNode(HistorySetNode.Type.EXTENDED_SEARCH, "0",
                                             word));
                         }
                         text.setText("");

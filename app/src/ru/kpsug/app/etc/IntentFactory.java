@@ -1,10 +1,10 @@
-package ru.kpsug.app.service;
+package ru.kpsug.app.etc;
 
-import ru.kpsug.app.film.FilmDetailsActivity;
-import ru.kpsug.app.film.SuggestionsActivity;
-import ru.kpsug.app.search.ExtendedSearchActivity;
-import ru.kpsug.app.search.HistoryActivity;
-import ru.kpsug.app.search.SearchActivity;
+import ru.kpsug.app.activity.ExtendedSearchActivity;
+import ru.kpsug.app.activity.FilmDetailsActivity;
+import ru.kpsug.app.activity.HistoryActivity;
+import ru.kpsug.app.activity.SearchActivity;
+import ru.kpsug.app.activity.SuggestionsActivity;
 import ru.kpsug.kp.KpPath;
 import android.content.Context;
 import android.content.Intent;

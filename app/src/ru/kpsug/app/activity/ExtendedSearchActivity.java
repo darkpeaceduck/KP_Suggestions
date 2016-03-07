@@ -1,11 +1,11 @@
-package ru.kpsug.app.search;
+package ru.kpsug.app.activity;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import ru.kpsug.app.R;
-import ru.kpsug.app.film.FilmStringPretty;
-import ru.kpsug.app.service.IntentFactory;
+import ru.kpsug.app.etc.FilmStringPretty;
+import ru.kpsug.app.etc.IntentFactory;
 import ru.kpsug.db.Film;
 import ru.kpsug.kp.Search;
 import ru.kpsug.kp.Search.SearchException;
@@ -25,11 +25,11 @@ import android.widget.TextView;
 public class ExtendedSearchActivity extends AppCompatActivity {
     private LinearLayout lm;
     private List<Film> result = null;
-    private AsyncTask<String, Object, ArrayList<Film>> searchLoadingTask = new AsyncTask<String, Object, ArrayList<Film>>() {
+    
+    private AsyncTask<String, Object, List<Film>> searchLoadingTask = new AsyncTask<String, Object, List<Film>>() {
         @Override
-        protected ArrayList<Film> doInBackground(String... params) {
-            Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
-            ArrayList<Film> films = new ArrayList<Film>();
+        protected List<Film> doInBackground(String... params) {
+            List<Film> films = new ArrayList<>();
             try {
                 SearchResult result = Search.mainSearch(params[0]);
                 films = result.getFilms();
@@ -38,8 +38,9 @@ public class ExtendedSearchActivity extends AppCompatActivity {
             }
             return films;
         }
-
-        protected void onPostExecute(ArrayList<Film> result) {
+        
+        @Override
+        protected void onPostExecute(List<Film> result) {
             ExtendedSearchActivity.this.result = result;
             applyResultChanges();
         };
@@ -49,7 +50,7 @@ public class ExtendedSearchActivity extends AppCompatActivity {
         for (final Film item : result) {
             View v = LayoutInflater.from(ExtendedSearchActivity.this).inflate(
                     R.layout.list_item, null);
-            TextView product = (TextView) v.findViewById(R.id.tadaText);
+            TextView product = (TextView) v.findViewById(R.id.ListItemText);
             product.setText(FilmStringPretty.prefixPrint(item));
             product.setOnClickListener(new OnClickListener() {
                 @Override
@@ -60,7 +61,7 @@ public class ExtendedSearchActivity extends AppCompatActivity {
             });
             lm.addView(v);
         }
-        ((ProgressBar) findViewById(R.id.progressBar1))
+        ((ProgressBar) findViewById(R.id.progressBarExtendedSearch))
                 .setVisibility(View.GONE);
     }
 
@@ -68,7 +69,7 @@ public class ExtendedSearchActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_extended_search);
-        lm = (LinearLayout) findViewById(R.id.o2);
+        lm = (LinearLayout) findViewById(R.id.LinearLayoutExtendedSearch);
         String searchWord = getIntent().getStringExtra("word");
         searchLoadingTask.execute(searchWord);
 

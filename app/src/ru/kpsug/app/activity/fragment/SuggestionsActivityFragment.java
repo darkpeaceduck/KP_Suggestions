@@ -1,10 +1,7 @@
-package ru.kpsug.app.film;
+package ru.kpsug.app.activity.fragment;
 
 import java.util.List;
 
-import ru.kpsug.app.R;
-import ru.kpsug.app.service.IntentFactory;
-import ru.kpsug.db.Film;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -13,6 +10,10 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import ru.kpsug.app.R;
+import ru.kpsug.app.etc.FilmStringPretty;
+import ru.kpsug.app.etc.IntentFactory;
+import ru.kpsug.db.Film;
 
 public class SuggestionsActivityFragment extends Fragment {
     private List<Film> pagedFilms;
@@ -28,7 +29,7 @@ public class SuggestionsActivityFragment extends Fragment {
         for (final Film item : pagedFilms) {
             View v = LayoutInflater.from(rootView.getContext()).inflate(
                     R.layout.list_item, null);
-            TextView product = (TextView) v.findViewById(R.id.tadaText);
+            TextView product = (TextView) v.findViewById(R.id.ListItemText);
             product.setText(FilmStringPretty.prefixPrint(item));
             product.setOnClickListener(new OnClickListener() {
                 @Override
@@ -42,7 +43,7 @@ public class SuggestionsActivityFragment extends Fragment {
     }
 
     private void viewPage(final View rootView) {
-        lm = (LinearLayout) rootView.findViewById(R.id.LinearLayout2);
+        lm = (LinearLayout) rootView.findViewById(R.id.LinearLayoutFragmentSuggestions);
         this.rootView = rootView;
         refresh();
     }

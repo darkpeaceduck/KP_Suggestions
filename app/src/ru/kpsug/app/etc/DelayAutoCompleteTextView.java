@@ -1,4 +1,4 @@
-package ru.kpsug.app.search;
+package ru.kpsug.app.etc;
 
 import android.content.Context;
 import android.os.Handler;
@@ -13,10 +13,10 @@ public class DelayAutoCompleteTextView extends AutoCompleteTextView {
     private static final int MESSAGE_TEXT_CHANGED = 200;
     private static final int DEFAULT_AUTOCOMPLETE_DELAY = 100;
 
-    private int mAutoCompleteDelay = DEFAULT_AUTOCOMPLETE_DELAY;
-    private ProgressBar mLoadingIndicator;
+    private int autoCompleteDelay = DEFAULT_AUTOCOMPLETE_DELAY;
+    private ProgressBar loadingIndicator;
 
-    private final Handler mHandler = new Handler() {
+    private final Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             DelayAutoCompleteTextView.super.performFiltering(
@@ -29,28 +29,28 @@ public class DelayAutoCompleteTextView extends AutoCompleteTextView {
     }
 
     public void setLoadingIndicator(ProgressBar progressBar) {
-        mLoadingIndicator = progressBar;
+        loadingIndicator = progressBar;
     }
 
     public void setAutoCompleteDelay(int autoCompleteDelay) {
-        mAutoCompleteDelay = autoCompleteDelay;
+        this.autoCompleteDelay = autoCompleteDelay;
     }
 
     @Override
     protected void performFiltering(CharSequence text, int keyCode) {
-        if (mLoadingIndicator != null) {
-            mLoadingIndicator.setVisibility(View.VISIBLE);
+        if (loadingIndicator != null) {
+            loadingIndicator.setVisibility(View.VISIBLE);
         }
-        mHandler.removeMessages(MESSAGE_TEXT_CHANGED);
-        mHandler.sendMessageDelayed(
-                mHandler.obtainMessage(MESSAGE_TEXT_CHANGED, text),
-                mAutoCompleteDelay);
+        handler.removeMessages(MESSAGE_TEXT_CHANGED);
+        handler.sendMessageDelayed(
+                handler.obtainMessage(MESSAGE_TEXT_CHANGED, text),
+                autoCompleteDelay);
     }
 
     @Override
     public void onFilterComplete(int count) {
-        if (mLoadingIndicator != null) {
-            mLoadingIndicator.setVisibility(View.GONE);
+        if (loadingIndicator != null) {
+            loadingIndicator.setVisibility(View.GONE);
         }
         super.onFilterComplete(count);
     }

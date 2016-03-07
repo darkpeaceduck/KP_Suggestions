@@ -1,41 +1,42 @@
 package ru.kpsug.db;
 
-import java.io.BufferedReader;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
-import org.json.simple.JSONArray;
 import org.json.simple.JSONValue;
-import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import ru.kpsug.utils.ConfigParser;
+import ru.kpsug.utils.MyParseUtils;
 
 public class DBOperator {
-    private String host = "127.0.0.1";
-    private String port = "5432";
-    private String db_name = "kp_index";
-    private String user = "postgres";
-    private String password = "postgres";
-    private static final String field_size = "5000";
-    private static final String films_table = "films";
+    private static final String HOST_DEFAULT = "127.0.0.1";
+    private static final String PORT_DEFAULT = "5432";
+    private static final String DB_NAME_DEFAULT = "kp_index";
+    private static final String USER_DEFAULT = "postgres";
+    private static final String PASSWORD_DEFAULT = "postgres";
+    private static final String FIELD_SIZE = "5000";
+    private static final String FILMS_TABLE = "films";
+    
+    private String host = HOST_DEFAULT;
+    private String port = PORT_DEFAULT;
+    private String dbName = DB_NAME_DEFAULT;
+    private String user = USER_DEFAULT;
+    private String password = PASSWORD_DEFAULT;
 
     volatile private Connection connect = null;
     volatile private Statement statement = null;
 
     private void parseConf(String config) throws IOException {
-        Map<String, String> values = ConfigParser.parseConfig(config);
+        Map<String, String> values = MyParseUtils.parseConfig(config);
         for (Entry<String, String> pair : values.entrySet()) {
             String key = pair.getKey();
             String value = pair.getValue();
@@ -47,7 +48,7 @@ public class DBOperator {
                 port = value;
                 break;
             case "db_name":
-                db_name = value;
+                dbName = value;
                 break;
             case "user":
                 user = value;
@@ -60,20 +61,20 @@ public class DBOperator {
             }
         }
     }
-
-    // null if from hardcode constants
+    
     public DBOperator(String conf_path) {
         if (conf_path != null) {
             try {
                 parseConf(conf_path);
-            } catch (IOException excp) {
+            } catch (IOException e) {
+            	e.printStackTrace();
             }
         }
     }
 
     public void connect() throws SQLException {
         connect = DriverManager.getConnection("jdbc:postgresql://" + host + ":"
-                + port + "/" + db_name, user, password);
+                + port + "/" + dbName, user, password);
     }
 
     public void closeAll() throws SQLException {
@@ -82,171 +83,196 @@ public class DBOperator {
         }
     }
 
-    public synchronized boolean executeUpdate(String query) {
+    public synchronized void executeUpdate(String query) throws SQLException{
         if (statement == null) {
-            try {
-                statement = connect.createStatement();
-            } catch (SQLException excp) {
-                return false;
-            }
+            statement = connect.createStatement();
         }
-        try {
-            statement.execute(query);
-        } catch (SQLException excp) {
-            return false;
-        }
-        return true;
+        statement.execute(query);
     }
 
-    // returns null if failed
-    public synchronized ResultSet executeQuery(String query) {
+    public synchronized ResultSet executeQuery(String query) throws SQLException{
         if (statement == null) {
-            try {
-                statement = connect.createStatement();
-            } catch (SQLException excp) {
-                return null;
-            }
+            statement = connect.createStatement();
         }
-        try {
-            ResultSet ret = statement.executeQuery(query);
-            return ret;
-        } catch (SQLException excp) {
-            return null;
-        }
+        return statement.executeQuery(query);
     }
 
-    public boolean DropDatabase() {
-        String query_drop_scheme = "DROP SCHEMA public cascade";
-        String create_scheme = "create schema public";
-        return executeUpdate(query_drop_scheme) && executeUpdate(create_scheme);
+    public void DropDatabase() throws SQLException {
+        String queryDropScheme = "DROP SCHEMA public cascade";
+        String createScheme = "create schema public";
+        
+        executeUpdate(queryDropScheme);
+        executeUpdate(createScheme);
     }
 
-    public boolean BuildDatabase() {
-        if (!DropDatabase()) {
-            return false;
-        }
-        String main_query = " create table " + films_table
-                + " (id integer PRIMARY KEY,  " + "actors varchar("
-                + field_size + ")," + "purposes varchar(" + field_size + "),"
-                + "links varchar(" + field_size + ")," + "annotation varchar("
-                + field_size + ")," + "rating varchar(" + field_size + "),"
-                + "name varchar(" + field_size + "))";
-        return executeUpdate(main_query);
+    public void BuildDatabase() throws SQLException{
+    
+        String queryFormat = 
+        		" create table %s "
+        		+ "(id integer PRIMARY KEY,"
+        		+ "actors varchar(%s),"
+        		+ "purposes varchar(%s),"
+                + "links varchar(%s),"
+                + "annotation varchar(%s),"
+                + "rating varchar(%s),"
+                + "name varchar(%s))";
+        
+        DropDatabase();
+        executeUpdate(String.format(queryFormat, 
+        		FILMS_TABLE, 
+        		
+        		FIELD_SIZE, 
+        		FIELD_SIZE,
+        		FIELD_SIZE, 
+        		FIELD_SIZE,
+        		FIELD_SIZE, 
+        		FIELD_SIZE));
     }
 
-    private String writeArrayList(ArrayList<String> arr) {
+    private String writeList(List<String> arr) {
         return JSONValue.toJSONString(arr);
     }
 
-    private String writePurposes(TreeMap<String, ArrayList<String>> purposes) {
+    private String writePurposes(Map<String, List<String>> purposes) {
         return JSONValue.toJSONString(purposes);
     }
+    
+    private String checkIdValue(String value) throws SQLException{
+		if(!value.matches("\\d*")){
+			throw new SQLException();
+		}
+		return value;
+	}
+	
+	private String checkFieldValue(String value) throws SQLException{
+		if(!value.matches("[^']*")){
+			throw new SQLException();
+		}
+		return value;
+	}
 
-    // insert film if not exists
-    public boolean InsertFilm(Film film) {
-        String main_query = "insert into " + films_table + " (id, "
-                + "purposes," + " links, " + "annotation, " + "rating,"
-                + " name , actors)  SELECT " + film.getId() + "," + " '"
-                + writePurposes(film.getPurposes()) + "'," + " '"
-                + writeArrayList(film.getSuggestion_links()) + "', " + "'"
-                + film.getAnnotation() + "', " + "'" + film.getRating() + "', "
-                + "'" + film.getName() + "', '"
-                + writeArrayList(film.getActors())
-                + "' WHERE NOT EXISTS (  SELECT id FROM " + films_table
-                + " WHERE id = " + film.getId() + ");";
-        return executeUpdate(main_query);
+    public void InsertFilm(Film film) throws SQLException{
+       
+        String queryFormat = "insert into %s "
+        		+ "(id, purposes, links, annotation, rating, name, actors)  "
+        		+ "SELECT %s, '%s', '%s', '%s', '%s', '%s', '%s' " 
+                + " WHERE NOT EXISTS (  SELECT id FROM %s "
+                + " WHERE id = %s);";
+        
+        executeUpdate(String.format(queryFormat, 
+        		FILMS_TABLE,
+        		
+        		checkIdValue(film.getId()), 
+        		checkFieldValue(writePurposes(film.getPurposes())), 
+        		checkFieldValue(writeList(film.getSuggestion_links())),
+				checkFieldValue(film.getAnnotation()), 
+				checkFieldValue(film.getRating()),
+				checkFieldValue(film.getName()), 
+				checkFieldValue(writeList(film.getActors())),
+        		
+        		FILMS_TABLE,
+        		
+        		checkIdValue(film.getId())));
     }
 
-    public boolean UpdateFilm(Film film) {
-        String main_query = "UPDATE " + films_table + " SET id=" + film.getId()
-                + " , purposes='" + film.getPurposes() + "', links='"
-                + writeArrayList(film.getSuggestion_links()) + "', annotation='"
-                + film.getAnnotation() + "', rating='" + film.getRating()
-                + "', name='" + film.getName() + "', actors='"
-                + writeArrayList(film.getActors()) + "' WHERE id=" + film.getId();
-        return executeUpdate(main_query);
+    public void UpdateFilm(Film film) throws SQLException {
+        String queryFormat = 
+        		"UPDATE %s "
+        		+ "SET id=%s, "
+        		+ "purposes='%s', "
+        		+ "links='%s', "
+        		+ "annotation='%s', "
+        		+ "rating='%s', "
+        		+ "name='%s', "
+        		+ "actors='%s' "
+        		+ "WHERE id=%s";
+        executeUpdate(String.format(queryFormat, 
+        		FILMS_TABLE,
+        		
+        		checkIdValue(film.getId()),
+        		checkFieldValue(writePurposes(film.getPurposes())),
+				checkFieldValue(writeList(film.getSuggestion_links())),
+				checkFieldValue(film.getAnnotation()),
+				checkFieldValue(film.getRating()),
+				checkFieldValue(film.getName()),
+				checkFieldValue(writeList(film.getActors())),
+        		
+				checkIdValue(film.getId()) ));
     }
     
-    public boolean InsertWithUpdate(Film film){
-        return UpdateFilm(film) && 
+    public void InsertWithUpdate(Film film) throws SQLException {
+        UpdateFilm(film);
         InsertFilm(film);
     }
 
-    public boolean deleteFilmFromId(String id) {
-        String main_query = "delete from " + films_table + " where id=" + id;
-        return executeUpdate(main_query);
+    public void deleteFilmFromId(String id) throws SQLException{
+        String queryFormat = "delete from %s "
+        					+ "where id=%s";
+        
+        executeUpdate(String.format(queryFormat,
+        		FILMS_TABLE, 
+        		checkIdValue(id)));
     }
 
-    // returns null if failed
-    private String getResultSetValue(ResultSet set, String param) {
+    private List<String> parseListString(String s) {
         try {
-            String result = set.getString(param);
-            return result;
-        } catch (SQLException excp) {
-            return null;
-        }
-    }
-
-    private ArrayList<String> parseArrayListString(String s) {
-        try {
-            return (ArrayList<String>) (ConfigParser.getJSONParser()).parse(s,
-                    ConfigParser.getContainerFactory());
+            return (List<String>) (MyParseUtils.getJSONParser()).parse(s,
+                    MyParseUtils.getContainerFactory());
         } catch (ParseException e) {
             return new ArrayList<String>();
         }
     }
 
-    private TreeMap<String, ArrayList<String>> parsePurposes(String s) {
+    private Map<String, List<String>> parsePurposes(String s) {
         try {
-            return (TreeMap<String, ArrayList<String>>) (ConfigParser
+            return (Map<String, List<String>>) (MyParseUtils
                     .getJSONParser()).parse(s,
-                    ConfigParser.getContainerFactory());
+                    MyParseUtils.getContainerFactory());
         } catch (ParseException e) {
-            return new TreeMap<String, ArrayList<String>>();
+            return new TreeMap<String, List<String>>();
         }
     }
+    
+    private String getResultSetField(ResultSet set, String field) throws SQLException{
+    	String value = set.getString(field);
+    	if(value == null){
+    		return "";
+    	}
+    	return value;
+    }
+    
+    public static class FilmNotFoundException extends Exception{
 
-    public Film selectFilm(String id) {
-        String main_query = "select * from " + films_table + " where id=" + id;
-        ResultSet set = executeQuery(main_query);
-        if (set == null) {
-            return null;
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 6034087387014737521L;
+    	
+    }
+
+    public synchronized Film selectFilm(String id) throws SQLException, FilmNotFoundException {
+        String queryFormat = "select * from %s "
+        					+ "where id=%s";
+        ResultSet set = executeQuery(String.format(queryFormat,
+					FILMS_TABLE, 
+					checkIdValue(id)) );
+        
+        if(set == null){
+        	throw new FilmNotFoundException();
         }
-        try {
-            set.next();
-        } catch (SQLException e) {
-            return null;
+
+        if(!set.next()){
+        	throw new FilmNotFoundException();
         }
+        
         Film film = new Film();
-        String value = "";
-        if ((value = getResultSetValue(set, "id")) == null) {
-            return null;
-        }
-        film.setId(value);
-        if ((value = getResultSetValue(set, "name")) == null) {
-            return null;
-        }
-        film.setName(value);
-        if ((value = getResultSetValue(set, "rating")) == null) {
-            return null;
-        }
-        film.setRating(value);
-        if ((value = getResultSetValue(set, "annotation")) == null) {
-            return null;
-        }
-        film.setAnnotation(value);
-        if ((value = getResultSetValue(set, "links")) == null) {
-            return null;
-        }
-        film.setSuggestion_links(parseArrayListString(value));
-        if ((value = getResultSetValue(set, "actors")) == null) {
-            return null;
-        }
-        film.setActors(parseArrayListString(value));
-        if ((value = getResultSetValue(set, "purposes")) == null) {
-            return null;
-        }
-        film.setPurposes(parsePurposes(value));
+        film.setId(getResultSetField(set, "id"));
+        film.setName(getResultSetField(set, "name"));
+        film.setRating(getResultSetField(set, "rating"));
+        film.setAnnotation(getResultSetField(set, "annotation"));
+        film.setSuggestion_links(parseListString(getResultSetField(set, "links")));
+        film.setActors(parseListString(getResultSetField(set, "actors")));
+        film.setPurposes(parsePurposes(getResultSetField(set, "purposes")));
         return film;
     }
 }

@@ -1,10 +1,10 @@
-package ru.kpsug.app.search;
+package ru.kpsug.app.activity;
 
 import java.util.Set;
 
 import ru.kpsug.app.R;
+import ru.kpsug.app.etc.IntentFactory;
 import ru.kpsug.app.service.HistoryKeeperService;
-import ru.kpsug.app.service.IntentFactory;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -22,24 +22,26 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 public class HistoryActivity extends AppCompatActivity {
-    private HistoryKeeperService.HistoryKeeperBinder mbinderHistory = null;
+    private HistoryKeeperService.HistoryKeeperBinder binderHistory = null;
     private LinearLayout lm;
+    
     private ServiceConnection connHistory = new ServiceConnection() {
         @Override
-        public void onServiceDisconnected(ComponentName name) {
-
-        }
-
-        @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
-            mbinderHistory = (HistoryKeeperService.HistoryKeeperBinder) service;
+            binderHistory = (HistoryKeeperService.HistoryKeeperBinder) service;
             viewHistory();
         }
+
+		@Override
+		public void onServiceDisconnected(ComponentName name) {
+			// TODO Auto-generated method stub
+			
+		}
     };
 
     private void viewHistory() {
-        if (mbinderHistory != null) {
-            viewHistory(mbinderHistory.getService().getHistoryStr());
+        if (binderHistory != null) {
+            viewHistory(binderHistory.getService().getHistoryStr());
         }
     }
 
@@ -48,8 +50,8 @@ public class HistoryActivity extends AppCompatActivity {
         for (final String str : value) {
             View v = LayoutInflater.from(this)
                     .inflate(R.layout.list_item, null);
-            TextView product = (TextView) v.findViewById(R.id.tadaText);
-            final HistoryKeeperService.Node node = new HistoryKeeperService.Node(
+            TextView product = (TextView) v.findViewById(R.id.ListItemText);
+            final HistoryKeeperService.HistorySetNode node = new HistoryKeeperService.HistorySetNode(
                     str);
             product.setText(node.prettyPrint());
             product.setOnClickListener(new OnClickListener() {
@@ -92,13 +94,13 @@ public class HistoryActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_history);
-        lm = (LinearLayout) findViewById(R.id.LinearLayout1);
-        ((Button) findViewById(R.id.toggleButton1))
+        lm = (LinearLayout) findViewById(R.id.LinearLayoutHistoryActivity);
+        ((Button) findViewById(R.id.toggleButtonCleanHistory))
                 .setOnClickListener(new OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        if (mbinderHistory != null) {
-                            mbinderHistory.getService().cleanHistory();
+                        if (binderHistory != null) {
+                            binderHistory.getService().cleanHistory();
                         }
                         clearViewHistory();
                     }
