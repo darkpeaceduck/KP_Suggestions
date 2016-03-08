@@ -1,12 +1,14 @@
 package ru.kpsug.app.service;
 
 import java.io.IOException;
+import java.net.UnknownHostException;
 
 import android.app.Service;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Binder;
 import android.os.IBinder;
+import android.util.Log;
 import ru.kpsug.app.R;
 import ru.kpsug.server.MyProtoClient;
 import ru.kpsug.server.MyProtoRequest;
@@ -71,6 +73,14 @@ public class DbConnectionService extends Service {
 
 		private SuggestionsResult send() {
 			SuggestionsResult sresult = null;
+			if(!client.isConnected()){
+				try{
+					client.connect();
+				}catch(IOException e){
+					e.printStackTrace();
+					reconnect();
+				}
+			}
 			while (true) {
 				client.send(savedRequest.getRequest());
 				try {

@@ -90,5 +90,9 @@ public class MyProtoClient {
 		closeSocket();
 		connect();
 	}
+	
+	public synchronized boolean isConnected(){
+		return socket != null;
+	}
 
 }

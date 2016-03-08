@@ -37,6 +37,8 @@ public class FilmDetailsActivity extends AppCompatActivity implements DbConnecti
     private TextView annotationView = null;
     private TextView actorsView = null;
     private Film savedFilm = null;
+    private Button buttonSearch;
+    private Button buttonOpenInBrowser;
     
     @Override
 	public void onDbConnectionTaskCallback(SuggestionsResult result) {
@@ -87,6 +89,8 @@ public class FilmDetailsActivity extends AppCompatActivity implements DbConnecti
         actorsView.setText(film.getActors().toString());
         ((ProgressBar) findViewById(R.id.progressBarFilmDetails))
                 .setVisibility(View.GONE);
+        buttonSearch.setVisibility(View.VISIBLE);
+        buttonOpenInBrowser.setVisibility(View.VISIBLE);
         if (connectionBinderHistory != null) {
             connectionBinderHistory.getService().writeToHistory(
                     new HistorySetNode(HistorySetNode.Type.FILM, id, FilmStringPretty
@@ -95,28 +99,32 @@ public class FilmDetailsActivity extends AppCompatActivity implements DbConnecti
     }
 
     private void initSugButtion() {
-        ((Button) findViewById(R.id.buttonSearch))
-                .setOnClickListener(new OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        if (connectionBinderHistory != null) {
-                            connectionBinderHistory.getService().writeToHistory(
-                                    new HistorySetNode(HistorySetNode.Type.SUGGESTIONS, id,
-                                            FilmStringPretty
-                                                    .prefixPrint(savedFilm)));
-                        }
-                        startActivity(IntentFactory.createSuggestionsActivity(
-                                FilmDetailsActivity.this, id));
-                    }
-                });
-        ((Button) findViewById(R.id.buttonOpenInBrowser))
-                .setOnClickListener(new OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        startActivity(IntentFactory.createBrowserIntent(KpPath
-                                .makeFilmLink(id)));
-                    }
-                });
+    	buttonSearch =  (Button) findViewById(R.id.buttonSearch);
+    	buttonOpenInBrowser = (Button) findViewById(R.id.buttonOpenInBrowser);
+    	
+    	buttonSearch.setVisibility(View.GONE);
+    	buttonOpenInBrowser.setVisibility(View.GONE);
+        
+    	buttonSearch.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (connectionBinderHistory != null) {
+                    connectionBinderHistory.getService().writeToHistory(
+                            new HistorySetNode(HistorySetNode.Type.SUGGESTIONS, id,
+                                    FilmStringPretty
+                                            .prefixPrint(savedFilm)));
+                }
+                startActivity(IntentFactory.createSuggestionsActivity(
+                        FilmDetailsActivity.this, id));
+            }
+        });
+        buttonOpenInBrowser.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(IntentFactory.createBrowserIntent(KpPath
+                        .makeFilmLink(id)));
+            }
+        });
     }
 
     @Override

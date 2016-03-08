@@ -76,7 +76,6 @@ public class SearchActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        getSupportActionBar().hide();
         createAutoComplete();
         bindService(new Intent(this, HistoryKeeperService.class), connHistory,
                 Context.BIND_AUTO_CREATE);
