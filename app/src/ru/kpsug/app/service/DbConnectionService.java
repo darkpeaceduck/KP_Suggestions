@@ -1,14 +1,12 @@
 package ru.kpsug.app.service;
 
 import java.io.IOException;
-import java.net.UnknownHostException;
 
 import android.app.Service;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Binder;
 import android.os.IBinder;
-import android.util.Log;
 import ru.kpsug.app.R;
 import ru.kpsug.server.MyProtoClient;
 import ru.kpsug.server.MyProtoRequest;
@@ -22,8 +20,38 @@ public class DbConnectionService extends Service {
 		}
 	}
 
+	public static class DbConnectionServiceResponse {
+		public enum State {
+			ERROR, SUCCESS
+		}
+
+		private State state;
+		private SuggestionsResult result;
+
+		public DbConnectionServiceResponse(SuggestionsResult result) {
+			super();
+			this.result = result;
+			this.state = State.SUCCESS;
+			if (result == null) {
+				state = State.ERROR;
+			}
+		}
+
+		public State getState() {
+			return state;
+		}
+
+		public SuggestionsResult getResult() {
+			return result;
+		}
+
+		public boolean isError() {
+			return state == State.ERROR;
+		}
+	}
+
 	public interface DbConnectionTaskCallback {
-		void onDbConnectionTaskCallback(SuggestionsResult result);
+		void onDbConnectionTaskCallback(DbConnectionServiceResponse result);
 	}
 
 	private class DbAsyncRequest {
@@ -46,8 +74,11 @@ public class DbConnectionService extends Service {
 
 	}
 
-	private class DbConnectionSendReceiveTask extends AsyncTask<DbAsyncRequest, Object, SuggestionsResult> {
-		private static final int SLEEP_RECONNECT_TIMEOUT = 1000;
+	private class DbConnectionSendReceiveTask extends AsyncTask<DbAsyncRequest, Object, DbConnectionServiceResponse> {
+		private static final int SLEEP_RECONNECT_TIMEOUT = 300;
+		private static final int RECONNECT_TRYES = 2;
+		private static final int SEND_TRYES = 1;
+
 		private final MyProtoClient client;
 		private DbAsyncRequest savedRequest;
 
@@ -56,7 +87,7 @@ public class DbConnectionService extends Service {
 		}
 
 		private void reconnect() {
-			while (true) {
+			for (int i = 0; i < RECONNECT_TRYES; i++) {
 				try {
 					client.reconnect();
 				} catch (IOException e2) {
@@ -71,38 +102,41 @@ public class DbConnectionService extends Service {
 			}
 		}
 
-		private SuggestionsResult send() {
+		private DbConnectionServiceResponse send() {
 			SuggestionsResult sresult = null;
-			if(!client.isConnected()){
-				try{
-					client.connect();
-				}catch(IOException e){
-					e.printStackTrace();
-					reconnect();
-				}
-			}
-			while (true) {
-				client.send(savedRequest.getRequest());
+			if (!client.isConnected()) {
 				try {
-					sresult = client.nextResponse();
-				} catch (Exception e) {
+					client.connect();
+				} catch (IOException e) {
 					e.printStackTrace();
 					reconnect();
-					continue;
 				}
-				break;
 			}
-			return sresult;
+
+			if (client.isConnected()) {
+				for (int i = 0; i < SEND_TRYES; i++) {
+					client.send(savedRequest.getRequest());
+					try {
+						sresult = client.nextResponse();
+					} catch (Exception e) {
+						e.printStackTrace();
+						reconnect();
+						continue;
+					}
+					break;
+				}
+			}
+			return new DbConnectionServiceResponse(sresult);
 		}
 
 		@Override
-		protected SuggestionsResult doInBackground(DbAsyncRequest... params) {
+		protected DbConnectionServiceResponse doInBackground(DbAsyncRequest... params) {
 			savedRequest = params[0];
 			return send();
 		}
 
 		@Override
-		protected void onPostExecute(SuggestionsResult result) {
+		protected void onPostExecute(DbConnectionServiceResponse result) {
 			savedRequest.getCallback().onDbConnectionTaskCallback(result);
 		}
 	}

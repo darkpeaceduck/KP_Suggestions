@@ -2,6 +2,7 @@ package ru.kpsug.app.etc;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -26,5 +27,21 @@ public class FilmStringPretty {
 		}
 
 		return film.getName() + "(" + StringUtils.join(values, ",") + ")";
+	}
+
+	public static String purposesPrint(Film film) {
+		Map<String, List<String>> purposes = film.getPurposes();
+		StringBuilder stringBuilder = new StringBuilder();
+		for (Map.Entry<String, List<String>> entry : purposes.entrySet()) {
+			stringBuilder.append(entry.getKey().toUpperCase());
+			stringBuilder.append(" : ");
+			stringBuilder.append(StringUtils.join(entry.getValue(), ", "));
+			stringBuilder.append("\n\n");
+		}
+		return stringBuilder.toString();
+	}
+
+	public static String actorsPrint(Film film) {
+		return StringUtils.join(film.getActors(), "\n");
 	}
 }

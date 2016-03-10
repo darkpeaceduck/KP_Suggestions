@@ -15,7 +15,7 @@
         android:scrollbars="none"
         tools:context="ru.kpsug.app.activity.FilmDetailsActivity" >
 
-        <TextView
+        <ru.kpsug.app.etc.ExpandableTextView
             android:id="@+id/textViewPurposes"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -24,9 +24,13 @@
             android:layout_below="@+id/textViewRating"
             android:layout_marginTop="17dp"
             android:text="Purposes"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
+            android:gravity="center"
+            android:minHeight = "65dip"
+            android:background="@drawable/list_item_drawable"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+             />
 
-        <TextView
+        <ru.kpsug.app.etc.ExpandableTextView
             android:id="@+id/textViewAnnotation"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -35,9 +39,13 @@
             android:layout_below="@+id/textViewPurposes"
             android:layout_marginTop="17dp"
             android:text="Annotation"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
+            android:gravity="center"
+            android:minHeight = "65dip"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:background="@drawable/list_item_drawable" 
+         />
 
-        <TextView
+        <ru.kpsug.app.etc.ExpandableTextView
             android:id="@+id/textViewActors"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -46,7 +54,11 @@
             android:layout_below="@+id/textViewAnnotation"
             android:layout_marginTop="17dp"
             android:text="Actors"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
+            android:gravity="center"
+            android:minHeight = "65dip"
+            android:background="@drawable/list_item_drawable"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+         />
 
         <TextView
             android:id="@+id/textViewName"
@@ -72,8 +84,9 @@
             style="?android:attr/progressBarStyleLarge"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_above="@+id/textViewActors"
-            android:layout_centerHorizontal="true" />
+            android:layout_centerHorizontal="true"
+     	    android:layout_centerVertical="true"
+		 />
 
         <TextView
             android:id="@+id/textViewRating"
@@ -83,6 +96,7 @@
             android:layout_below="@+id/textViewName"
             android:layout_marginTop="17dp"
             android:text="Rating"
+            android:gravity="center"
             android:textAppearance="?android:attr/textAppearanceLarge" />
 
         <Button
@@ -95,6 +109,17 @@
             android:layout_below="@+id/buttonSearch"
             android:layout_marginTop="17dp"
             android:text="@string/link_to_kp_button" />
+
+        <Button
+            android:id="@+id/buttonRefresh"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerHorizontal="true"
+            android:layout_alignLeft="@+id/textViewName"
+            android:layout_below="@+id/textViewName"
+            android:layout_marginTop="17dp"
+            android:text="@string/button_refresh_text" />
 
     </RelativeLayout>
 

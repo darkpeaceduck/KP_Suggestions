@@ -92,7 +92,7 @@ public class MyProtoClient {
 	}
 	
 	public synchronized boolean isConnected(){
-		return socket != null;
+		return socket != null && writer != null && reader != null;
 	}
 
 }
