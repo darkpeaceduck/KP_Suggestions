@@ -24,9 +24,14 @@
     <string name="sorted_dialog_radio2">Неубыванию года</string>
     <string name="sorted_dialog_radio3">Невозрастанию года</string>
     <string name="link_to_kp_button">Открыть в браузере</string>
+    <string name="button_refresh_text">Обновить</string>
     <string name="history_tag">history</string>
     <string name="history_file_tag">history</string>
     <string name="title_activity_history">История</string>
     <string name="button_clean_history">Очистить историю</string>
-
+	<string name="annotation_view_default_expand_text">Раскрыть Описание</string>
+	<string name="actors_view_default_expand_text">Показать актеров</string>
+	<string name="purposes_view_default_expand_text">Показать разную информацию</string>
+	<string name="err_connecting_to_server">Не удалось соединиться с сервером</string>
+	<string name="err_not_found_film">Фильм не найден в базе данных</string>
 </resources>

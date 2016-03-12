@@ -2,10 +2,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="ru.kpsug.app.search.ExtendedSearchActivity" >
+    tools:context="ru.kpsug.app.activity.ExtendedSearchActivity" >
 
     <ScrollView
-        android:id="@+id/scrollView1"
+        android:id="@+id/scrollViewExtendedSearch"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
@@ -14,7 +14,7 @@
         android:layout_alignParentTop="true" >
 
         <LinearLayout
-            android:id="@+id/o2"
+            android:id="@+id/LinearLayoutExtendedSearch"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
@@ -23,7 +23,7 @@
     </ScrollView>
 
     <ProgressBar
-        android:id="@+id/progressBar1"
+        android:id="@+id/progressBarExtendedSearch"
         style="?android:attr/progressBarStyleLarge"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

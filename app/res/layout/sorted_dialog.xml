@@ -16,25 +16,25 @@
         android:text="@string/depth_dialog_button_text" />
 
     <RadioGroup
-        android:id="@+id/radioGroup1"
+        android:id="@+id/radioGroupSortedDialog"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" >
 
         <RadioButton
-            android:id="@+id/radio0"
+            android:id="@+id/radioRating"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:checked="true"
             android:text="@string/sorted_dialog_radio1" />
 
         <RadioButton
-            android:id="@+id/radio1"
+            android:id="@+id/radioMore"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/sorted_dialog_radio2" />
 
         <RadioButton
-            android:id="@+id/radio2"
+            android:id="@+id/radioLess"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/sorted_dialog_radio3" />

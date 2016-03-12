@@ -16,7 +16,7 @@
         android:text="@string/depth_dialog_button_text" />
 
     <SeekBar
-        android:id="@+id/seekBar1"
+        android:id="@+id/seekBarDepthDialog"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:minHeight="50dp"
