@@ -9,7 +9,7 @@ import java.io.PrintWriter;
 import java.net.Socket;
 
 import ru.kpsug.db.DBOperator;
-import ru.kpsug.server.Suggestions.SuggestionsResult;
+import ru.kpsug.server.SuggestionsCalculator.SuggestionsResult;
 import ru.kpsug.server.tcpServer.ServerLog;
 
 public class RequestHandler implements Runnable {
@@ -46,7 +46,7 @@ public class RequestHandler implements Runnable {
 	}
 
 	SuggestionsResult processDb(String id, int depth) {
-		return Suggestions.getFilmsAround(id, depth, db);
+		return SuggestionsCalculator.getFilmsAround(id, depth, db);
 	}
 
 }

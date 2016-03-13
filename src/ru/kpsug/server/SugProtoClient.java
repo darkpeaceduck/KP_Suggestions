@@ -10,10 +10,10 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.Map;
 
-import ru.kpsug.server.Suggestions.SuggestionsResult;
-import ru.kpsug.utils.MyParseUtils;
+import ru.kpsug.server.SuggestionsCalculator.SuggestionsResult;
+import ru.kpsug.utils.ParseUtils;
 
-public class MyProtoClient {
+public class SugProtoClient {
 	private static final String HOST_DEFAULT = "127.0.0.1";
 	private static final int PORT_DEFAULT = 6666;
 
@@ -24,7 +24,7 @@ public class MyProtoClient {
 	private BufferedReader reader;
 
 	void parseConfig(InputStream config) throws IOException {
-		Map<String, String> parsed = MyParseUtils.parseConfigInp(config);
+		Map<String, String> parsed = ParseUtils.parseConfigInp(config);
 		if (parsed.containsKey("host")) {
 			host = parsed.get("host");
 		}
@@ -33,7 +33,7 @@ public class MyProtoClient {
 		}
 	}
 
-	public MyProtoClient(InputStream input) {
+	public SugProtoClient(InputStream input) {
 		if (input != null) {
 			try {
 				parseConfig(input);
@@ -48,7 +48,7 @@ public class MyProtoClient {
 		reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 	}
 
-	public synchronized void send(MyProtoRequest request) {
+	public synchronized void send(SugProtoRequest request) {
 		String result = String.valueOf(request.getType());
 		result += "=" + request.getDepth();
 		result += "=" + request.getId();

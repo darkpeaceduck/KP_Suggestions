@@ -5,9 +5,9 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
 
-import ru.kpsug.server.Suggestions.SuggestionsResult;
+import ru.kpsug.server.SuggestionsCalculator.SuggestionsResult;
 
-public class MyProtoFormatter {
+public class SugProtoParser {
 	private static List<String> parseToLexems(String s) {
 		List<String> words = new ArrayList<>();
 		StringTokenizer tokenizer = new StringTokenizer(s);
@@ -21,8 +21,8 @@ public class MyProtoFormatter {
 		return words;
 	}
 
-	public static MyProtoRequest parse(String s) {
-		MyProtoRequest result = null;
+	public static SugProtoRequest parse(String s) {
+		SugProtoRequest result = null;
 		List<String> words = parseToLexems(s);
 		if (words.size() >= 3) {
 			int type, id;
@@ -33,12 +33,12 @@ public class MyProtoFormatter {
 			} catch (NumberFormatException excp) {
 				return null;
 			}
-			result = new MyProtoRequest(type, id, words.get(2));
+			result = new SugProtoRequest(type, id, words.get(2));
 		}
 		return result;
 	}
 
-	public static String makeResponse(MyProtoRequest request, SuggestionsResult suggestions_result) {
+	public static String makeResponse(SugProtoRequest request, SuggestionsResult suggestions_result) {
 		if (suggestions_result == null) {
 			return makeError();
 		}

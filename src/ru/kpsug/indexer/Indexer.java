@@ -11,6 +11,8 @@ import java.util.concurrent.TimeUnit;
 import ru.kpsug.db.DBOperator;
 import ru.kpsug.db.DBOperator.FilmNotFoundException;
 import ru.kpsug.db.Film;
+import ru.kpsug.indexer.SingleThreadBfsTask.SingleThreadBfsTaskConstrArgs;
+import ru.kpsug.indexer.SingleThreadSegmentTask.SingleThreadSegmentTaskConstrArgs;
 import ru.kpsug.kp.KpParser;
 import ru.kpsug.kp.KpParser.FuckupException;
 import ru.kpsug.kp.KpPath;
@@ -55,7 +57,7 @@ public class Indexer {
 					String kpFilmLikePageUrl = KpPath.makeFilmLikeUrlPrefixLink(rootUrl, String.valueOf(id));
 
 					film = KpParser.parseFilm(PageLoader.loadUrl(kpFilmPageUrl), PageLoader.loadUrl(kpFilmLikePageUrl));
-					db.InsertFilm(film);
+					db.insertFilm(film);
 					logger.writeLog(Integer.valueOf(id), true);
 					break;
 				} catch (FuckupException | PageLoaderException e1) {
@@ -100,7 +102,8 @@ public class Indexer {
 		}
 
 		for (int i = pageStart; i <= pageEnd; i++) {
-			Runnable task = new SingleThreadBfsTask(0, inserter, i, depth, log);
+			Runnable task = new SingleThreadBfsTask(
+					new SingleThreadBfsTaskConstrArgs(0, inserter, i, depth, log));
 			taskExecutor.execute(task);
 		}
 	}
@@ -111,8 +114,8 @@ public class Indexer {
 		}
 
 		for (int i = pageStart; i <= pageEnd; i += taskSegmentLength) {
-			Runnable task = new SingleThreadSegmentTask(i - pageStart, i, Math.min(pageEnd, i + taskSegmentLength), log,
-					inserter);
+			Runnable task = new SingleThreadSegmentTask(new SingleThreadSegmentTaskConstrArgs(i - pageStart, i, Math.min(pageEnd, i + taskSegmentLength), log,
+					inserter));
 			taskExecutor.execute(task);
 		}
 	}
@@ -121,8 +124,8 @@ public class Indexer {
 		if (mode != IndexerMode.MULTI_THREAD_BFS) {
 			return;
 		}
-
-		new MultiThreadBfsTask(0, depth, log, pageStart, pageEnd, inserter).run();
+		new MultiThreadBfsTask(new MultiThreadBfsTask.MultiThreadBfsTaskConstrArgs(
+				0, depth, log, pageStart, pageEnd, inserter)).run();
 	}
 
 	private static void initDb() throws SQLException {

@@ -15,9 +15,9 @@ import org.json.simple.parser.ParseException;
 import ru.kpsug.db.DBOperator;
 import ru.kpsug.db.Film;
 import ru.kpsug.utils.JSONParceble;
-import ru.kpsug.utils.MyParseUtils;
+import ru.kpsug.utils.ParseUtils;
 
-public class Suggestions {
+public class SuggestionsCalculator {
 	public static class SuggestionsResult implements JSONParceble {
 		private static final int MAX_LIMIT = 100;
 
@@ -47,7 +47,7 @@ public class Suggestions {
 
 		public List<Film> getFilmSortedByYearMore(int position, int limit) {
 			List<Film> films = getFilmsSortedByRating(position, MAX_LIMIT);
-			Collections.sort(films, Film.getFilmYearComparator());
+			Collections.sort(films, Film.createFilmYearComparator());
 			return films.subList(0, Math.min(films.size(), limit));
 		}
 
@@ -60,7 +60,7 @@ public class Suggestions {
 		public void setLevelsEdgesFromListFilm(Map<Integer, List<Film>> levelsEdges) {
 			for (Entry<Integer, List<Film>> entry : levelsEdges.entrySet()) {
 				List<String> list = new ArrayList<String>();
-				Collections.sort(entry.getValue(), Film.getFilmRatingComparator());
+				Collections.sort(entry.getValue(), Film.createFilmRatingComparator());
 				int num = 0;
 				for (Film film : entry.getValue()) {
 					list.add(film.getId());
@@ -115,7 +115,7 @@ public class Suggestions {
 		public boolean refreshStateFromJSONString(String s) {
 			try {
 				return refreshStateFromObject(
-						MyParseUtils.getJSONParser().parse(s, MyParseUtils.getContainerFactory()));
+						ParseUtils.getJSONParser().parse(s, ParseUtils.getContainerFactory()));
 			} catch (ParseException e) {
 				return false;
 			}
@@ -160,7 +160,7 @@ public class Suggestions {
 	private static final int MAX_RUNTIME_FILMS_ON_LEVEL = 100;
 
 	private static Set<Film> getSetWithComp() {
-		return new TreeSet<Film>(Film.getFilmRatingComparator());
+		return new TreeSet<Film>(Film.createFilmRatingComparator());
 	}
 
 	public static SuggestionsResult mainSuggestionsMethod(String id, int depth, DBOperator db) {

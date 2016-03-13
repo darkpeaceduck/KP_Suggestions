@@ -1,6 +1,6 @@
 package ru.kpsug.server;
 
-public class MyProtoRequest {
+public class SugProtoRequest {
 	private int type;
 	private int depth;
 	private String id;
@@ -29,7 +29,7 @@ public class MyProtoRequest {
 		this.id = id;
 	}
 
-	public MyProtoRequest(int type, int depth, String id) {
+	public SugProtoRequest(int type, int depth, String id) {
 		super();
 		this.type = type;
 		this.depth = depth;

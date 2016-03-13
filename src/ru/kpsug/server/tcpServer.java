@@ -13,7 +13,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import ru.kpsug.db.DBOperator;
-import ru.kpsug.utils.MyParseUtils;
+import ru.kpsug.utils.ParseUtils;
 
 public class tcpServer implements Runnable {
 	public static class ServerLog {
@@ -38,7 +38,7 @@ public class tcpServer implements Runnable {
 	volatile private ServerLog log;
 
 	private void parseConfig(String path) throws IOException {
-		Map<String, String> result = MyParseUtils.parseConfig(path);
+		Map<String, String> result = ParseUtils.parseConfig(path);
 		for (Entry<String, String> pair : result.entrySet()) {
 			String key = pair.getKey();
 			String value = pair.getValue();

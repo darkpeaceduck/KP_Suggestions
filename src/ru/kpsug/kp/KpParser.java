@@ -16,7 +16,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import ru.kpsug.db.Film;
-import ru.kpsug.utils.MyParseUtils;
+import ru.kpsug.utils.ParseUtils;
 
 public class KpParser {
 	private static Document removeSpecialChars(Document doc) {
@@ -220,7 +220,7 @@ public class KpParser {
 		try {
 			String s = doc.body().html();
 			s = s.substring(1, s.length() - 1);
-			map = (Map<String, Object>) MyParseUtils.getJSONParser().parse(s, MyParseUtils.getContainerFactory());
+			map = (Map<String, Object>) ParseUtils.getJSONParser().parse(s, ParseUtils.getContainerFactory());
 		} catch (ParseException e) {
 			return null;
 		}

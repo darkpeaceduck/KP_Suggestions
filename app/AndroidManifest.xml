@@ -35,7 +35,7 @@
         </activity>
 
         <service
-            android:name="ru.kpsug.app.service.DbConnectionService"
+            android:name="ru.kpsug.app.service.DbConnectionManager"
             android:enabled="true" />
         <service
             android:name="ru.kpsug.app.service.HistoryKeeperService"

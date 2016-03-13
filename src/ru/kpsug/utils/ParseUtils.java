@@ -13,7 +13,7 @@ import java.util.TreeMap;
 import org.json.simple.parser.ContainerFactory;
 import org.json.simple.parser.JSONParser;
 
-public class MyParseUtils {
+public class ParseUtils {
 	public static Map<String, String> parseConfigInp(InputStream input) throws IOException {
 		BufferedReader reader = new BufferedReader(new InputStreamReader(input));
 		String line = null;

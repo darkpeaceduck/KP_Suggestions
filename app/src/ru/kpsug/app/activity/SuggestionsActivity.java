@@ -1,11 +1,7 @@
 package ru.kpsug.app.activity;
 
-import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
@@ -19,40 +15,29 @@ import ru.kpsug.app.dialog.LimitDialog;
 import ru.kpsug.app.dialog.SortedDialog;
 import ru.kpsug.app.etc.IntentFactory;
 import ru.kpsug.app.etc.SuggestionsActivitySortedMode;
-import ru.kpsug.app.service.DbConnectionService;
-import ru.kpsug.app.service.DbConnectionService.DbConnectionServiceResponse;
-import ru.kpsug.server.Suggestions.SuggestionsResult;
+import ru.kpsug.app.service.DbConnectionManager;
+import ru.kpsug.app.service.DbConnectionManager.DbConnectionManagerResponse;
+import ru.kpsug.app.service.DbConnectionManager.DbConnectionTaskCallback;
+import ru.kpsug.server.SuggestionsCalculator.SuggestionsResult;
 
-public class SuggestionsActivity extends AppCompatActivity implements DbConnectionService.DbConnectionTaskCallback {
-
-	@Override
-	public void onDbConnectionTaskCallback(DbConnectionServiceResponse result) {
-		if (!result.isError()) {
-			refreshPages(result.getResult());
-		}
-	}
+public class SuggestionsActivity extends AppCompatActivity {
 
 	private static final int DEFAULT_DEPTH_LEVEL = 2;
 
 	private SuggestionsActivityFragmentAdapter sectionsPagerAdapter;
 	private ViewPager viewPager;
-	private DbConnectionService.DbConnectionBinder connectionBinder;
 	private String filmId;
 	private DepthDialog depthDlg;
 	private LimitDialog limitDlg;
 	private SortedDialog sortedDlg;
 
-	private final ServiceConnection conn = new ServiceConnection() {
-		@Override
-		public void onServiceConnected(ComponentName name, IBinder service) {
-			connectionBinder = (DbConnectionService.DbConnectionBinder) service;
-			onLoad(DEFAULT_DEPTH_LEVEL);
-		}
+	private DbConnectionTaskCallback dbConnectionTaskCallback = new DbConnectionTaskCallback() {
 
 		@Override
-		public void onServiceDisconnected(ComponentName name) {
-			// TODO Auto-generated method stub
-
+		public void onDbConnectionTaskCallback(DbConnectionManagerResponse result) {
+			if (!result.isError()) {
+				refreshPages(result.getResult());
+			}
 		}
 	};
 
@@ -64,7 +49,7 @@ public class SuggestionsActivity extends AppCompatActivity implements DbConnecti
 	public void onLoad(int page) {
 		viewPager.setAdapter(sectionsPagerAdapter);
 		((ProgressBar) findViewById(R.id.progressBarFilmDetails)).setVisibility(View.VISIBLE);
-		connectionBinder.getService().requestToDb(filmId, page, this);
+		DbConnectionManager.requestToDb(getResources(), filmId, page, dbConnectionTaskCallback);
 	}
 
 	public void onLimitChange(int limit) {
@@ -82,16 +67,15 @@ public class SuggestionsActivity extends AppCompatActivity implements DbConnecti
 		Intent incomingIntent = getIntent();
 		filmId = incomingIntent.getStringExtra("id");
 		viewPager = (ViewPager) findViewById(R.id.pager);
-		bindService(new Intent(this, DbConnectionService.class), conn, Context.BIND_AUTO_CREATE);
 		depthDlg = new DepthDialog(this);
 		limitDlg = new LimitDialog(this);
 		sortedDlg = new SortedDialog(this);
 		sectionsPagerAdapter = new SuggestionsActivityFragmentAdapter(getSupportFragmentManager());
+		onLoad(DEFAULT_DEPTH_LEVEL);
 	}
 
 	@Override
 	protected void onDestroy() {
-		unbindService(conn);
 		super.onDestroy();
 	}
 

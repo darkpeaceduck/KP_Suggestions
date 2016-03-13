@@ -23,7 +23,7 @@ public class TestDb {
 	@Test
 	public void testCreateDb() throws SQLException {
 		DBOperator dbOperator = openConnection();
-		dbOperator.BuildDatabase();
+		dbOperator.buildDatabase();
 	}
 
 	@Test
@@ -41,7 +41,7 @@ public class TestDb {
 		} catch (FilmNotFoundException e) {
 		}
 
-		dbOperator.InsertFilm(film);
+		dbOperator.insertFilm(film);
 
 		assertEquals(film, dbOperator.selectFilm(intersterllarId));
 	}
@@ -56,11 +56,11 @@ public class TestDb {
 		String savedName = film.getName();
 		film.setName("Petrovich");
 
-		dbOperator.UpdateFilm(film);
+		dbOperator.updateFilm(film);
 		assertEquals(film, dbOperator.selectFilm(intersterllarId));
 
 		film.setName(savedName);
-		dbOperator.UpdateFilm(film);
+		dbOperator.updateFilm(film);
 		assertEquals(film, dbOperator.selectFilm(intersterllarId));
 	}
 

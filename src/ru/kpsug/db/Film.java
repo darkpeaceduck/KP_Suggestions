@@ -11,7 +11,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
 
 import ru.kpsug.utils.JSONParceble;
-import ru.kpsug.utils.MyParseUtils;
+import ru.kpsug.utils.ParseUtils;
 
 public class Film implements Comparable<Film>, JSONParceble {
 	private List<String> suggestion_links = new ArrayList<>();
@@ -130,7 +130,7 @@ public class Film implements Comparable<Film>, JSONParceble {
 	@Override
 	public boolean refreshStateFromJSONString(String s) {
 		try {
-			return refreshStateFromObject(MyParseUtils.getJSONParser().parse(s, MyParseUtils.getContainerFactory()));
+			return refreshStateFromObject(ParseUtils.getJSONParser().parse(s, ParseUtils.getContainerFactory()));
 		} catch (ParseException e) {
 			return false;
 		}
@@ -167,7 +167,7 @@ public class Film implements Comparable<Film>, JSONParceble {
 		return true;
 	}
 
-	public static Comparator<Film> getFilmRatingComparator() {
+	public static Comparator<Film> createFilmRatingComparator() {
 		return new Comparator<Film>() {
 
 			@Override
@@ -189,7 +189,7 @@ public class Film implements Comparable<Film>, JSONParceble {
 		};
 	}
 
-	public static Comparator<Film> getFilmYearComparator() {
+	public static Comparator<Film> createFilmYearComparator() {
 		return new Comparator<Film>() {
 
 			@Override

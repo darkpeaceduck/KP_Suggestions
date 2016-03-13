@@ -18,16 +18,16 @@ import ru.kpsug.app.R;
 import ru.kpsug.app.etc.ExpandableTextView;
 import ru.kpsug.app.etc.FilmStringPretty;
 import ru.kpsug.app.etc.IntentFactory;
-import ru.kpsug.app.service.DbConnectionService;
-import ru.kpsug.app.service.DbConnectionService.DbConnectionServiceResponse;
+import ru.kpsug.app.service.DbConnectionManager;
+import ru.kpsug.app.service.DbConnectionManager.DbConnectionManagerResponse;
+import ru.kpsug.app.service.DbConnectionManager.DbConnectionTaskCallback;
 import ru.kpsug.app.service.HistoryKeeperService;
 import ru.kpsug.app.service.HistoryKeeperService.HistorySetNode;
 import ru.kpsug.db.Film;
 import ru.kpsug.kp.KpPath;
 
-public class FilmDetailsActivity extends AppCompatActivity implements DbConnectionService.DbConnectionTaskCallback {
+public class FilmDetailsActivity extends AppCompatActivity {
 	private String id = null;
-	private DbConnectionService.DbConnectionBinder connectionBinder = null;
 	private HistoryKeeperService.HistoryKeeperBinder connectionBinderHistory = null;
 	private TextView filmNameView = null;
 	private TextView ratingView = null;
@@ -40,28 +40,17 @@ public class FilmDetailsActivity extends AppCompatActivity implements DbConnecti
 	private Button buttonRefresh;
 	private ProgressBar progressBarLoading;
 
-	@Override
-	public void onDbConnectionTaskCallback(DbConnectionServiceResponse result) {
-		if (result.isError()) {
-			refreshDataOnServerError();
-		} else if (result.getResult().getFilms().isEmpty()) {
-			refreshDataOnFilmNotFoundError();
-		} else {
-			refreshFilmData(result.getResult().getFilms().entrySet().iterator().next().getValue());
-		}
-	}
-
-	private ServiceConnection conn = new ServiceConnection() {
-		@Override
-		public void onServiceConnected(ComponentName name, IBinder service) {
-			connectionBinder = (DbConnectionService.DbConnectionBinder) service;
-			connectionBinder.getService().requestToDb(id, FilmDetailsActivity.this);
-		}
+	private DbConnectionTaskCallback dbConnectionTaskCallback = new DbConnectionTaskCallback() {
 
 		@Override
-		public void onServiceDisconnected(ComponentName name) {
-			// TODO Auto-generated method stub
-
+		public void onDbConnectionTaskCallback(DbConnectionManagerResponse result) {
+			if (result.isError()) {
+				refreshDataOnServerError();
+			} else if (result.getResult().getFilms().isEmpty()) {
+				refreshDataOnFilmNotFoundError();
+			} else {
+				refreshFilmData(result.getResult().getFilms().entrySet().iterator().next().getValue());
+			}
 		}
 	};
 
@@ -175,13 +164,12 @@ public class FilmDetailsActivity extends AppCompatActivity implements DbConnecti
 
 		progressBarLoading = (ProgressBar) findViewById(R.id.progressBarFilmDetails);
 		initButtons();
-		bindService(new Intent(this, DbConnectionService.class), conn, Context.BIND_AUTO_CREATE);
 		bindService(new Intent(this, HistoryKeeperService.class), connHistory, Context.BIND_AUTO_CREATE);
+		DbConnectionManager.requestToDb(getResources(), id, dbConnectionTaskCallback);
 	}
 
 	@Override
 	protected void onDestroy() {
-		unbindService(conn);
 		unbindService(connHistory);
 		super.onDestroy();
 	}

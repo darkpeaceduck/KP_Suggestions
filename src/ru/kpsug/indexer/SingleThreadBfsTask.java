@@ -16,13 +16,28 @@ public class SingleThreadBfsTask implements Runnable, IndexerLogger {
 	private int depth;
 	private PrintStream log;
 
-	public SingleThreadBfsTask(int id, IndexerInserter inserter, int page, int depth, PrintStream log) {
+	public static class SingleThreadBfsTaskConstrArgs {
+		public int id;
+		public IndexerInserter inserter;
+		public int page;int depth;
+		public PrintStream log;
+		public SingleThreadBfsTaskConstrArgs(int id, IndexerInserter inserter, int page, int depth, PrintStream log){
+			super();
+			this.id = id;
+			this.inserter = inserter;
+			this.page = page;
+			this.depth = depth;
+			this.log = log;
+		}
+		
+	}
+	public SingleThreadBfsTask(SingleThreadBfsTaskConstrArgs args) {
 		super();
-		this.inserter = inserter;
-		this.pid = id;
-		this.start = String.valueOf(page);
-		this.depth = depth;
-		this.log = log;
+		this.inserter = args.inserter;
+		this.pid = args.id;
+		this.start = String.valueOf(args.page);
+		this.depth = args.depth;
+		this.log = args.log;
 	}
 
 	@Override

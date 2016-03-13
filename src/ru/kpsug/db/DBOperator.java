@@ -3,6 +3,7 @@ package ru.kpsug.db;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -15,7 +16,7 @@ import java.util.TreeMap;
 import org.json.simple.JSONValue;
 import org.json.simple.parser.ParseException;
 
-import ru.kpsug.utils.MyParseUtils;
+import ru.kpsug.utils.ParseUtils;
 
 public class DBOperator {
     private static final String HOST_DEFAULT = "127.0.0.1";
@@ -23,7 +24,7 @@ public class DBOperator {
     private static final String DB_NAME_DEFAULT = "kp_index";
     private static final String USER_DEFAULT = "postgres";
     private static final String PASSWORD_DEFAULT = "postgres";
-    private static final String FIELD_SIZE = "5000";
+    private static final int FIELD_SIZE = 5000;
     private static final String FILMS_TABLE = "films";
     
     private String host = HOST_DEFAULT;
@@ -33,10 +34,9 @@ public class DBOperator {
     private String password = PASSWORD_DEFAULT;
 
     volatile private Connection connect = null;
-    volatile private Statement statement = null;
 
     private void parseConf(String config) throws IOException {
-        Map<String, String> values = MyParseUtils.parseConfig(config);
+        Map<String, String> values = ParseUtils.parseConfig(config);
         for (Entry<String, String> pair : values.entrySet()) {
             String key = pair.getKey();
             String value = pair.getValue();
@@ -83,50 +83,38 @@ public class DBOperator {
         }
     }
 
-    public synchronized void executeUpdate(String query) throws SQLException{
-        if (statement == null) {
-            statement = connect.createStatement();
-        }
-        statement.execute(query);
+    public PreparedStatement newPreparedStatement(String request) throws SQLException{
+    	return connect.prepareStatement(request);
     }
 
-    public synchronized ResultSet executeQuery(String query) throws SQLException{
-        if (statement == null) {
-            statement = connect.createStatement();
-        }
-        return statement.executeQuery(query);
-    }
-
-    public void DropDatabase() throws SQLException {
+    public void dropDatabase() throws SQLException {
         String queryDropScheme = "DROP SCHEMA public cascade";
         String createScheme = "create schema public";
         
-        executeUpdate(queryDropScheme);
-        executeUpdate(createScheme);
+        newPreparedStatement(queryDropScheme).executeUpdate();
+        newPreparedStatement(createScheme).executeUpdate();
     }
 
-    public void BuildDatabase() throws SQLException{
+    public void buildDatabase() throws SQLException{
+    	dropDatabase();
     
         String queryFormat = 
-        		" create table %s "
+        		" create table ? "
         		+ "(id integer PRIMARY KEY,"
-        		+ "actors varchar(%s),"
-        		+ "purposes varchar(%s),"
-                + "links varchar(%s),"
-                + "annotation varchar(%s),"
-                + "rating varchar(%s),"
-                + "name varchar(%s))";
+        		+ "actors varchar(?),"
+        		+ "purposes varchar(?),"
+                + "links varchar(?),"
+                + "annotation varchar(?),"
+                + "rating varchar(?),"
+                + "name varchar(?))";
         
-        DropDatabase();
-        executeUpdate(String.format(queryFormat, 
-        		FILMS_TABLE, 
-        		
-        		FIELD_SIZE, 
-        		FIELD_SIZE,
-        		FIELD_SIZE, 
-        		FIELD_SIZE,
-        		FIELD_SIZE, 
-        		FIELD_SIZE));
+        
+        PreparedStatement statement = newPreparedStatement(queryFormat);
+        statement.setString(1, FILMS_TABLE);
+        for (int i = 2; i <= 7; i++) {
+        	statement.setInt(i, FIELD_SIZE);
+        }
+        statement.executeUpdate();
     }
 
     private String writeList(List<String> arr) {
@@ -151,73 +139,88 @@ public class DBOperator {
 		return value;
 	}
 
-    public void InsertFilm(Film film) throws SQLException{
+    public void insertFilm(Film film) throws SQLException{
        
-        String queryFormat = "insert into %s "
-        		+ "(id, purposes, links, annotation, rating, name, actors)  "
-        		+ "SELECT %s, '%s', '%s', '%s', '%s', '%s', '%s' " 
-                + " WHERE NOT EXISTS (  SELECT id FROM %s "
-                + " WHERE id = %s);";
+        String queryFormat = "insert into ? "
+        		+ "(id, "
+        		+ "purposes, "
+        		+ "links, "
+        		+ "annotation, "
+        		+ "rating, "
+        		+ "name, "
+        		+ "actors)  "
+        		+ "SELECT ?, "
+        		+ "'?', "
+        		+ "'?', "
+        		+ "'?', "
+        		+ "'?', "
+        		+ "'?', "
+        		+ "'?' " 
+                + " WHERE NOT EXISTS (  SELECT id FROM ? "
+                + " WHERE id = ?);";
         
-        executeUpdate(String.format(queryFormat, 
-        		FILMS_TABLE,
-        		
-        		checkIdValue(film.getId()), 
-        		checkFieldValue(writePurposes(film.getPurposes())), 
-        		checkFieldValue(writeList(film.getSuggestion_links())),
-				checkFieldValue(film.getAnnotation()), 
-				checkFieldValue(film.getRating()),
-				checkFieldValue(film.getName()), 
-				checkFieldValue(writeList(film.getActors())),
-        		
-        		FILMS_TABLE,
-        		
-        		checkIdValue(film.getId())));
+        PreparedStatement statement = newPreparedStatement(queryFormat);
+        statement.setString(1, FILMS_TABLE);
+        statement.setString(2, checkIdValue(film.getId()));
+		statement.setString(3, checkFieldValue(writePurposes(film.getPurposes()))); 
+		statement.setString(4, checkFieldValue(writeList(film.getSuggestion_links())));
+		statement.setString(5, checkFieldValue(film.getAnnotation()));
+		statement.setString(6, checkFieldValue(film.getRating()));
+		statement.setString(7, checkFieldValue(film.getName()));
+		statement.setString(8, checkFieldValue(writeList(film.getActors())));
+		statement.setString(9, FILMS_TABLE);
+		statement.setString(10, checkIdValue(film.getId()));
+        
+        statement.executeUpdate();
     }
 
-    public void UpdateFilm(Film film) throws SQLException {
+    public void updateFilm(Film film) throws SQLException {
         String queryFormat = 
-        		"UPDATE %s "
-        		+ "SET id=%s, "
-        		+ "purposes='%s', "
-        		+ "links='%s', "
-        		+ "annotation='%s', "
-        		+ "rating='%s', "
-        		+ "name='%s', "
-        		+ "actors='%s' "
-        		+ "WHERE id=%s";
-        executeUpdate(String.format(queryFormat, 
-        		FILMS_TABLE,
-        		
-        		checkIdValue(film.getId()),
-        		checkFieldValue(writePurposes(film.getPurposes())),
-				checkFieldValue(writeList(film.getSuggestion_links())),
-				checkFieldValue(film.getAnnotation()),
-				checkFieldValue(film.getRating()),
-				checkFieldValue(film.getName()),
-				checkFieldValue(writeList(film.getActors())),
-        		
-				checkIdValue(film.getId()) ));
+        		"UPDATE ? "
+        		+ "SET id=?, "
+        		+ "purposes='?', "
+        		+ "links='?', "
+        		+ "annotation='?', "
+        		+ "rating='?', "
+        		+ "name='?', "
+        		+ "actors='?' "
+        		+ "WHERE id=?";
+        PreparedStatement statement = newPreparedStatement(queryFormat);
+       
+        statement.setString(1, FILMS_TABLE);
+        statement.setString(2, checkIdValue(film.getId()));
+		statement.setString(3, checkFieldValue(writePurposes(film.getPurposes()))); 
+		statement.setString(4, checkFieldValue(writeList(film.getSuggestion_links())));
+		statement.setString(5, checkFieldValue(film.getAnnotation()));
+		statement.setString(6, checkFieldValue(film.getRating()));
+		statement.setString(7, checkFieldValue(film.getName()));
+		statement.setString(8, checkFieldValue(writeList(film.getActors())));
+		statement.setString(9, checkIdValue(film.getId()));
+		
+        statement.executeUpdate();
     }
     
-    public void InsertWithUpdate(Film film) throws SQLException {
-        UpdateFilm(film);
-        InsertFilm(film);
+    public void insertWithUpdate(Film film) throws SQLException {
+        updateFilm(film);
+        insertFilm(film);
     }
 
     public void deleteFilmFromId(String id) throws SQLException{
-        String queryFormat = "delete from %s "
-        					+ "where id=%s";
+        String queryFormat = "delete from ? "
+        					+ "where id=?";
         
-        executeUpdate(String.format(queryFormat,
-        		FILMS_TABLE, 
-        		checkIdValue(id)));
+        PreparedStatement statement = newPreparedStatement(queryFormat);
+        
+        statement.setString(1, FILMS_TABLE);
+        statement.setString(2, checkIdValue(id));
+        
+        statement.executeUpdate();
     }
 
     private List<String> parseListString(String s) {
         try {
-            return (List<String>) (MyParseUtils.getJSONParser()).parse(s,
-                    MyParseUtils.getContainerFactory());
+            return (List<String>) (ParseUtils.getJSONParser()).parse(s,
+                    ParseUtils.getContainerFactory());
         } catch (ParseException e) {
             return new ArrayList<String>();
         }
@@ -225,9 +228,9 @@ public class DBOperator {
 
     private Map<String, List<String>> parsePurposes(String s) {
         try {
-            return (Map<String, List<String>>) (MyParseUtils
+            return (Map<String, List<String>>) (ParseUtils
                     .getJSONParser()).parse(s,
-                    MyParseUtils.getContainerFactory());
+                    ParseUtils.getContainerFactory());
         } catch (ParseException e) {
             return new TreeMap<String, List<String>>();
         }
@@ -251,11 +254,16 @@ public class DBOperator {
     }
 
     public synchronized Film selectFilm(String id) throws SQLException, FilmNotFoundException {
-        String queryFormat = "select * from %s "
-        					+ "where id=%s";
-        ResultSet set = executeQuery(String.format(queryFormat,
-					FILMS_TABLE, 
-					checkIdValue(id)) );
+    	connect.setAutoCommit(false);
+        String queryFormat = "select * from ? "
+        					+ "where id=?";
+        PreparedStatement statement = newPreparedStatement(queryFormat);
+        
+        statement.setString(1, FILMS_TABLE);
+        statement.setString(2, checkIdValue(id));
+        
+        ResultSet set = statement.executeQuery();
+        connect.commit();
         
         if(set == null){
         	throw new FilmNotFoundException();

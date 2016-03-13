@@ -9,7 +9,7 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import ru.kpsug.app.activity.fragment.SuggestionsActivityFragment;
 import ru.kpsug.app.etc.SuggestionsActivitySortedMode;
 import ru.kpsug.db.Film;
-import ru.kpsug.server.Suggestions.SuggestionsResult;
+import ru.kpsug.server.SuggestionsCalculator.SuggestionsResult;
 
 public class SuggestionsActivityFragmentAdapter extends FragmentStatePagerAdapter {
 
