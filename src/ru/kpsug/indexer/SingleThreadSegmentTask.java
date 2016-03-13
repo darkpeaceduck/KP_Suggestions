@@ -16,16 +16,6 @@ public class SingleThreadSegmentTask implements Runnable, IndexerLogger {
 		public int page_stop;
 		public PrintStream log;
 		public IndexerInserter inserter;
-
-		public SingleThreadSegmentTaskConstrArgs(int pid, int page_start, int page_stop, PrintStream log,
-				IndexerInserter inserter) {
-			super();
-			this.pid = pid;
-			this.page_start = page_start;
-			this.page_stop = page_stop;
-			this.log = log;
-			this.inserter = inserter;
-		}
 	}
 
 	public SingleThreadSegmentTask(SingleThreadSegmentTaskConstrArgs args) {

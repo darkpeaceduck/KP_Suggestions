@@ -11,6 +11,7 @@ import java.util.concurrent.TimeUnit;
 import ru.kpsug.db.DBOperator;
 import ru.kpsug.db.DBOperator.FilmNotFoundException;
 import ru.kpsug.db.Film;
+import ru.kpsug.indexer.MultiThreadBfsTask.MultiThreadBfsTaskConstrArgs;
 import ru.kpsug.indexer.SingleThreadBfsTask.SingleThreadBfsTaskConstrArgs;
 import ru.kpsug.indexer.SingleThreadSegmentTask.SingleThreadSegmentTaskConstrArgs;
 import ru.kpsug.kp.KpParser;
@@ -102,8 +103,13 @@ public class Indexer {
 		}
 
 		for (int i = pageStart; i <= pageEnd; i++) {
-			Runnable task = new SingleThreadBfsTask(
-					new SingleThreadBfsTaskConstrArgs(0, inserter, i, depth, log));
+			SingleThreadBfsTaskConstrArgs args = new SingleThreadBfsTaskConstrArgs();
+			args.id = 0;
+			args.depth = depth;
+			args.log = log;
+			args.inserter = inserter;
+			args.page = i;
+			Runnable task = new SingleThreadBfsTask(args);
 			taskExecutor.execute(task);
 		}
 	}
@@ -114,8 +120,13 @@ public class Indexer {
 		}
 
 		for (int i = pageStart; i <= pageEnd; i += taskSegmentLength) {
-			Runnable task = new SingleThreadSegmentTask(new SingleThreadSegmentTaskConstrArgs(i - pageStart, i, Math.min(pageEnd, i + taskSegmentLength), log,
-					inserter));
+			SingleThreadSegmentTaskConstrArgs args = new SingleThreadSegmentTaskConstrArgs();
+			args.pid = i - pageStart;
+			args.page_start = i;
+			args.page_stop = Math.min(pageEnd, i + taskSegmentLength);
+			args.log = log;
+			args.inserter = inserter;
+			Runnable task = new SingleThreadSegmentTask(args);
 			taskExecutor.execute(task);
 		}
 	}
@@ -124,8 +135,15 @@ public class Indexer {
 		if (mode != IndexerMode.MULTI_THREAD_BFS) {
 			return;
 		}
-		new MultiThreadBfsTask(new MultiThreadBfsTask.MultiThreadBfsTaskConstrArgs(
-				0, depth, log, pageStart, pageEnd, inserter)).run();
+		
+		MultiThreadBfsTaskConstrArgs args = new MultiThreadBfsTaskConstrArgs();
+		args.pid = 0;
+		args.depth = depth;
+		args.log = log;
+		args.page_start = pageStart;
+		args.page_end = pageEnd;
+		args.inserter = inserter;
+		new MultiThreadBfsTask(args).run();
 	}
 
 	private static void initDb() throws SQLException {

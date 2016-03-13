@@ -21,22 +21,14 @@ public class MultiThreadBfsTask implements Runnable {
 	private IndexerInserter inserter;
 	
 	public static class MultiThreadBfsTaskConstrArgs{
+		
 		public int pid;
 		public int depth;
 		public PrintStream log;
 		public int page_start;
 		public int page_end;
 		public IndexerInserter inserter;
-		public MultiThreadBfsTaskConstrArgs(int pid, int depth, PrintStream log, int page_start, int page_end,
-				IndexerInserter inserter) {
-			super();
-			this.pid = pid;
-			this.depth = depth;
-			this.log = log;
-			this.page_start = page_start;
-			this.page_end = page_end;
-			this.inserter = inserter;
-		}
+		
 	}
 
 	public MultiThreadBfsTask(MultiThreadBfsTaskConstrArgs args) {
@@ -48,21 +40,46 @@ public class MultiThreadBfsTask implements Runnable {
 		this.page_end = args.page_end;
 		this.inserter = args.inserter;
 	}
+	
+	private class BfsEntry{
+		private Future<?> future;
+		private int id;
+		
+		public BfsEntry(Future<?> future, int id) {
+			super();
+			this.future = future;
+			this.id = id;
+		}
+		
+		public Future<?> getFuture() {
+			return future;
+		}
+
+		public int getId() {
+			return id;
+		}
+	}
 
 	private void runBfs() {
 		Map<Integer, Integer> used = new HashMap<>();
-		Deque<Integer> queue = new LinkedList<>();
-		Deque<Future<?>> queueFut = new LinkedList<>();
+		Deque<BfsEntry> queue = new LinkedList<>();
 		for (int i = page_start; i <= page_end; i++) {
-			queue.push(i);
-			queueFut.push(inserter.submitTask(new SingleThreadSegmentTask(new SingleThreadSegmentTaskConstrArgs(0, i, i, log, inserter))));
+			SingleThreadSegmentTaskConstrArgs args = new SingleThreadSegmentTaskConstrArgs();
+			args.pid = 0;
+			args.page_start = i;
+			args.page_stop = i;
+			args.log = log;
+			args.inserter = inserter;
+			queue.push(new BfsEntry(inserter.submitTask(new SingleThreadSegmentTask(args)), 
+					i));
 			used.put(i, 0);
 		}
 		while (!queue.isEmpty()) {
-			Integer id = queue.getFirst();
+			BfsEntry entry = queue.getFirst();
 			queue.pop();
-			Future<?> fut = queueFut.getFirst();
-			queueFut.pop();
+			Integer id = entry.getId();
+			Future<?> fut = entry.getFuture();
+			
 			Integer h = used.get(id);
 			try {
 				fut.get();
@@ -82,8 +99,14 @@ public class MultiThreadBfsTask implements Runnable {
 					Integer goInt = Integer.parseInt(go);
 					if (!used.containsKey(goInt)) {
 						used.put(goInt, h + 1);
-						queue.push(goInt);
-						queueFut.push(inserter.submitTask(new SingleThreadSegmentTask(new SingleThreadSegmentTaskConstrArgs(0, goInt, goInt, log, inserter))));
+						SingleThreadSegmentTaskConstrArgs args = new SingleThreadSegmentTaskConstrArgs();
+						args.pid = 0;
+						args.page_start = goInt;
+						args.page_stop = goInt;
+						args.log = log;
+						args.inserter = inserter;
+						queue.push(new BfsEntry(inserter.submitTask(new SingleThreadSegmentTask(args)),
+								goInt));
 					}
 				}
 			}

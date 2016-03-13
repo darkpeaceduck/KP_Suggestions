@@ -21,14 +21,7 @@ public class SingleThreadBfsTask implements Runnable, IndexerLogger {
 		public IndexerInserter inserter;
 		public int page;int depth;
 		public PrintStream log;
-		public SingleThreadBfsTaskConstrArgs(int id, IndexerInserter inserter, int page, int depth, PrintStream log){
-			super();
-			this.id = id;
-			this.inserter = inserter;
-			this.page = page;
-			this.depth = depth;
-			this.log = log;
-		}
+		
 		
 	}
 	public SingleThreadBfsTask(SingleThreadBfsTaskConstrArgs args) {
