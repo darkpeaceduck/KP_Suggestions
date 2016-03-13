@@ -254,7 +254,6 @@ public class DBOperator {
     }
 
     public synchronized Film selectFilm(String id) throws SQLException, FilmNotFoundException {
-    	connect.setAutoCommit(false);
         String queryFormat = "select * from ? "
         					+ "where id=?";
         PreparedStatement statement = newPreparedStatement(queryFormat);
@@ -263,7 +262,6 @@ public class DBOperator {
         statement.setString(2, checkIdValue(id));
         
         ResultSet set = statement.executeQuery();
-        connect.commit();
         
         if(set == null){
         	throw new FilmNotFoundException();
