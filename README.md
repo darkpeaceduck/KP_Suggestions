@@ -1,6 +1,6 @@
 ## Description (fall 2015 actual)
 
-I'd found that kinopoisk second-and-more level recomendations was usefull for me (example for all second level recomendations for film **a** 
+I'd found that kinopoisk second-and-more level recomendations was usefull for me (example for all second level recomendations for film **A** 
 
  ![Image of a description](res/pic.png)
 
